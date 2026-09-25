@@ -43,39 +43,4 @@ export class ConfigStore {
   save(config: WirebayConfig): void {
     this.writer.writeJson(this.paths.configFile, config);
   }
-
-  /** Server names enabled for a tool, sorted. */
-  static serversForTool(config: WirebayConfig, toolId: string): string[] {
-    return Object.entries(config.servers)
-      .filter(([, s]) => s.tools.includes(toolId))
-      .map(([name]) => name)
-      .sort();
-  }
-
-  /** Every tool that has at least one server enabled, sorted. */
-  static toolsInUse(config: WirebayConfig): string[] {
-    return [...new Set(Object.values(config.servers).flatMap((s) => s.tools))].sort();
-  }
-
-  /** Enable servers for tools (merging with what is already enabled). */
-  static enable(config: WirebayConfig, servers: string[], tools: string[]): void {
-    for (const s of servers) {
-      const prev = config.servers[s]?.tools ?? [];
-      config.servers[s] = { tools: [...new Set([...prev, ...tools])].sort() };
-    }
-  }
-
-  /** Remove servers from the config entirely. */
-  static removeServers(config: WirebayConfig, servers: string[]): void {
-    const gone = new Set(servers);
-    config.servers = Object.fromEntries(Object.entries(config.servers).filter(([name]) => !gone.has(name)));
-  }
-
-  /** Disable servers for tools (servers stay added, possibly with no tools). */
-  static disable(config: WirebayConfig, servers: string[], tools: string[]): void {
-    for (const s of servers) {
-      const entry = config.servers[s];
-      if (entry) config.servers[s] = { tools: entry.tools.filter((t) => !tools.includes(t)) };
-    }
-  }
 }

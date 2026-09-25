@@ -23,6 +23,8 @@ $ wirebay push github to codex and cursor
    - `add X` with no tools → the tools detected at `wirebay init`
 6. **Typos** get a suggestion: `wirebay snyc` → _Did you mean "sync"?_
 7. **Options can go anywhere**, and `--to`, `--from`, `--for` and `--server` accept comma-separated lists.
+8. **Scope:** `--global` (default) or `--project` for the current project; `--dir <path>` picks a
+   project folder and implies `--project`. See [global vs project servers](teams.md).
 
 ## Verbs and aliases
 
@@ -63,6 +65,7 @@ The full list is in the [tools directory](../tools/INDEX.md) and in `wirebay too
 | Remove everywhere          | `remove github` · `rm github from all`                                           |
 | Show status                | `list` · `ls` · `status` · `ls codex`                                            |
 | Preview                    | add `--dry-run` or `-n` to any command that changes files                        |
+| This project only          | add `--project` (or `--dir path/to/project`) to any command                      |
 
 These rows are tested in `test/unit/parse.test.ts`. If you add a phrasing, add it there.
 

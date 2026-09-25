@@ -1,12 +1,11 @@
 /**
- * `wirebay unsync [tools]`
+ * `wirebay unsync [tools] [--global | --project | --dir <path>]`
  * @module
  */
 
 import type { AppContext } from "../app/AppContext.ts";
 import type { ParsedCommand } from "../cli/CommandParser.ts";
 import { ExitCode } from "../core/errors.ts";
-import { StateStore } from "../core/store/StateStore.ts";
 import { Command } from "./Command.ts";
 import { SyncReporter } from "./support/SyncReporter.ts";
 import { TargetSelector } from "./support/TargetSelector.ts";
@@ -17,36 +16,37 @@ export class UnsyncCommand extends Command {
   override readonly aliases = ["detach"];
   override readonly targeted = true;
   readonly help = {
-    usage: "wirebay unsync [tools]",
+    usage: "wirebay unsync [tools] [--global | --project | --dir <path>]",
     summary: "Remove every wirebay-managed entry from tools (config is kept).",
-    examples: ["wirebay unsync all", "wirebay unsync codex"],
+    examples: ["wirebay unsync all", "wirebay unsync codex", "wirebay unsync --project"],
   };
 
   async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
     const t = ctx.terminal;
-    const config = ctx.config.load();
+    const selector = new TargetSelector(ctx, input);
     const state = ctx.state.load();
-    const tools = Array.isArray(input.tools) && input.tools.length ? input.tools : StateStore.toolsWithEntries(state);
-    if (!tools.length) {
-      t.out("Nothing to unsync: wirebay has not written to any tool yet.");
+    const named = Array.isArray(input.tools) && input.tools.length ? input.tools : undefined;
+    const plans = selector
+      .scopes()
+      .map((scope) => ({ scope, tools: named ?? selector.toolsWrittenTo(scope, state) }))
+      .filter((p) => p.tools.length);
+    if (!plans.length) {
+      t.out("Nothing to unsync: wirebay has not written to any tool here yet.");
       return ExitCode.Ok;
     }
-    const selector = new TargetSelector(ctx, input);
     const servers = selector.servers();
     const what = servers ? servers.join(", ") : "all wirebay-managed servers";
-    if (!input.flags["dry-run"] && !(await t.confirm(`Remove ${what} from ${tools.join(", ")}? (wirebay config is kept)`, input.flags))) {
+    const where = plans.map((p) => `${p.tools.join(", ")} (${selector.label(p.scope)})`).join("; ");
+    if (!input.flags["dry-run"] && !(await t.confirm(`Remove ${what} from ${where}? (wirebay config is kept)`, input.flags))) {
       t.out(t.dim("Cancelled. Pass --yes to skip this question."));
       return ExitCode.Error;
     }
-    const outcome = ctx.sync.run({
-      tools,
-      servers,
-      scope: selector.scope(config),
-      force: !!input.flags.force,
-      dryRun: !!input.flags["dry-run"],
-      removeOnly: true,
-    });
-    const problems = new SyncReporter(t).print(outcome, { dryRun: !!input.flags["dry-run"] });
+    let problems = false;
+    for (const plan of plans) {
+      if (plans.length > 1) t.out(t.bold(`\n${selector.label(plan.scope)}`));
+      const outcome = ctx.sync.run({ ...plan, servers, force: !!input.flags.force, dryRun: !!input.flags["dry-run"], removeOnly: true });
+      problems = new SyncReporter(t).print(outcome, { dryRun: !!input.flags["dry-run"] }) || problems;
+    }
     if (!input.flags["dry-run"]) t.out(t.dim("Run `wirebay sync` to put them back."));
     return problems ? ExitCode.Conflict : ExitCode.Ok;
   }

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/project.schema.json",
+  "title": "wirebay project config (<project>/.wirebay.json)",
+  "description": "Servers this project uses and the tools they go to. Safe to commit: it holds no secrets.",
+  "type": "object",
+  "required": ["version", "servers"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "const": 1 },
+    "servers": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9-]*$" },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["tools"],
+        "additionalProperties": false,
+        "properties": {
+          "tools": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "Tool ids whose project-level MCP config gets this server"
+          }
+        }
+      }
+    }
+  }
+}

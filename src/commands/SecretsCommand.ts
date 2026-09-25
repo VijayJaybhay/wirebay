@@ -115,7 +115,7 @@ export class SecretsCommand extends Command {
     const t = ctx.terminal;
     const values = ctx.secrets.all();
     const uses = this.uses(ctx);
-    const enabled = new Set(Object.keys(ctx.config.load().servers));
+    const enabled = new Set(ctx.desired.allServerNames());
     const keys = new Set([
       ...ctx.secrets.keys(),
       ...[...uses.entries()].filter(([, us]) => us.some((u) => enabled.has(u.server))).map(([k]) => k),

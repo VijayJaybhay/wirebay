@@ -22,7 +22,7 @@ export class PresetsCommand extends Command {
 
   run(input: ParsedCommand, ctx: AppContext): number {
     const t = ctx.terminal;
-    const config = ctx.config.load();
+    const added = new Set(ctx.desired.allServerNames());
     const stale = ToolsCommand.staleDays(input);
     const search = input.rest.join(" ").toLowerCase();
     const rows = [...ctx.servers.presets().values()]
@@ -31,7 +31,7 @@ export class PresetsCommand extends Command {
         category: def.category,
         description: def.description,
         auth: def.authLabel(),
-        added: !!config.servers[def.name],
+        added: added.has(def.name),
         status: def.status,
         lastVerified: def.data.lastVerified ?? null,
         ageDays: ToolDirectory.daysSince(def.data.lastVerified),

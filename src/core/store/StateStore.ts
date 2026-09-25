@@ -41,12 +41,16 @@ export class StateStore {
     return state.files[StateStore.key(tool, scope, file)];
   }
 
-  /** Tools with wirebay-managed entries, optionally only those holding a given server. */
-  static toolsWithEntries(state: WirebayState, server?: string): string[] {
+  /**
+   * Tools with wirebay-managed entries.
+   * @param server - Only files holding this server.
+   * @param where - Only files matching this predicate (e.g. one scope or one project).
+   */
+  static toolsWithEntries(state: WirebayState, server?: string, where: (file: StateFile) => boolean = () => true): string[] {
     return [
       ...new Set(
         Object.values(state.files)
-          .filter((f) => !server || server in f.entries)
+          .filter((f) => (server === undefined || server in f.entries) && where(f))
           .map((f) => f.tool),
       ),
     ].sort();

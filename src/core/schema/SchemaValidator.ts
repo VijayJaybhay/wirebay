@@ -1,5 +1,5 @@
 /**
- * JSON Schema validation for server definitions, tool manifests and the user config,
+ * JSON Schema validation for server definitions, tool manifests, the user config and project configs,
  * using the schemas shipped in `schemas/`.
  * @module
  */
@@ -9,7 +9,7 @@ import { Ajv, type ErrorObject, type ValidateFunction } from "ajv";
 import { WirebayPaths } from "../platform/WirebayPaths.ts";
 
 /** The schemas wirebay ships. */
-export type SchemaName = "server" | "tool" | "config";
+export type SchemaName = "server" | "tool" | "config" | "project";
 
 /** Validates data against the bundled JSON Schemas. Compiled validators are cached per instance. */
 export class SchemaValidator {

@@ -76,7 +76,9 @@ wirebay list                                      # what is synced where
 wirebay remove github from cursor                 # one tool
 wirebay remove github                             # everywhere
 wirebay secrets set NETLIFY_PERSONAL_ACCESS_TOKEN # rotate a token (asked for, never echoed)
-wirebay sync --scope project                      # team-shareable .mcp.json / .vscode/mcp.json
+wirebay add supabase to cursor claude --project  # this project only (saved in ./.wirebay.json)
+wirebay add supabase to vscode --dir ~/code/app   # a project folder named explicitly
+wirebay sync --project                            # re-create this project's tool files
 wirebay unsync all                                # take everything wirebay added back out
 ```
 

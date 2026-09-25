@@ -7,7 +7,6 @@ import type { AppContext } from "../app/AppContext.ts";
 import type { Flags, ParsedCommand } from "../cli/CommandParser.ts";
 import { ExitCode, UsageError } from "../core/errors.ts";
 import { ServerRegistry } from "../core/servers/ServerRegistry.ts";
-import { ConfigStore } from "../core/store/ConfigStore.ts";
 import type { ArgSpec, Launch, ServerDef } from "../core/types.ts";
 import { Command } from "./Command.ts";
 import { SyncReporter } from "./support/SyncReporter.ts";
@@ -23,7 +22,7 @@ export class AddCommand extends Command {
   override readonly targeted = true;
   override readonly acceptsFreeWords = true;
   readonly help = {
-    usage: "wirebay add <server> [to <tools>|all] [--npx|--uvx|--docker|--url|--command …]",
+    usage: "wirebay add <server> [to <tools>|all] [--global | --project | --dir <path>] [--npx|--uvx|--docker|--url|--command …]",
     summary: "Add a built-in or custom server, ask for its secrets, and sync it.",
     examples: [
       "wirebay add github to all",
@@ -31,26 +30,29 @@ export class AddCommand extends Command {
       "wirebay add linear --npx @linear/mcp --secret LINEAR_API_KEY --to claude",
       "wirebay add sentry --url https://mcp.sentry.dev/mcp --oauth",
       "wirebay add github --variant docker",
+      "wirebay add github to cursor claude --project",
+      "wirebay add supabase to vscode --dir ~/code/my-app",
     ],
   };
 
   async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
     const t = ctx.terminal;
-    const config = ctx.config.load();
+    const selector = new TargetSelector(ctx, input);
+    const scope = selector.scope();
     const names = this.collectNames(input, ctx);
 
     if (input.flags.variant) this.selectVariant(names, String(input.flags.variant), ctx);
 
-    const selector = new TargetSelector(ctx, input);
-    const tools = selector.toolsForAdd(config);
-    if (!tools.length)
+    const tools = selector.toolsForAdd(scope);
+    if (!tools.length) {
       throw new UsageError(
-        "No AI tools detected on this machine.",
-        "Name them explicitly (wirebay add github to codex) or use --include-missing.",
+        scope === "project" ? "No detected tool supports project-level MCP config." : "No AI tools detected on this machine.",
+        "Name them explicitly (wirebay add github to cursor) or use --include-missing.",
       );
-    ConfigStore.enable(config, names, tools);
-    ctx.config.save(config);
-    t.out(`${t.ok("✓")} enabled ${names.map((n) => t.bold(n)).join(", ")} for ${tools.join(", ")}`);
+    }
+    ctx.desired.save(scope, ctx.desired.servers(scope).enable(names, tools));
+    t.out(`${t.ok("✓")} enabled ${names.map((n) => t.bold(n)).join(", ")} for ${tools.join(", ")} ${t.dim(`(${selector.label(scope)})`)}`);
+    if (scope === "project") t.out(t.dim(`  saved in ${ctx.project.file}: commit it to share these servers with your team`));
 
     await this.collectSecrets(names, input, ctx);
 
@@ -61,7 +63,7 @@ export class AddCommand extends Command {
     const outcome = ctx.sync.run({
       tools,
       servers: names,
-      scope: selector.scope(config),
+      scope,
       force: !!input.flags.force,
       dryRun: !!input.flags["dry-run"],
       includeMissing: !!input.flags["include-missing"],

@@ -17,7 +17,9 @@ import { EnvFileSecretsStore } from "../core/secrets/EnvFileSecretsStore.ts";
 import { SecretMasker, type SecretsBackend } from "../core/secrets/SecretsBackend.ts";
 import { ServerRegistry } from "../core/servers/ServerRegistry.ts";
 import { ConfigStore } from "../core/store/ConfigStore.ts";
+import { DesiredState } from "../core/store/DesiredState.ts";
 import { EntryHasher } from "../core/store/EntryHasher.ts";
+import { ProjectConfigStore } from "../core/store/ProjectConfigStore.ts";
 import { StateStore } from "../core/store/StateStore.ts";
 import { Reconciler } from "../core/sync/Reconciler.ts";
 import { SyncEngine } from "../core/sync/SyncEngine.ts";
@@ -66,6 +68,16 @@ export class AppContext {
   /** Desired state (`config.json`). */
   get config(): ConfigStore {
     return this.lazy("config", () => new ConfigStore(this.paths, this.writer));
+  }
+
+  /** The current project's `.wirebay.json` (project scope). */
+  get project(): ProjectConfigStore {
+    return this.lazy("project", () => new ProjectConfigStore(this.writer, this.cwd));
+  }
+
+  /** Desired state per scope: global (`config.json`) or project (`.wirebay.json`). */
+  get desired(): DesiredState {
+    return this.lazy("desired", () => new DesiredState(this.config, this.project));
   }
 
   /** Applied state (`state.json`). */

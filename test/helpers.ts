@@ -35,12 +35,16 @@ export class Sandbox {
     return new AppContext({ env: this.env, cwd: this.root });
   }
 
-  /** Run the real CLI in this sandbox. */
-  run(args: string[], input?: string): { code: number; stdout: string; stderr: string } {
+  /**
+   * Run the real CLI in this sandbox.
+   * @param options.input - Text piped to stdin.
+   * @param options.cwd - Working directory (default: the sandbox root).
+   */
+  run(args: string[], options: { input?: string; cwd?: string } = {}): { code: number; stdout: string; stderr: string } {
     const r = spawnSync(process.execPath, ["--no-warnings", cliPath, ...args], {
       env: this.env,
-      cwd: this.root,
-      input,
+      cwd: options.cwd ?? this.root,
+      input: options.input,
       encoding: "utf8",
       timeout: 60_000,
     });

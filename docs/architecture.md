@@ -9,7 +9,9 @@
                                                                               │
  presets/*.json ─┐                                                            ▼
  ~/.wirebay/     ├─▶ ServerRegistry ─┐                               SyncEngine.run()
-   servers/*.json┘                   │   ConfigStore (config.json) ─────▶ │
+   servers/*.json┘                   │   DesiredState ──────────────────▶ │
+                                     │    ├ ConfigStore (config.json, global)
+                                     │    └ ProjectConfigStore (.wirebay.json)
  tools/*/tool.json ─▶ ToolRegistry ──┤                                    ▼
  ~/.wirebay/tools/ ┘                 │                         EntryRenderer.render(server, tool)
                                      │                                    │
@@ -48,7 +50,9 @@
 | `ToolAdapter` + `AdapterFactory`      | Read, render and commit one tool file; Claude Code's user scope commits through its CLI      |
 | `EntryRenderer`                       | The launcher entry for (server, tool): absolute / portable / npx modes                       |
 | `Reconciler`                          | Plans per-file changes: conflicts, drift, pruning; applies and records hashes                |
-| `SyncEngine`                          | Orchestrates a sync across tools                                                             |
+| `DesiredState` / `ServerMapOps`       | Which servers go to which tools per scope (global `config.json`, project `.wirebay.json`)    |
+| `ProjectConfigStore`                  | Finds the project root (`--dir`, `.wirebay.json`, git root) and reads/writes `.wirebay.json` |
+| `SyncEngine`                          | Orchestrates a sync across tools for one scope                                               |
 | `LaunchPlanner` / `ServerLauncher`    | Builds the child env and command (secrets filtering, mcp-remote bridge) / spawns it          |
 | `McpHandshakeClient` / `Doctor`       | A minimal MCP client / all health checks                                                     |
 

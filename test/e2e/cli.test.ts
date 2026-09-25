@@ -50,7 +50,7 @@ await test("init → add → list → doctor → remove → unsync", () => {
     assert.equal(r.code, 0, r.stderr + r.stdout);
     assert.match(r.stderr, /needs TEST_TOKEN/);
 
-    r = sb.run(["secrets", "set", "TEST_TOKEN", "--stdin"], SENTINEL);
+    r = sb.run(["secrets", "set", "TEST_TOKEN", "--stdin"], { input: SENTINEL });
     assert.equal(r.code, 0, r.stderr);
     assert.ok(!r.stdout.includes(SENTINEL), "secret echoed");
     writeFileSync(path.join(sb.wirebayHome, "secrets.env"), `TEST_UNDECLARED=nope\n`, { flag: "a" });
@@ -148,6 +148,77 @@ await test("helpful errors", () => {
     assert.match(r.stderr, /--npx/);
     r = sb.run(["--version"]);
     assert.match(r.stdout, /^\d+\.\d+\.\d+/);
+  } finally {
+    sb.cleanup();
+  }
+});
+
+await test("project scope: --project, --dir, subfolders, and tools without project config", () => {
+  const sb = new Sandbox();
+  try {
+    const { cursor } = setupTools(sb);
+    const app = path.join(sb.root, "app");
+    const nested = path.join(app, "src", "deep");
+    mkdirSync(nested, { recursive: true });
+    const projectCursor = path.join(app, ".cursor", "mcp.json");
+    const projectFile = path.join(app, ".wirebay.json");
+
+    let r = sb.run(["init", "--dir", app]);
+    assert.equal(r.code, 0, r.stderr);
+    assert.deepEqual((JSON.parse(readFileSync(projectFile, "utf8")) as { servers: object }).servers, {});
+
+    // Added from a subfolder: the project root is found by walking up to .wirebay.json.
+    r = sb.run(["add", "local", "--command", "node", "to", "cursor", "--project"], { cwd: nested });
+    assert.equal(r.code, 0, r.stderr + r.stdout);
+    assert.match(r.stdout, /project /);
+    const project = JSON.parse(readFileSync(projectFile, "utf8")) as { servers: Record<string, { tools: string[] }> };
+    assert.deepEqual(project.servers, { local: { tools: ["cursor"] } });
+    assert.match(readFileSync(projectCursor, "utf8"), /"local"/);
+    assert.ok(!readFileSync(cursor, "utf8").includes('"local"'), "global cursor config untouched");
+
+    // A global server lives next to it.
+    r = sb.run(["add", "everywhere", "--command", "node", "to", "cursor", "--global"], { cwd: app });
+    assert.equal(r.code, 0, r.stderr);
+    assert.match(readFileSync(cursor, "utf8"), /"everywhere"/);
+    assert.ok(!readFileSync(projectCursor, "utf8").includes('"everywhere"'));
+
+    // list inside the project shows both scopes.
+    r = sb.run(["list", "--json"], { cwd: app });
+    const both = JSON.parse(r.stdout) as { scopes: { scope: string; servers: { server: string; tools: Record<string, string> }[] }[] };
+    assert.deepEqual(
+      both.scopes.map((s) => [s.scope, s.servers.map((x) => `${x.server}:${x.tools.cursor ?? "-"}`)]),
+      [
+        ["user", ["everywhere:synced"]],
+        ["project", ["local:synced"]],
+      ],
+    );
+
+    // Outside the project only the global scope is shown.
+    r = sb.run(["list", "--json"]);
+    assert.equal((JSON.parse(r.stdout) as { scope: string }).scope, "user");
+
+    // Codex has no project-level config: it is skipped with a hint to use --global.
+    r = sb.run(["enable", "local", "for", "codex", "--dir", app]);
+    assert.match(r.stdout + r.stderr, /--global/);
+    assert.ok(!readFileSync(path.join(sb.home, ".codex", "config.toml"), "utf8").includes("local"));
+
+    // unsync --project only touches the project's files.
+    r = sb.run(["unsync", "--project", "--yes"], { cwd: app });
+    assert.equal(r.code, 0, r.stderr);
+    assert.ok(!readFileSync(projectCursor, "utf8").includes('"local"'));
+    assert.match(readFileSync(cursor, "utf8"), /"everywhere"/);
+
+    // An invalid project file is reported, not silently ignored.
+    writeFileSync(projectFile, '{ "version": 1, "servers": { "Bad Name": {} } }');
+    r = sb.run(["list"], { cwd: app });
+    assert.notEqual(r.code, 0);
+    assert.match(r.stderr, /not a valid wirebay project config/);
+
+    r = sb.run(["add", "x", "--command", "node", "--project", "--global"]);
+    assert.equal(r.code, 2);
+    r = sb.run(["list", "--dir", path.join(sb.root, "missing")]);
+    assert.equal(r.code, 2);
+    assert.match(r.stderr, /does not exist/);
   } finally {
     sb.cleanup();
   }

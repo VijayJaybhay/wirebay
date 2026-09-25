@@ -54,8 +54,7 @@ export class Doctor {
   async run(options: DoctorOptions = {}): Promise<DoctorCheck[]> {
     this.options = options;
     this.checkEnvironment();
-    const config = this.ctx.config.load();
-    const servers = options.servers ?? (options.tools ? [] : Object.keys(config.servers));
+    const servers = options.servers ?? (options.tools ? [] : this.ctx.desired.allServerNames());
     for (const name of servers) await this.checkServer(name);
     if (!options.servers || options.tools) this.checkToolFiles(options.tools);
     return this.checks;

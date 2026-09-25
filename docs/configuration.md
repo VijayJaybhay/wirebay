@@ -36,12 +36,20 @@
 | Field          | Meaning                                                                                                                           |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `defaultTools` | Tools a server is enabled for when `add` gets no tool names. Set by `init` to the detected tools.                                 |
-| `defaultScope` | `user` or `project`. The `--scope` option overrides it.                                                                           |
+| `defaultScope` | Where `add`/`enable`/`disable`/`remove` write: `user` (global) or `project`. `--global`, `--project` and `--dir` override it.     |
 | `renderMode`   | `auto` (absolute for user scope, portable for project scope), `absolute`, or `portable`.                                          |
 | `paths`        | Absolute paths to `npx`, `uvx`, `docker`, … Useful because GUI apps don't inherit your shell `PATH`. Refreshed by `wirebay init`. |
-| `servers`      | Server name → the tools it's enabled for.                                                                                         |
+| `servers`      | Server name → the tools it's enabled for (global scope).                                                                          |
 
 After editing by hand, run `wirebay sync`.
+
+## Project config: `<project>/.wirebay.json`
+
+Servers for one project live in the project, not in `~/.wirebay`. The file has the same
+`servers` map as `config.json` and is safe to commit. It is created by `wirebay init --project`
+or the first `wirebay add … --project`, and checked against
+[`schemas/project.schema.json`](../schemas/project.schema.json) when read. See
+[global vs project servers](teams.md).
 
 ## Render modes
 

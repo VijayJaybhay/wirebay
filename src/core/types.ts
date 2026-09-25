@@ -110,6 +110,19 @@ export interface ToolManifest {
 
 export type RenderMode = "auto" | "absolute" | "portable";
 
+/** Which tools each server is enabled for (the heart of the desired state). */
+export type ServerMap = Record<string, { tools: string[] }>;
+
+/**
+ * `<project>/.wirebay.json`: servers this project uses, written into the tools' *project* config
+ * files. Meant to be committed so a team shares it; contains no secrets.
+ */
+export interface ProjectConfig {
+  $schema?: string;
+  version: number;
+  servers: ServerMap;
+}
+
 /** ~/.wirebay/config.json: the desired state. */
 export interface WirebayConfig {
   $schema?: string;

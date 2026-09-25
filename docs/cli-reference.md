@@ -6,10 +6,10 @@ Every command also accepts natural phrasing; see [command grammar](command-gramm
 
 ## `init`
 
-Create ~/.wirebay, the secrets file, and detect installed tools.
+Create ~/.wirebay, the secrets file, and detect installed tools (--project: also this project's .wirebay.json).
 
 ```
-wirebay init
+wirebay init [--project | --dir <path>]
 ```
 
 Aliases: `setup`
@@ -18,6 +18,8 @@ Examples:
 
 ```bash
 wirebay init
+wirebay init --project
+wirebay init --dir ~/code/my-app
 ```
 
 ## `add`
@@ -25,7 +27,7 @@ wirebay init
 Add a built-in or custom server, ask for its secrets, and sync it.
 
 ```
-wirebay add <server> [to <tools>|all] [--npx|--uvx|--docker|--url|--command …]
+wirebay add <server> [to <tools>|all] [--global | --project | --dir <path>] [--npx|--uvx|--docker|--url|--command …]
 ```
 
 Aliases: `install`, `new`
@@ -38,14 +40,16 @@ wirebay add netlify to codex cursor
 wirebay add linear --npx @linear/mcp --secret LINEAR_API_KEY --to claude
 wirebay add sentry --url https://mcp.sentry.dev/mcp --oauth
 wirebay add github --variant docker
+wirebay add github to cursor claude --project
+wirebay add supabase to vscode --dir ~/code/my-app
 ```
 
 ## `sync`
 
-Make tool configs match wirebay's config. Adds, updates and removes only wirebay-managed entries.
+Make tool configs match wirebay's config (global, plus this project). Only wirebay-managed entries change.
 
 ```
-wirebay sync [servers] [to <tools>|all] [--dry-run] [--force] [--scope project]
+wirebay sync [servers] [to <tools>|all] [--global | --project | --dir <path>] [--dry-run] [--force]
 ```
 
 Aliases: `push`, `apply`, `deploy`
@@ -56,6 +60,7 @@ Examples:
 wirebay sync
 wirebay sync codex
 wirebay sync github to cursor vscode
+wirebay sync --project
 wirebay sync --dry-run
 ```
 
@@ -64,7 +69,7 @@ wirebay sync --dry-run
 Write ready-to-copy config files without touching real ones.
 
 ```
-wirebay export [tools] [--out dir]
+wirebay export [tools] [--global | --project | --dir <path>] [--out dir]
 ```
 
 Aliases: `generate`
@@ -78,10 +83,10 @@ wirebay export cursor
 
 ## `enable`
 
-Turn servers on for more tools, then sync.
+Turn servers on for more tools (globally or for this project), then sync.
 
 ```
-wirebay enable <servers> for <tools>
+wirebay enable <servers> for <tools> [--global | --project | --dir <path>]
 ```
 
 Aliases: `on`
@@ -90,14 +95,15 @@ Examples:
 
 ```bash
 wirebay enable netlify for cursor vscode
+wirebay enable github for claude --project
 ```
 
 ## `disable`
 
-Turn servers off for some tools, then sync.
+Turn servers off for some tools (globally or for this project), then sync.
 
 ```
-wirebay disable <servers> from <tools>
+wirebay disable <servers> from <tools> [--global | --project | --dir <path>]
 ```
 
 Aliases: `off`
@@ -106,14 +112,15 @@ Examples:
 
 ```bash
 wirebay disable aws-api from desktop
+wirebay disable github from cursor --project
 ```
 
 ## `remove`
 
-Remove servers from some tools, or from wirebay and every tool.
+Remove servers from some tools, or from wirebay and every tool (globally or for this project).
 
 ```
-wirebay remove <servers> [from <tools>] [--purge]
+wirebay remove <servers> [from <tools>] [--global | --project | --dir <path>] [--purge]
 ```
 
 Aliases: `rm`, `delete`, `uninstall`
@@ -123,6 +130,7 @@ Examples:
 ```bash
 wirebay remove github from cursor
 wirebay remove github
+wirebay remove github --project
 ```
 
 ## `unsync`
@@ -130,7 +138,7 @@ wirebay remove github
 Remove every wirebay-managed entry from tools (config is kept).
 
 ```
-wirebay unsync [tools]
+wirebay unsync [tools] [--global | --project | --dir <path>]
 ```
 
 Aliases: `detach`
@@ -140,14 +148,15 @@ Examples:
 ```bash
 wirebay unsync all
 wirebay unsync codex
+wirebay unsync --project
 ```
 
 ## `list`
 
-Show which servers are synced to which tools.
+Show which servers are synced to which tools, globally and for this project.
 
 ```
-wirebay list [server|tool] [--json]
+wirebay list [server|tool] [--global | --project | --dir <path>] [--json]
 ```
 
 Aliases: `ls`, `status`
@@ -157,6 +166,7 @@ Examples:
 ```bash
 wirebay list
 wirebay ls codex
+wirebay list --project
 ```
 
 ## `tools`
@@ -262,46 +272,49 @@ wirebay run github
 
 ## Options
 
-| Option                      | Description                                                          |
-| --------------------------- | -------------------------------------------------------------------- |
-| `--to <value>`              | Tool(s) to act on (comma-separated)                                  |
-| `--from <value>`            | Tool(s) to remove from                                               |
-| `--for <value>`             | Same as --to                                                         |
-| `--server <value>`          | Server(s) to act on                                                  |
-| `--all`                     | Every server (or every tool, when servers are named)                 |
-| `--all-tools`               | Every installed tool                                                 |
-| `--all-servers`             | Every added server                                                   |
-| `--scope <value>`           | user (default) or project                                            |
-| `--dry-run` / `-n`          | Show what would change, change nothing                               |
-| `--yes` / `-y`              | Don't ask for confirmation                                           |
-| `--force`                   | Overwrite entries that were edited by hand or not created by wirebay |
-| `--json`                    | Machine-readable output                                              |
-| `--include-missing`         | Also write configs for tools that don't look installed               |
-| `--no-sync`                 | Only update wirebay's config; don't touch tool files                 |
-| `--npx <value>`             | add: run an npm package with npx                                     |
-| `--uvx <value>`             | add: run a Python package with uvx                                   |
-| `--docker <value>`          | add: run a Docker image                                              |
-| `--url <value>`             | add: connect to a remote (HTTP) MCP server                           |
-| `--command <value>`         | add: run any executable                                              |
-| `--arg <value>`             | add: extra argument for the server (repeatable)                      |
-| `--secret <value>`          | add: secret key the server needs (repeatable)                        |
-| `--optional-secret <value>` | add: optional secret key (repeatable)                                |
-| `--env <value>`             | add: non-secret KEY=value (repeatable)                               |
-| `--header <value>`          | add: non-secret HTTP header 'Name: value' (repeatable)               |
-| `--oauth`                   | add: remote server uses browser OAuth                                |
-| `--variant <value>`         | add: use a preset variant (e.g. github --variant docker)             |
-| `--description <value>`     | add: one-line description                                            |
-| `--no-prompt`               | Never prompt (also automatic without a TTY or in CI)                 |
-| `--stdin`                   | secrets set: read the value from stdin                               |
-| `--stale`                   | tools/presets: only entries due for re-verification                  |
-| `--days <value>`            | tools/presets --stale: age threshold (default 90)                    |
-| `--list`                    | restore: list backups                                                |
-| `--offline`                 | doctor: skip starting servers                                        |
-| `--timeout <value>`         | doctor: seconds to wait for each server (default 90)                 |
-| `--purge`                   | remove: also delete your custom server definition                    |
-| `--out <value>`             | export: output folder (default ./wirebay-export)                     |
-| `--help` / `-h`             | Show help                                                            |
-| `--version` / `-v`          | Show version                                                         |
+| Option                      | Description                                                                             |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| `--to <value>`              | Tool(s) to act on (comma-separated)                                                     |
+| `--from <value>`            | Tool(s) to remove from                                                                  |
+| `--for <value>`             | Same as --to                                                                            |
+| `--server <value>`          | Server(s) to act on                                                                     |
+| `--all`                     | Every server (or every tool, when servers are named)                                    |
+| `--all-tools`               | Every installed tool                                                                    |
+| `--all-servers`             | Every added server                                                                      |
+| `--global`                  | Apply to the tools' global (user-level) config (the default)                            |
+| `--project`                 | Apply to this project's tool configs (.mcp.json, .cursor/mcp.json, …) via .wirebay.json |
+| `--dir <value>`             | Apply to the project in this folder (implies --project)                                 |
+| `--scope <value>`           | user or project (same as --global / --project)                                          |
+| `--dry-run` / `-n`          | Show what would change, change nothing                                                  |
+| `--yes` / `-y`              | Don't ask for confirmation                                                              |
+| `--force`                   | Overwrite entries that were edited by hand or not created by wirebay                    |
+| `--json`                    | Machine-readable output                                                                 |
+| `--include-missing`         | Also write configs for tools that don't look installed                                  |
+| `--no-sync`                 | Only update wirebay's config; don't touch tool files                                    |
+| `--npx <value>`             | add: run an npm package with npx                                                        |
+| `--uvx <value>`             | add: run a Python package with uvx                                                      |
+| `--docker <value>`          | add: run a Docker image                                                                 |
+| `--url <value>`             | add: connect to a remote (HTTP) MCP server                                              |
+| `--command <value>`         | add: run any executable                                                                 |
+| `--arg <value>`             | add: extra argument for the server (repeatable)                                         |
+| `--secret <value>`          | add: secret key the server needs (repeatable)                                           |
+| `--optional-secret <value>` | add: optional secret key (repeatable)                                                   |
+| `--env <value>`             | add: non-secret KEY=value (repeatable)                                                  |
+| `--header <value>`          | add: non-secret HTTP header 'Name: value' (repeatable)                                  |
+| `--oauth`                   | add: remote server uses browser OAuth                                                   |
+| `--variant <value>`         | add: use a preset variant (e.g. github --variant docker)                                |
+| `--description <value>`     | add: one-line description                                                               |
+| `--no-prompt`               | Never prompt (also automatic without a TTY or in CI)                                    |
+| `--stdin`                   | secrets set: read the value from stdin                                                  |
+| `--stale`                   | tools/presets: only entries due for re-verification                                     |
+| `--days <value>`            | tools/presets --stale: age threshold (default 90)                                       |
+| `--list`                    | restore: list backups                                                                   |
+| `--offline`                 | doctor: skip starting servers                                                           |
+| `--timeout <value>`         | doctor: seconds to wait for each server (default 90)                                    |
+| `--purge`                   | remove: also delete your custom server definition                                       |
+| `--out <value>`             | export: output folder (default ./wirebay-export)                                        |
+| `--help` / `-h`             | Show help                                                                               |
+| `--version` / `-v`          | Show version                                                                            |
 
 ## Exit codes
 
