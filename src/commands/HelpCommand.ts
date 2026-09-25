@@ -58,7 +58,7 @@ export class HelpCommand extends Command {
         .map((f) => `--${f.name}${f.short ? `/-${f.short}` : ""}`)
         .join("  ")}`,
     );
-    t.out(t.dim(`\nMore: wirebay help <command> · https://github.com/VijayJaybhay/wirebay#readme`));
+    t.out(t.dim(`\nMore: wirebay help <command> · https://github.com/pragnalabs-ai/wirebay#readme`));
     return ExitCode.Ok;
   }
 }

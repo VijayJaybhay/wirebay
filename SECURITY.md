@@ -5,7 +5,7 @@ wirebay handles API tokens, so security reports are very welcome.
 ## Reporting a vulnerability
 
 Please **do not open a public issue**. Report privately through GitHub:
-**[Report a vulnerability](https://github.com/VijayJaybhay/wirebay/security/advisories/new)**
+**[Report a vulnerability](https://github.com/pragnalabs-ai/wirebay/security/advisories/new)**
 (Security tab → Advisories → "Report a vulnerability").
 
 Include what you found, how to reproduce it, and the impact. We aim to reply within 7 days and to

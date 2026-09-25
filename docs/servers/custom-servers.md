@@ -44,7 +44,7 @@ or a reserved word (like `all`).
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/server.schema.json",
+  "$schema": "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/server.schema.json",
   "version": 1,
   "name": "linear",
   "description": "Linear issues and projects",

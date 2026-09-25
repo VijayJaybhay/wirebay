@@ -56,11 +56,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VijayJaybhay/wirebay.git"
+    "url": "git+https://github.com/pragnalabs-ai/wirebay.git"
   },
-  "homepage": "https://github.com/VijayJaybhay/wirebay#readme",
+  "homepage": "https://github.com/pragnalabs-ai/wirebay#readme",
   "bugs": {
-    "url": "https://github.com/VijayJaybhay/wirebay/issues"
+    "url": "https://github.com/pragnalabs-ai/wirebay/issues"
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",

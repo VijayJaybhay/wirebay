@@ -244,10 +244,10 @@ wirebay add firebase to all
 - **Runs:** `npx -y firebase-tools@15.31.0 mcp [--dir ${FIREBASE_PROJECT_DIR}]`
 - **Needs:** npx
 
-| Key                              | Required | What it is                                                           | Where to get it                                                                                                 |
-| -------------------------------- | -------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `GOOGLE_APPLICATION_CREDENTIALS` | no       | Path to a service-account JSON (leave empty to use `firebase login`) | [link](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/firebase.md#1-choose-how-to-authenticate) |
-| `FIREBASE_PROJECT_DIR`           | no       | Folder containing firebase.json                                      |                                                                                                                 |
+| Key                              | Required | What it is                                                           | Where to get it                                                                                                  |
+| -------------------------------- | -------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `GOOGLE_APPLICATION_CREDENTIALS` | no       | Path to a service-account JSON (leave empty to use `firebase login`) | [link](https://github.com/pragnalabs-ai/wirebay/blob/main/docs/servers/firebase.md#1-choose-how-to-authenticate) |
+| `FIREBASE_PROJECT_DIR`           | no       | Folder containing firebase.json                                      |                                                                                                                  |
 
 Set with `wirebay secrets set <KEY>`.
 
@@ -308,9 +308,9 @@ wirebay add netlify to all
 - **Runs:** `npx -y @netlify/mcp@1.15.1`
 - **Needs:** npx
 
-| Key                             | Required | What it is                    | Where to get it                                                                                    |
-| ------------------------------- | -------- | ----------------------------- | -------------------------------------------------------------------------------------------------- |
-| `NETLIFY_PERSONAL_ACCESS_TOKEN` | yes      | Netlify personal access token | [link](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/netlify.md#1-create-a-token) |
+| Key                             | Required | What it is                    | Where to get it                                                                                     |
+| ------------------------------- | -------- | ----------------------------- | --------------------------------------------------------------------------------------------------- |
+| `NETLIFY_PERSONAL_ACCESS_TOKEN` | yes      | Netlify personal access token | [link](https://github.com/pragnalabs-ai/wirebay/blob/main/docs/servers/netlify.md#1-create-a-token) |
 
 Set with `wirebay secrets set <KEY>`.
 
@@ -408,12 +408,12 @@ wirebay add github to all
 - **`--variant docker`:** `docker run -i --rm -e GITHUB_PERSONAL_ACCESS_TOKEN -e GITHUB_TOOLSETS -e GITHUB_HOST ghcr.io/github/github-mcp-server:v1.12.2`
 - **Needs:** npx
 
-| Key                            | Required | What it is                                              | Where to get it                                                                                   |
-| ------------------------------ | -------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `GITHUB_PERSONAL_ACCESS_TOKEN` | yes      | Fine-grained personal access token                      | [link](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/github.md#1-create-a-token) |
-| `GITHUB_TOOLSETS`              | no       | Comma-separated toolsets to enable                      |                                                                                                   |
-| `GITHUB_MCP_URL`               | no       | GitHub Enterprise MCP endpoint (empty = github.com)     |                                                                                                   |
-| `GITHUB_HOST`                  | no       | GitHub Enterprise Server hostname (docker variant only) |                                                                                                   |
+| Key                            | Required | What it is                                              | Where to get it                                                                                    |
+| ------------------------------ | -------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `GITHUB_PERSONAL_ACCESS_TOKEN` | yes      | Fine-grained personal access token                      | [link](https://github.com/pragnalabs-ai/wirebay/blob/main/docs/servers/github.md#1-create-a-token) |
+| `GITHUB_TOOLSETS`              | no       | Comma-separated toolsets to enable                      |                                                                                                    |
+| `GITHUB_MCP_URL`               | no       | GitHub Enterprise MCP endpoint (empty = github.com)     |                                                                                                    |
+| `GITHUB_HOST`                  | no       | GitHub Enterprise Server hostname (docker variant only) |                                                                                                    |
 
 Set with `wirebay secrets set <KEY>`.
 

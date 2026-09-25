@@ -44,7 +44,7 @@ with a complex setup, like GitHub or AWS.
       "required": true,
       "description": "Personal API key",
       "pattern": "^lin_api_",
-      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/linear.md#1-create-a-token",
+      "help": "https://github.com/pragnalabs-ai/wirebay/blob/main/docs/servers/linear.md#1-create-a-token",
     },
   ],
   "env": { "LOG_LEVEL": "error" }, // non-secret defaults; may use ${VARS}

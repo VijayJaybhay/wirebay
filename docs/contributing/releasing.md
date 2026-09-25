@@ -27,7 +27,7 @@ npx changeset
 ### One-time setup
 
 - Prefer **trusted publishing**: on npmjs.com, package settings → _Trusted publishers_ → add
-  GitHub Actions for `VijayJaybhay/wirebay`, workflow `release.yml`. No token is needed.
+  GitHub Actions for `pragnalabs-ai/wirebay`, workflow `release.yml`. No token is needed.
 - Otherwise, create an npm **automation** token and add it as the `NPM_TOKEN` repository secret.
 - Repository settings → Actions → _Allow GitHub Actions to create and approve pull requests_.
 

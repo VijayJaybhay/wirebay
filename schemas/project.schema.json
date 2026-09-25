@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/project.schema.json",
+  "$id": "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/project.schema.json",
   "title": "wirebay project config (<project>/.wirebay.json)",
   "description": "Servers this project uses and the tools they go to. Safe to commit: it holds no secrets.",
   "type": "object",

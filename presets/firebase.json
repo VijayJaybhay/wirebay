@@ -20,7 +20,7 @@
     {
       "key": "GOOGLE_APPLICATION_CREDENTIALS",
       "description": "Path to a service-account JSON (leave empty to use `firebase login`)",
-      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/firebase.md#1-choose-how-to-authenticate"
+      "help": "https://github.com/pragnalabs-ai/wirebay/blob/main/docs/servers/firebase.md#1-choose-how-to-authenticate"
     },
     {
       "key": "FIREBASE_PROJECT_DIR",

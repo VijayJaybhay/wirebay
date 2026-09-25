@@ -99,7 +99,7 @@ export class ProjectConfigStore {
   /** An empty project config. */
   static defaults(): ProjectConfig {
     return {
-      $schema: "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/project.schema.json",
+      $schema: "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/project.schema.json",
       version: ProjectConfigStore.version,
       servers: {},
     };

@@ -20,7 +20,7 @@
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/config.schema.json",
+  "$schema": "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/config.schema.json",
   "version": 1,
   "defaultTools": ["claude-code", "codex", "cursor"],
   "defaultScope": "user",

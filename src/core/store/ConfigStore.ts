@@ -23,7 +23,7 @@ export class ConfigStore {
   /** A config with nothing enabled. */
   static defaults(): WirebayConfig {
     return {
-      $schema: "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/config.schema.json",
+      $schema: "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/config.schema.json",
       version: ConfigStore.version,
       defaultTools: [],
       defaultScope: "user",

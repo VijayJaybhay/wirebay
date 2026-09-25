@@ -2,7 +2,7 @@
 
 Official MCP docs: https://www.kimi.com/code/docs/en/kimi-code-cli/customization/mcp.html
 
-> **Status:** beta: paths are documented; per-server optional fields are not fully verified. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta: paths are documented; per-server optional fields are not fully verified. If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

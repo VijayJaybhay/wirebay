@@ -2,7 +2,7 @@
 
 The Continue extension for VS Code and JetBrains. Official docs: https://docs.continue.dev/customize/deep-dives/mcp
 
-> **Status:** beta, project scope only (see below). If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta, project scope only (see below). If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

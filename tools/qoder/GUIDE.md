@@ -2,7 +2,7 @@
 
 Official MCP docs: https://docs.qoder.com/cli/mcp-servers
 
-> **Status:** beta. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta. If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

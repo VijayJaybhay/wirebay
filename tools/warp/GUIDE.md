@@ -2,7 +2,7 @@
 
 The Warp terminal's agents. Official docs: https://docs.warp.dev/knowledge-and-collaboration/mcp
 
-> **Status:** beta: Windows/Linux paths aren't stated separately in the docs. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta: Windows/Linux paths aren't stated separately in the docs. If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

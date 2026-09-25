@@ -104,7 +104,7 @@ export class ServerRegistry {
     const file = this.userFile(def.name);
     const clean = ServerRegistry.withoutSource(def);
     this.writer.writeJson(file, {
-      $schema: "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/server.schema.json",
+      $schema: "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/server.schema.json",
       version: 1,
       ...clean,
     });

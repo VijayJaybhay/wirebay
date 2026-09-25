@@ -2,7 +2,7 @@
 
 The open-source terminal coding agent. Official docs: https://opencode.ai/docs/mcp-servers/
 
-> **Status:** beta: the Windows user path isn't stated in the docs (wirebay uses `%USERPROFILE%\.config\opencode\opencode.json`). If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta: the Windows user path isn't stated in the docs (wirebay uses `%USERPROFILE%\.config\opencode\opencode.json`). If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

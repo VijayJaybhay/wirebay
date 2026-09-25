@@ -110,7 +110,7 @@ export class WirebayApp {
       return err.exitCode;
     }
     t.note(`${t.err("unexpected error:")} ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`);
-    t.note("Please report it: https://github.com/VijayJaybhay/wirebay/issues");
+    t.note("Please report it: https://github.com/pragnalabs-ai/wirebay/issues");
     return ExitCode.Error;
   }
 }

@@ -16,7 +16,7 @@ not acceptable.
 ## Enforcement
 
 Report unacceptable behavior privately to the maintainers through a
-[private advisory](https://github.com/VijayJaybhay/wirebay/security/advisories/new) (choose "Code of
+[private advisory](https://github.com/pragnalabs-ai/wirebay/security/advisories/new) (choose "Code of
 Conduct" in the title), or by contacting a maintainer listed in `.github/CODEOWNERS`. Every report is
 reviewed and kept confidential. Maintainers may remove, edit or reject comments, commits, code,
 issues and other contributions that break this code, and may ban contributors temporarily or permanently.

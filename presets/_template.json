@@ -14,7 +14,7 @@
       "key": "MY_SERVER_TOKEN",
       "required": true,
       "description": "What this token is and where to create it",
-      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/my-server.md"
+      "help": "https://github.com/pragnalabs-ai/wirebay/blob/main/docs/servers/my-server.md"
     }
   ],
   "env": {},

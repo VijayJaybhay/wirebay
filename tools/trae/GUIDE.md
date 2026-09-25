@@ -2,7 +2,7 @@
 
 The Trae AI IDE. Official docs: https://docs.trae.ai/ide/add-mcp-servers
 
-> **Status:** beta, project scope only. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta, project scope only. If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

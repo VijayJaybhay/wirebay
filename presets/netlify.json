@@ -15,7 +15,7 @@
       "required": true,
       "description": "Netlify personal access token",
       "pattern": "^nfp_",
-      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/netlify.md#1-create-a-token"
+      "help": "https://github.com/pragnalabs-ai/wirebay/blob/main/docs/servers/netlify.md#1-create-a-token"
     }
   ],
   "prereqs": ["npx"],

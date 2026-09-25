@@ -2,7 +2,7 @@
 
 Official MCP docs: https://docs.tabnine.com/main/getting-started/tabnine-agent/mcp-intro-and-setup/mcp-server-config
 
-> **Status:** beta: older Tabnine builds used `.tabnine/mcp_servers.json`. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta: older Tabnine builds used `.tabnine/mcp_servers.json`. If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

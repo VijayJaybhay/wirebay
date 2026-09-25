@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/server.schema.json",
+  "$id": "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/server.schema.json",
   "title": "wirebay MCP server definition",
   "type": "object",
   "required": ["name", "launch"],

@@ -7,7 +7,7 @@ https://docs.devin.ai/cli/extensibility/mcp/configuration. Cascade docs: https:/
 
 > **Status: beta.** The Devin Desktop FAQ still mentions the old `~/.codeium` location (see _Quirks_). If your
 > servers don't show up, use the override below and please
-> [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

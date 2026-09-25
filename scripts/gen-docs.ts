@@ -23,7 +23,7 @@ import type { Tool } from "../src/core/tools/Tool.ts";
 import type { Launch } from "../src/core/types.ts";
 
 /** Public repository URL used for absolute links (README is also shown on npmjs.com). */
-export const REPO_URL = "https://github.com/VijayJaybhay/wirebay";
+export const REPO_URL = "https://github.com/pragnalabs-ai/wirebay";
 
 /** Writes (or, in check mode, compares) every generated file. */
 export class DocsGenerator {

@@ -2,7 +2,7 @@
 
 Augment's terminal agent. Official docs: https://docs.augmentcode.com/cli/integrations
 
-> **Status:** beta: the Windows path is inferred (`%USERPROFILE%\.augment\settings.json`). If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta: the Windows path is inferred (`%USERPROFILE%\.augment\settings.json`). If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

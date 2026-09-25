@@ -31,7 +31,7 @@ The project's servers are saved in `<project>/.wirebay.json`:
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/project.schema.json",
+  "$schema": "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/project.schema.json",
   "version": 1,
   "servers": {
     "supabase": { "tools": ["cursor", "claude-code"] }

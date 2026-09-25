@@ -6,7 +6,7 @@ Adding a tool or a server is JSON plus Markdown, and the tests for it are genera
 ## Setup (3 commands)
 
 ```bash
-git clone https://github.com/VijayJaybhay/wirebay.git && cd wirebay
+git clone https://github.com/pragnalabs-ai/wirebay.git && cd wirebay
 npm install
 npm test
 ```

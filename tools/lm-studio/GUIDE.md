@@ -2,7 +2,7 @@
 
 Run local models with MCP tools (0.3.17+). Official docs: https://lmstudio.ai/docs/app/mcp
 
-> **Status:** beta: some versions keep the file in `~/.cache/lm-studio/mcp.json` instead. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta: some versions keep the file in `~/.cache/lm-studio/mcp.json` instead. If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

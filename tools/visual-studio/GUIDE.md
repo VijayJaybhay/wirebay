@@ -2,7 +2,7 @@
 
 Official MCP docs: https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers
 
-> **Status:** beta: the stdio entry shape follows VS Code's format; Microsoft's page only shows a remote example. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+> **Status:** beta: the stdio entry shape follows VS Code's format; Microsoft's page only shows a remote example. If something is off, please [report it](https://github.com/pragnalabs-ai/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 

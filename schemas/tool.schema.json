@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/tool.schema.json",
+  "$id": "https://raw.githubusercontent.com/pragnalabs-ai/wirebay/main/schemas/tool.schema.json",
   "title": "wirebay tool manifest",
   "type": "object",
   "required": ["id", "name", "configs", "format", "rootKey", "entry"],
