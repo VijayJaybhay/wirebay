@@ -1,0 +1,21 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "aws-docs",
+  "description": "AWS Documentation: search and read official AWS docs (no credentials needed)",
+  "launch": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": ["awslabs.aws-documentation-mcp-server@1.2.1"]
+  },
+  "secrets": [],
+  "env": {
+    "AWS_DOCUMENTATION_PARTITION": "aws",
+    "FASTMCP_LOG_LEVEL": "ERROR"
+  },
+  "prereqs": ["uvx"],
+  "docs": "https://github.com/awslabs/mcp/tree/main/src/aws-documentation-mcp-server",
+  "guide": "docs/servers/aws.md",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

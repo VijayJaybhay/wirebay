@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "gemini",
+  "name": "Gemini CLI",
+  "aliases": ["gemini-cli"],
+  "homepage": "https://github.com/google-gemini/gemini-cli",
+  "docs": { "mcp": "https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md" },
+  "detect": { "commands": ["gemini"], "paths": ["~/.gemini"] },
+  "configs": {
+    "user": { "path": "~/.gemini/settings.json", "createIfMissing": true },
+    "project": { "path": "{cwd}/.gemini/settings.json", "createIfMissing": true }
+  },
+  "format": "jsonc",
+  "rootKey": "mcpServers",
+  "mergeStrategy": "edit",
+  "entry": { "stdio": { "command": "{command}", "args": "{args}", "env": "{env}" } },
+  "supports": { "stdio": true, "http": true, "envExpansion": true, "cmdShims": false },
+  "restartRequired": true,
+  "status": "stable",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

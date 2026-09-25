@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "claude-desktop",
+  "name": "Claude Desktop",
+  "aliases": ["desktop", "claude-app"],
+  "homepage": "https://claude.ai/download",
+  "docs": { "mcp": "https://modelcontextprotocol.io/docs/develop/connect-local-servers" },
+  "detect": {
+    "paths": [{ "win32": "{appdata}/Claude", "darwin": "~/Library/Application Support/Claude", "linux": "{config}/Claude" }]
+  },
+  "configs": {
+    "user": {
+      "path": {
+        "win32": "{appdata}/Claude/claude_desktop_config.json",
+        "darwin": "~/Library/Application Support/Claude/claude_desktop_config.json",
+        "linux": "{config}/Claude/claude_desktop_config.json"
+      },
+      "createIfMissing": true
+    }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "mergeStrategy": "edit",
+  "entry": { "stdio": { "command": "{command}", "args": "{args}", "env": "{env}" } },
+  "supports": { "stdio": true, "http": false, "envExpansion": false, "cmdShims": false },
+  "restartRequired": true,
+  "status": "stable",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

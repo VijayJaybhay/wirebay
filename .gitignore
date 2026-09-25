@@ -1,0 +1,9 @@
+node_modules/
+dist/
+wirebay-export/
+*.tgz
+.env
+*.env
+!templates/*.env.example
+coverage/
+.DS_Store

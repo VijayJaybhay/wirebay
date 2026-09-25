@@ -1,0 +1,11 @@
+# >>> wirebay managed: do not edit by hand, run `wirebay sync` >>>
+[mcp_servers.github]
+command = "{{NODE}}"
+args = [ "{{WIREBAY_CLI}}", "run", "github" ]
+startup_timeout_sec = 60
+
+[mcp_servers.netlify]
+command = "{{NODE}}"
+args = [ "{{WIREBAY_CLI}}", "run", "netlify" ]
+startup_timeout_sec = 60
+# <<< wirebay managed <<<

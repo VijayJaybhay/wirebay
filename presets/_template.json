@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "my-server",
+  "description": "One line: what this server lets an AI tool do",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "@scope/package@1.0.0"]
+  },
+  "secrets": [
+    {
+      "key": "MY_SERVER_TOKEN",
+      "required": true,
+      "description": "What this token is and where to create it",
+      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/my-server.md"
+    }
+  ],
+  "env": {},
+  "prereqs": ["npx"],
+  "docs": "https://link-to-official-docs",
+  "guide": "docs/servers/my-server.md",
+  "lastVerified": "YYYY-MM-DD",
+  "status": "beta"
+}

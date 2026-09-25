@@ -1,0 +1,35 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "github",
+  "description": "GitHub: repositories, issues, pull requests, Actions, code security",
+  "launch": {
+    "type": "remote",
+    "url": "${GITHUB_MCP_URL:-https://api.githubcopilot.com/mcp/}",
+    "auth": { "type": "bearer", "secret": "GITHUB_PERSONAL_ACCESS_TOKEN" },
+    "headers": { "X-MCP-Toolsets": "${GITHUB_TOOLSETS}" }
+  },
+  "variants": {
+    "docker": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "-e", "GITHUB_TOOLSETS", "ghcr.io/github/github-mcp-server:v1.12.2"]
+    }
+  },
+  "secrets": [
+    {
+      "key": "GITHUB_PERSONAL_ACCESS_TOKEN",
+      "required": true,
+      "description": "Fine-grained personal access token",
+      "pattern": "^(ghp_|github_pat_)",
+      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/github.md#1-create-a-token"
+    },
+    { "key": "GITHUB_TOOLSETS", "description": "Comma-separated toolsets to enable" },
+    { "key": "GITHUB_MCP_URL", "description": "GitHub Enterprise MCP endpoint (empty = github.com)" }
+  ],
+  "prereqs": ["npx"],
+  "docs": "https://github.com/github/github-mcp-server",
+  "guide": "docs/servers/github.md",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "claude-code",
+  "name": "Claude Code",
+  "aliases": ["claude", "cc"],
+  "homepage": "https://claude.com/claude-code",
+  "docs": { "mcp": "https://docs.claude.com/en/docs/claude-code/mcp" },
+  "detect": { "commands": ["claude"], "paths": ["~/.claude"] },
+  "configs": {
+    "user": { "path": "~/.claude.json" },
+    "project": { "path": "{cwd}/.mcp.json", "createIfMissing": true }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "mergeStrategy": "edit",
+  "entry": { "stdio": { "type": "stdio", "command": "{command}", "args": "{args}", "env": "{env}" } },
+  "supports": { "stdio": true, "http": true, "envExpansion": true, "cmdShims": false },
+  "cli": { "list": "claude mcp list" },
+  "adapter": "claude-code",
+  "restartRequired": false,
+  "status": "stable",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

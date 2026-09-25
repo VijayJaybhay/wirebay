@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "aws-api",
+  "description": "AWS API: run AWS CLI commands through MCP (read-only by default)",
+  "launch": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": ["awslabs.aws-api-mcp-server@1.5.5"]
+  },
+  "secrets": [
+    { "key": "AWS_PROFILE", "description": "Named profile from ~/.aws (preferred over static keys)" },
+    { "key": "AWS_REGION", "required": true, "description": "Default region, e.g. us-east-1" },
+    { "key": "READ_OPERATIONS_ONLY", "description": "true = only read/list/describe operations" },
+    { "key": "AWS_ACCESS_KEY_ID", "description": "Static key (fallback only)", "pattern": "^(AKIA|ASIA)" },
+    { "key": "AWS_SECRET_ACCESS_KEY", "description": "Static secret (fallback only)" },
+    { "key": "AWS_SESSION_TOKEN", "description": "Session token for temporary credentials" }
+  ],
+  "env": {
+    "AWS_API_MCP_PROFILE_NAME": "${AWS_PROFILE}",
+    "READ_OPERATIONS_ONLY": "true",
+    "FASTMCP_LOG_LEVEL": "ERROR"
+  },
+  "prereqs": ["uvx"],
+  "docs": "https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server",
+  "guide": "docs/servers/aws.md",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

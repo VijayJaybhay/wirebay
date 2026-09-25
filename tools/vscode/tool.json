@@ -1,0 +1,33 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "vscode",
+  "name": "Visual Studio Code (GitHub Copilot agent mode)",
+  "aliases": ["code", "vs-code"],
+  "homepage": "https://code.visualstudio.com",
+  "docs": { "mcp": "https://code.visualstudio.com/docs/copilot/customization/mcp-servers" },
+  "detect": {
+    "commands": ["code"],
+    "paths": [{ "win32": "{appdata}/Code/User", "darwin": "~/Library/Application Support/Code/User", "linux": "{config}/Code/User" }]
+  },
+  "configs": {
+    "user": {
+      "path": {
+        "win32": "{appdata}/Code/User/mcp.json",
+        "darwin": "~/Library/Application Support/Code/User/mcp.json",
+        "linux": "{config}/Code/User/mcp.json"
+      },
+      "createIfMissing": true
+    },
+    "project": { "path": "{cwd}/.vscode/mcp.json", "createIfMissing": true }
+  },
+  "format": "jsonc",
+  "rootKey": "servers",
+  "mergeStrategy": "edit",
+  "entry": { "stdio": { "type": "stdio", "command": "{command}", "args": "{args}", "env": "{env}" } },
+  "supports": { "stdio": true, "http": true, "envExpansion": true, "cmdShims": true },
+  "restartRequired": false,
+  "status": "stable",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

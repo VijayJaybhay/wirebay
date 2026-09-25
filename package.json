@@ -1,0 +1,67 @@
+{
+  "name": "wirebay",
+  "version": "0.1.0",
+  "description": "Define MCP servers once, keep secrets in one place, and sync them to every AI coding tool (Claude Code, Claude Desktop, Codex, Cursor, VS Code, Gemini CLI).",
+  "type": "module",
+  "bin": {
+    "wirebay": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "presets",
+    "tools",
+    "schemas",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node src/cli.ts",
+    "build": "node scripts/clean.ts && tsc -p tsconfig.build.json",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test --test-reporter=spec \"test/**/*.test.ts\"",
+    "validate": "node scripts/validate.ts",
+    "new:tool": "node scripts/new-tool.ts",
+    "new:server": "node scripts/new-server.ts",
+    "gen:docs": "node scripts/gen-docs.ts",
+    "prepublishOnly": "npm run lint && npm run build && npm test && npm run validate"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "claude-code",
+    "claude-desktop",
+    "codex",
+    "cursor",
+    "vscode",
+    "gemini",
+    "ai-tools",
+    "cli"
+  ],
+  "author": "wirebay contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VijayJaybhay/wirebay.git"
+  },
+  "homepage": "https://github.com/VijayJaybhay/wirebay#readme",
+  "bugs": {
+    "url": "https://github.com/VijayJaybhay/wirebay/issues"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "ajv": "^8.20.0",
+    "diff": "^9.0.0",
+    "jsonc-parser": "^3.3.1",
+    "smol-toml": "^1.9.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.6",
+    "typescript": "^5.9.3"
+  }
+}
