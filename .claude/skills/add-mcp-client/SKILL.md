@@ -26,8 +26,8 @@ exactly. This skill adds the agent-specific parts.
 2. **Scaffold:** `npm run new:tool -- <id> --name "<Name>" --path "<user config path>" [--format …] [--root-key …]`
 3. **Fill in** `tools/<id>/tool.json` (aliases, both scopes if supported, per-OS paths, `entry`,
    `supports`, `restartRequired`) and `tools/<id>/GUIDE.md` (keep the template's sections).
-4. **Only if the generic adapter can't express the tool**, add `src/adapters/overrides/<id>.ts`,
-   register it in `src/adapters/index.ts`, and set `"adapter"`. Ask the user before writing code.
+4. **Only if the file-based adapter can't express the tool**, subclass `ToolAdapter` in `src/core/adapters/<Name>Adapter.ts`,
+   register it in `AdapterFactory.overrides`, and set `"adapter"`. Ask the user before writing code.
 5. **Generate and verify:**
    ```bash
    npm run gen:docs && npm run validate && npm test

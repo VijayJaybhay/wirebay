@@ -1,91 +1,88 @@
 // Reconcile rules: never touch foreign entries, detect hand edits, prune what's no longer wanted.
 
 import assert from "node:assert/strict";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
-import { applyPlan, planTarget } from "../../src/core/reconcile.ts";
-import type { ToolManifest, WirebayState } from "../../src/core/types.ts";
-import { sandbox } from "../helpers.ts";
+import type { Target } from "../../src/core/adapters/ToolAdapter.ts";
+import { Tool } from "../../src/core/tools/Tool.ts";
+import type { WirebayState } from "../../src/core/types.ts";
+import { type Sandbox, withSandbox } from "../helpers.ts";
 
-const tool: ToolManifest = {
+const tool = new Tool({
   id: "t",
   name: "Test tool",
   configs: { user: { path: "~/t.json" } },
   format: "json",
   rootKey: "mcpServers",
   entry: { stdio: { command: "{command}", args: "{args}" } },
-};
-
-function setup() {
-  const sb = sandbox();
-  const file = path.join(sb.home, "t.json");
-  mkdirSync(sb.home, { recursive: true });
-  writeFileSync(file, JSON.stringify({ mcpServers: { foreign: { command: "keep" } } }, null, 2));
-  const state: WirebayState = { version: 1, files: {} };
-  return { sb, file, state, target: { tool, scope: "user" as const, file } };
-}
-
+});
 const entry = (x: string) => ({ command: "node", args: [x] });
 
-test("adds, then reports unchanged, then prunes", () => {
-  const { sb, file, state, target } = setup();
-  try {
-    let plan = planTarget(target, state, { desired: { a: entry("a") } });
-    assert.deepEqual(Object.keys(plan.changes.set), ["a"]);
-    applyPlan(plan, state);
-    plan = planTarget(target, state, { desired: { a: entry("a") } });
-    assert.deepEqual(plan.unchanged, ["a"]);
-    assert.equal(Object.keys(plan.changes.set).length, 0);
-    plan = planTarget(target, state, { desired: {} });
-    assert.deepEqual(plan.changes.remove, ["a"]);
-    applyPlan(plan, state);
-    const json = JSON.parse(readFileSync(file, "utf8"));
-    assert.deepEqual(Object.keys(json.mcpServers), ["foreign"]);
-    assert.deepEqual(state.files, {});
-  } finally {
-    sb.cleanup();
-  }
-});
+function setup(sb: Sandbox) {
+  const file = path.join(sb.home, "t.json");
+  writeFileSync(file, JSON.stringify({ mcpServers: { foreign: { command: "keep" } } }, null, 2));
+  const state: WirebayState = { version: 1, files: {} };
+  const target: Target = { tool, scope: "user", file };
+  return { ctx: sb.context(), file, state, target };
+}
 
-test("a same-named entry not created by wirebay is a conflict unless --force", () => {
-  const { sb, state, target } = setup();
-  try {
-    const plan = planTarget(target, state, { desired: { foreign: entry("x") } });
+test("adds, then reports unchanged, then prunes", () =>
+  withSandbox((sb) => {
+    const { ctx, file, state, target } = setup(sb);
+    const r = ctx.reconciler;
+    let plan = r.plan(target, state, { desired: { a: entry("a") } });
+    assert.deepEqual(Object.keys(plan.changes.set), ["a"]);
+    r.apply(plan, state);
+    plan = r.plan(target, state, { desired: { a: entry("a") } });
+    assert.deepEqual(plan.unchanged, ["a"]);
+    plan = r.plan(target, state, { desired: {} });
+    assert.deepEqual(plan.changes.remove, ["a"]);
+    r.apply(plan, state);
+    assert.deepEqual(Object.keys(JSON.parse(readFileSync(file, "utf8")).mcpServers), ["foreign"]);
+    assert.deepEqual(state.files, {});
+  }));
+
+test("a same-named entry not created by wirebay is a conflict unless --force", () =>
+  withSandbox((sb) => {
+    const { ctx, state, target } = setup(sb);
+    const plan = ctx.reconciler.plan(target, state, { desired: { foreign: entry("x") } });
     assert.equal(plan.issues[0]?.kind, "conflict");
     assert.equal(Object.keys(plan.changes.set).length, 0);
-    const forced = planTarget(target, state, { desired: { foreign: entry("x") }, force: true });
-    assert.deepEqual(Object.keys(forced.changes.set), ["foreign"]);
-  } finally {
-    sb.cleanup();
-  }
-});
+    assert.deepEqual(Object.keys(ctx.reconciler.plan(target, state, { desired: { foreign: entry("x") }, force: true }).changes.set), ["foreign"]);
+  }));
 
-test("hand-edited managed entries are drift, not overwritten or removed", () => {
-  const { sb, file, state, target } = setup();
-  try {
-    applyPlan(planTarget(target, state, { desired: { a: entry("a") } }), state);
+test("hand-edited managed entries are drift, not overwritten or removed", () =>
+  withSandbox((sb) => {
+    const { ctx, file, state, target } = setup(sb);
+    const r = ctx.reconciler;
+    r.apply(r.plan(target, state, { desired: { a: entry("a") } }), state);
     const json = JSON.parse(readFileSync(file, "utf8"));
     json.mcpServers.a.args.push("--my-flag");
     writeFileSync(file, JSON.stringify(json, null, 2));
-    const update = planTarget(target, state, { desired: { a: entry("a2") } });
-    assert.equal(update.issues[0]?.kind, "drift");
-    const removal = planTarget(target, state, { desired: {} });
+    assert.equal(r.plan(target, state, { desired: { a: entry("a2") } }).issues[0]?.kind, "drift");
+    const removal = r.plan(target, state, { desired: {} });
     assert.equal(removal.issues[0]?.kind, "drift");
     assert.equal(removal.changes.remove.length, 0);
-    assert.deepEqual(planTarget(target, state, { desired: {}, force: true }).changes.remove, ["a"]);
-  } finally {
-    sb.cleanup();
-  }
-});
+    assert.deepEqual(r.plan(target, state, { desired: {}, force: true }).changes.remove, ["a"]);
+  }));
 
-test("scopeNames limits which managed entries are considered", () => {
-  const { sb, state, target } = setup();
-  try {
-    applyPlan(planTarget(target, state, { desired: { a: entry("a"), b: entry("b") } }), state);
-    const plan = planTarget(target, state, { desired: {}, scopeNames: new Set(["a"]) });
-    assert.deepEqual(plan.changes.remove, ["a"]);
-  } finally {
-    sb.cleanup();
-  }
-});
+test("scopeNames limits which managed entries are considered", () =>
+  withSandbox((sb) => {
+    const { ctx, state, target } = setup(sb);
+    const r = ctx.reconciler;
+    r.apply(r.plan(target, state, { desired: { a: entry("a"), b: entry("b") } }), state);
+    assert.deepEqual(r.plan(target, state, { desired: {}, scopeNames: new Set(["a"]) }).changes.remove, ["a"]);
+  }));
+
+test("writes are backed up and restorable", () =>
+  withSandbox((sb) => {
+    const { ctx, file, state, target } = setup(sb);
+    const before = readFileSync(file, "utf8");
+    ctx.reconciler.apply(ctx.reconciler.plan(target, state, { desired: { a: entry("a") } }), state);
+    const [latest] = ctx.backups.list("t");
+    assert.ok(latest, "a backup was taken");
+    assert.equal(latest.originalPath, path.resolve(file));
+    ctx.backups.restore(latest);
+    assert.equal(readFileSync(file, "utf8"), before);
+  }));

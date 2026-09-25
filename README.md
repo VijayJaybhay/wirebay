@@ -88,6 +88,7 @@ wirebay unsync all                                # take everything wirebay adde
 | ai | **huggingface** | Hugging Face: search models, datasets, papers and Spaces | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#huggingface) |
 | ai | **memory** | Memory: persistent knowledge-graph memory across sessions (MCP reference server) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#memory) |
 | ai | **sequential-thinking** | Sequential Thinking: structured step-by-step reasoning tool (MCP reference server) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#sequential-thinking) |
+| browser | **browser-use** | Browser Use: autonomous browser agent (local, or the paid cloud service) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#browser-use) |
 | browser | **chrome-devtools** | Chrome DevTools: inspect and debug live Chrome (performance, network, console) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#chrome-devtools) |
 | browser | **playwright** | Playwright: automate a real browser via accessibility snapshots (Microsoft) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#playwright) |
 | cloud | **aws-api** | AWS API: run AWS CLI commands through MCP (read-only by default) | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/aws.md) |
@@ -102,8 +103,10 @@ wirebay unsync all                                # take everything wirebay adde
 | cloud | **render** | Render: services, deploys, logs, metrics and Postgres queries | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#render) |
 | cloud | **terraform** | Terraform: Registry lookups and HCP Terraform workspaces (HashiCorp); runs disabled by default | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#terraform) |
 | cloud | **vercel** | Vercel: docs, projects, deployments and logs | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#vercel) |
+| code-hosting | **azure-devops** | Azure DevOps: work items, repos, pipelines and wikis | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#azure-devops) |
 | code-hosting | **github** | GitHub: repositories, issues, pull requests, Actions, code security | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/github.md) |
 | code-hosting | **gitlab** | GitLab: issues, merge requests, CI pipelines and repositories | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#gitlab) |
+| databases | **mcp-toolbox-postgres** | Google MCP Toolbox for Databases: prebuilt PostgreSQL tools | 3 keys | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#mcp-toolbox-postgres) |
 | databases | **mongodb** | MongoDB: query databases and manage Atlas (read-only by default) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#mongodb) |
 | databases | **neon** | Neon: serverless Postgres projects, branches, SQL and migrations (read-only by default) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#neon) |
 | databases | **postgres** | PostgreSQL (Postgres MCP Pro): query, explain and tune; restricted (read-only) by default | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#postgres) |
@@ -112,19 +115,30 @@ wirebay unsync all                                # take everything wirebay adde
 | dev-tools | **context7** | Context7: up-to-date library documentation and code examples for LLMs | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#context7) |
 | dev-tools | **docker** | Docker MCP Toolkit gateway: one entry point to containerized catalog servers | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#docker) |
 | dev-tools | **git** | Git: read and operate on a local git repository (MCP reference server) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#git) |
+| dev-tools | **microsoft-learn** | Microsoft Learn: search and read official Microsoft/Azure/.NET docs and code samples | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#microsoft-learn) |
+| dev-tools | **mobile-mcp** | Mobile MCP: automate iOS and Android simulators, emulators and devices | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#mobile-mcp) |
+| dev-tools | **mobilebuildmcp** | MobileBuildMCP (formerly XcodeBuildMCP): Xcode builds, simulators, devices and UI automation (macOS) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#mobilebuildmcp) |
+| dev-tools | **next-devtools** | Next.js DevTools: errors, routes and logs from your running Next.js 16+ dev server (Vercel) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#next-devtools) |
 | dev-tools | **postman** | Postman: collections, workspaces and API specs (minimal toolset by default) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#postman) |
+| dev-tools | **serena** | Serena: language-server-powered code navigation and editing for the current project | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#serena) |
 | dev-tools | **shopify-dev** | Shopify Dev: Shopify docs, GraphQL schemas and code validation (no store access) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#shopify-dev) |
+| dev-tools | **storybook** | Storybook: component docs, story authoring and tests from your running Storybook | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#storybook) |
+| observability | **datadog** | Datadog: logs, metrics, traces, monitors and incidents | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#datadog) |
+| observability | **grafana** | Grafana: dashboards, Prometheus/Loki queries, alerts and incidents (read-only by default) | 2 keys | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#grafana) |
 | observability | **sentry** | Sentry: errors, issues, traces and Seer root-cause analysis | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#sentry) |
 | payments | **paypal** | PayPal: invoices, orders and payments (sandbox by default) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#paypal) |
 | payments | **stripe** | Stripe: payments API and docs search (prefer a sandbox) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#stripe) |
 | productivity | **atlassian** | Atlassian Rovo: Jira, Confluence, Jira Service Management, Bitbucket | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#atlassian) |
 | productivity | **linear** | Linear: issues, projects, cycles and comments | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#linear) |
 | productivity | **notion** | Notion: search, read and edit pages and databases | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#notion) |
+| productivity | **zapier** | Zapier: run actions in 9,000+ apps | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#zapier) |
+| search | **apify** | Apify: run web scrapers (Actors) and read their results | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#apify) |
 | search | **brave-search** | Brave Search: web, news, image and local search | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#brave-search) |
 | search | **exa** | Exa: AI web search and page fetching | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#exa) |
 | search | **firecrawl** | Firecrawl: scrape, crawl, search and extract web data | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#firecrawl) |
 | search | **perplexity** | Perplexity: search, ask, research and reasoning | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#perplexity) |
 | search | **tavily** | Tavily: search, extract and crawl for agents | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#tavily) |
+| utilities | **desktop-commander** | Desktop Commander: terminal commands, file editing and process management (high risk) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#desktop-commander) |
 | utilities | **fetch** | Fetch: download web pages and convert them to markdown (MCP reference server) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#fetch) |
 | utilities | **filesystem** | Filesystem: read, write and search files inside an allowed folder (MCP reference server) | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#filesystem) |
 | utilities | **time** | Time: current time and timezone conversion (MCP reference server) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#time) |

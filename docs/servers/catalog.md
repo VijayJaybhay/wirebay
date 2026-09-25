@@ -10,16 +10,16 @@ Anything not listed works too: see [custom servers](custom-servers.md).
 | Category | Servers |
 |---|---|
 | ai | [huggingface](#huggingface) · [memory](#memory) · [sequential-thinking](#sequential-thinking) |
-| browser | [chrome-devtools](#chrome-devtools) · [playwright](#playwright) |
+| browser | [browser-use](#browser-use) · [chrome-devtools](#chrome-devtools) · [playwright](#playwright) |
 | cloud | [aws-api](#aws-api) · [aws-docs](#aws-docs) · [azure](#azure) · [cloudflare](#cloudflare) · [cloudflare-docs](#cloudflare-docs) · [firebase](#firebase) · [heroku](#heroku) · [kubernetes](#kubernetes) · [netlify](#netlify) · [render](#render) · [terraform](#terraform) · [vercel](#vercel) |
-| code-hosting | [github](#github) · [gitlab](#gitlab) |
-| databases | [mongodb](#mongodb) · [neon](#neon) · [postgres](#postgres) · [supabase](#supabase) · [upstash](#upstash) |
-| dev-tools | [context7](#context7) · [docker](#docker) · [git](#git) · [postman](#postman) · [shopify-dev](#shopify-dev) |
-| observability | [sentry](#sentry) |
+| code-hosting | [azure-devops](#azure-devops) · [github](#github) · [gitlab](#gitlab) |
+| databases | [mcp-toolbox-postgres](#mcp-toolbox-postgres) · [mongodb](#mongodb) · [neon](#neon) · [postgres](#postgres) · [supabase](#supabase) · [upstash](#upstash) |
+| dev-tools | [context7](#context7) · [docker](#docker) · [git](#git) · [microsoft-learn](#microsoft-learn) · [mobile-mcp](#mobile-mcp) · [mobilebuildmcp](#mobilebuildmcp) · [next-devtools](#next-devtools) · [postman](#postman) · [serena](#serena) · [shopify-dev](#shopify-dev) · [storybook](#storybook) |
+| observability | [datadog](#datadog) · [grafana](#grafana) · [sentry](#sentry) |
 | payments | [paypal](#paypal) · [stripe](#stripe) |
-| productivity | [atlassian](#atlassian) · [linear](#linear) · [notion](#notion) |
-| search | [brave-search](#brave-search) · [exa](#exa) · [firecrawl](#firecrawl) · [perplexity](#perplexity) · [tavily](#tavily) |
-| utilities | [fetch](#fetch) · [filesystem](#filesystem) · [time](#time) |
+| productivity | [atlassian](#atlassian) · [linear](#linear) · [notion](#notion) · [zapier](#zapier) |
+| search | [apify](#apify) · [brave-search](#brave-search) · [exa](#exa) · [firecrawl](#firecrawl) · [perplexity](#perplexity) · [tavily](#tavily) |
+| utilities | [desktop-commander](#desktop-commander) · [fetch](#fetch) · [filesystem](#filesystem) · [time](#time) |
 
 ## huggingface
 
@@ -76,6 +76,31 @@ wirebay add sequential-thinking to all
 
 - **Runs:** `npx -y @modelcontextprotocol/server-sequential-thinking@2026.8.31`
 - **Needs:** npx
+
+## browser-use
+
+Browser Use: autonomous browser agent (local, or the paid cloud service)
+
+**Category:** browser · **Status:** stable · **Auth:** optional · **Verified:** 2026-09-25 · [Official docs](https://docs.browser-use.com/open-source/customize/integrations/mcp-server)
+
+```bash
+wirebay add browser-use to all
+```
+
+- **Runs:** `uvx --from browser-use[cli]==0.13.10 browser-use --mcp`
+- **`--variant cloud`:** hosted server `https://api.browser-use.com/v3/mcp` (`BROWSER_USE_API_KEY`), bridged with mcp-remote
+- **Needs:** uvx
+
+| Key | Required | What it is | Where to get it |
+|---|---|---|---|
+| `OPENAI_API_KEY` | no | LLM key used by the local agent (or set ANTHROPIC_API_KEY) |  |
+| `ANTHROPIC_API_KEY` | no | Alternative LLM key for the local agent |  |
+| `BROWSER_USE_HEADLESS` | no | false to show the browser window |  |
+| `BROWSER_USE_API_KEY` | no | Cloud API key (cloud variant only) | [link](https://cloud.browser-use.com/settings?tab=api-keys) |
+
+Set with `wirebay secrets set <KEY>`.
+
+> Browses autonomously and can act in logged-in sessions. The cloud variant bills per session.
 
 ## chrome-devtools
 
@@ -348,6 +373,27 @@ wirebay add vercel to all
 
 > Beta; Vercel only allows approved clients. Can deploy code and make purchases.
 
+## azure-devops
+
+Azure DevOps: work items, repos, pipelines and wikis
+
+**Category:** code-hosting · **Status:** stable · **Auth:** token · **Verified:** 2026-09-25 · [Official docs](https://github.com/microsoft/azure-devops-mcp)
+
+```bash
+wirebay add azure-devops to all
+```
+
+- **Runs:** `npx -y @azure-devops/mcp@2.10.0 ${AZURE_DEVOPS_ORG}`
+- **Needs:** npx
+
+| Key | Required | What it is | Where to get it |
+|---|---|---|---|
+| `AZURE_DEVOPS_ORG` | yes | Your organization name (the part after dev.azure.com/) |  |
+
+Set with `wirebay secrets set <KEY>`.
+
+> Signs in through the browser (Microsoft Entra) on first use. Can create and update work items, repos and wikis.
+
 ## github
 
 GitHub: repositories, issues, pull requests, Actions, code security
@@ -391,6 +437,31 @@ wirebay add gitlab to all
 Set with `wirebay secrets set <KEY>`.
 
 > Beta (GitLab 18.6+). Signs in through the browser. For self-managed GitLab set GITLAB_MCP_URL.
+
+## mcp-toolbox-postgres
+
+Google MCP Toolbox for Databases: prebuilt PostgreSQL tools
+
+**Category:** databases · **Status:** stable · **Auth:** 3 keys · **Verified:** 2026-09-25 · [Official docs](https://github.com/googleapis/mcp-toolbox)
+
+```bash
+wirebay add mcp-toolbox-postgres to all
+```
+
+- **Runs:** `npx -y @toolbox-sdk/server@1.13.0 --prebuilt=postgres --stdio`
+- **Needs:** npx
+
+| Key | Required | What it is | Where to get it |
+|---|---|---|---|
+| `POSTGRES_HOST` | no | Host (default localhost) |  |
+| `POSTGRES_PORT` | no | Port (default 5432) |  |
+| `POSTGRES_DATABASE` | yes | Database name |  |
+| `POSTGRES_USER` | yes | Database user (use a read-only role) |  |
+| `POSTGRES_PASSWORD` | yes | Database password |  |
+
+Set with `wirebay secrets set <KEY>`.
+
+> `execute_sql` can run any statement: connect with a read-only database role. Other databases (MySQL, BigQuery, AlloyDB, Spanner…) work with a custom server: `wirebay add toolbox-mysql --npx @toolbox-sdk/server@1.13.0 --arg --prebuilt=mysql --arg --stdio`.
 
 ## mongodb
 
@@ -569,6 +640,66 @@ Set with `wirebay secrets set <KEY>`.
 
 > Can commit, reset and check out branches. Requires uv.
 
+## microsoft-learn
+
+Microsoft Learn: search and read official Microsoft/Azure/.NET docs and code samples
+
+**Category:** dev-tools · **Status:** stable · **Auth:** none · **Verified:** 2026-09-25 · [Official docs](https://github.com/MicrosoftDocs/mcp)
+
+```bash
+wirebay add microsoft-learn to all
+```
+
+- **Runs:** hosted server `https://learn.microsoft.com/api/mcp` (no auth), bridged with mcp-remote
+- **Needs:** npx
+
+> Public and read-only; no login needed.
+
+## mobile-mcp
+
+Mobile MCP: automate iOS and Android simulators, emulators and devices
+
+**Category:** dev-tools · **Status:** stable · **Auth:** none · **Verified:** 2026-09-25 · [Official docs](https://github.com/mobile-next/mobile-mcp)
+
+```bash
+wirebay add mobile-mcp to all
+```
+
+- **Runs:** `npx -y @mobilenext/mobile-mcp@1.0.5`
+- **Needs:** npx
+
+> Android needs `adb` (Platform Tools); iOS needs macOS with Xcode command line tools. Telemetry is turned off.
+
+## mobilebuildmcp
+
+MobileBuildMCP (formerly XcodeBuildMCP): Xcode builds, simulators, devices and UI automation (macOS)
+
+**Category:** dev-tools · **Status:** stable · **Auth:** none · **Verified:** 2026-09-25 · [Official docs](https://github.com/getsentry/MobileBuildMCP)
+
+```bash
+wirebay add mobilebuildmcp to all
+```
+
+- **Runs:** `npx -y mobilebuildmcp@2.7.1 mcp`
+- **Needs:** npx
+
+> macOS 14.5+ with Xcode 16+ only. Renamed from XcodeBuildMCP on 2026-09-23; error telemetry is turned off.
+
+## next-devtools
+
+Next.js DevTools: errors, routes and logs from your running Next.js 16+ dev server (Vercel)
+
+**Category:** dev-tools · **Status:** stable · **Auth:** none · **Verified:** 2026-09-25 · [Official docs](https://github.com/vercel/next-devtools-mcp)
+
+```bash
+wirebay add next-devtools to all
+```
+
+- **Runs:** `npx -y next-devtools-mcp@0.4.0`
+- **Needs:** npx
+
+> Start your Next.js dev server for the live tools. Telemetry is turned off.
+
 ## postman
 
 Postman: collections, workspaces and API specs (minimal toolset by default)
@@ -592,6 +723,21 @@ Set with `wirebay secrets set <KEY>`.
 
 > Minimal toolset by default; `--variant full` can edit and delete collections. EU accounts need the local variant with POSTMAN_API_KEY and `--region eu`.
 
+## serena
+
+Serena: language-server-powered code navigation and editing for the current project
+
+**Category:** dev-tools · **Status:** beta · **Auth:** none · **Verified:** 2026-09-25 · [Official docs](https://github.com/oraios/serena)
+
+```bash
+wirebay add serena to all
+```
+
+- **Runs:** `uvx -p 3.13 serena-agent@1.7.0 start-mcp-server --context ide --project-from-cwd`
+- **Needs:** uvx
+
+> Can edit files and run shell commands. Opens a local web dashboard by default. Some languages need extra language servers.
+
 ## shopify-dev
 
 Shopify Dev: Shopify docs, GraphQL schemas and code validation (no store access)
@@ -606,6 +752,75 @@ wirebay add shopify-dev to all
 - **Needs:** npx
 
 > Docs and schema tools only; no access to store data. No credentials needed.
+
+## storybook
+
+Storybook: component docs, story authoring and tests from your running Storybook
+
+**Category:** dev-tools · **Status:** beta · **Auth:** none · **Verified:** 2026-09-25 · [Official docs](https://storybook.js.org/docs/ai/mcp/overview)
+
+```bash
+wirebay add storybook to all
+```
+
+- **Runs:** hosted server `${STORYBOOK_MCP_URL:-http://localhost:6006/mcp}` (no auth), bridged with mcp-remote
+- **Needs:** npx
+
+| Key | Required | What it is | Where to get it |
+|---|---|---|---|
+| `STORYBOOK_MCP_URL` | no | MCP URL of your Storybook dev server (default http://localhost:6006/mcp) |  |
+
+Set with `wirebay secrets set <KEY>`.
+
+> Needs Storybook 10.6+ with the addon (`npx storybook add @storybook/addon-mcp`) and the dev server running.
+
+## datadog
+
+Datadog: logs, metrics, traces, monitors and incidents
+
+**Category:** observability · **Status:** stable · **Auth:** browser login · **Verified:** 2026-09-25 · [Official docs](https://docs.datadoghq.com/mcp_server/setup/)
+
+```bash
+wirebay add datadog to all
+```
+
+- **Runs:** hosted server `https://${DD_MCP_HOST:-mcp.datadoghq.com}/v1/mcp` (browser sign-in), bridged with mcp-remote
+- **`--variant token`:** hosted server `https://${DD_MCP_HOST:-mcp.datadoghq.com}/v1/mcp` (`DD_MCP_TOKEN`), bridged with mcp-remote
+- **Needs:** npx
+
+| Key | Required | What it is | Where to get it |
+|---|---|---|---|
+| `DD_MCP_HOST` | no | Your site's MCP host, e.g. mcp.datadoghq.eu (default US1: mcp.datadoghq.com) |  |
+| `DD_MCP_TOKEN` | no | Personal or service access token (token variant only) |  |
+
+Set with `wirebay secrets set <KEY>`.
+
+> Signs in through the browser; your org admin may need to allow-list the localhost redirect. Without the `mcp_write` permission the server is read-only. GOV sites are not supported.
+
+## grafana
+
+Grafana: dashboards, Prometheus/Loki queries, alerts and incidents (read-only by default)
+
+**Category:** observability · **Status:** stable · **Auth:** 2 keys · **Verified:** 2026-09-25 · [Official docs](https://github.com/grafana/mcp-grafana)
+
+```bash
+wirebay add grafana to all
+```
+
+- **Runs:** `uvx mcp-grafana@1.6.0 --disable-write`
+- **`--variant read-write`:** `uvx mcp-grafana@1.6.0`
+- **`--variant docker`:** `docker run --rm -i -e GRAFANA_URL -e GRAFANA_SERVICE_ACCOUNT_TOKEN grafana/mcp-grafana:1.6.0 -t stdio --disable-write`
+- **Needs:** uvx
+
+| Key | Required | What it is | Where to get it |
+|---|---|---|---|
+| `GRAFANA_URL` | yes | Grafana URL, e.g. https://<stack>.grafana.net or http://localhost:3000 |  |
+| `GRAFANA_SERVICE_ACCOUNT_TOKEN` | yes | Service account token (Administration > Users and access > Service accounts) |  |
+| `GRAFANA_ORG_ID` | no | Optional organization ID |  |
+
+Set with `wirebay secrets set <KEY>`.
+
+> Read-only by default (`--disable-write`); `--variant read-write` allows changes. The service account's role limits what it can see.
 
 ## sentry
 
@@ -721,6 +936,51 @@ wirebay add notion to all
 
 > Signs in through the browser and can create and edit pages. Workspace owners control access in Settings > Connections.
 
+## zapier
+
+Zapier: run actions in 9,000+ apps
+
+**Category:** productivity · **Status:** stable · **Auth:** browser login · **Verified:** 2026-09-25 · [Official docs](https://docs.zapier.com/mcp/overview/how-connections-work)
+
+```bash
+wirebay add zapier to all
+```
+
+- **Runs:** hosted server `https://mcp.zapier.com/api/v1/connect` (browser sign-in), bridged with mcp-remote
+- **`--variant token`:** hosted server `https://mcp.zapier.com/api/v1/connect` (`ZAPIER_MCP_TOKEN`), bridged with mcp-remote
+- **Needs:** npx
+
+| Key | Required | What it is | Where to get it |
+|---|---|---|---|
+| `ZAPIER_MCP_TOKEN` | no | Connection token from mcp.zapier.com (token variant only) | [link](https://mcp.zapier.com) |
+
+Set with `wirebay secrets set <KEY>`.
+
+> Can run every action you enable on the Zapier MCP server; usage counts against your Zapier task limit.
+
+## apify
+
+Apify: run web scrapers (Actors) and read their results
+
+**Category:** search · **Status:** stable · **Auth:** browser login · **Verified:** 2026-09-25 · [Official docs](https://github.com/apify/apify-mcp-server)
+
+```bash
+wirebay add apify to all
+```
+
+- **Runs:** hosted server `https://mcp.apify.com?telemetry-enabled=false` (browser sign-in), bridged with mcp-remote
+- **`--variant token`:** hosted server `https://mcp.apify.com?telemetry-enabled=false` (`APIFY_TOKEN`), bridged with mcp-remote
+- **`--variant local`:** `npx -y @apify/actors-mcp-server@0.16.0 --telemetry-enabled=false`
+- **Needs:** npx
+
+| Key | Required | What it is | Where to get it |
+|---|---|---|---|
+| `APIFY_TOKEN` | no | API token (token/local variants) | [link](https://console.apify.com/account/integrations) |
+
+Set with `wirebay secrets set <KEY>`.
+
+> Actor runs cost money. Telemetry is turned off by wirebay's URL.
+
 ## brave-search
 
 Brave Search: web, news, image and local search
@@ -829,6 +1089,22 @@ wirebay add tavily to all
 Set with `wirebay secrets set <KEY>`.
 
 > Read-only; uses credits.
+
+## desktop-commander
+
+Desktop Commander: terminal commands, file editing and process management (high risk)
+
+**Category:** utilities · **Status:** stable · **Auth:** none · **Verified:** 2026-09-25 · [Official docs](https://github.com/wonderwhy-er/DesktopCommanderMCP)
+
+```bash
+wirebay add desktop-commander to all
+```
+
+- **Runs:** `npx -y @wonderwhy-er/desktop-commander@0.2.51 --no-onboarding`
+- **`--variant docker`:** `docker run -i --rm mcp/desktop-commander:latest`
+- **Needs:** npx
+
+> **High risk:** unrestricted shell access on your machine. Prefer `--variant docker` for isolation. Telemetry is on by default (set `telemetryEnabled: false` in its config).
 
 ## fetch
 

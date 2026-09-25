@@ -1,0 +1,51 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "apify",
+  "description": "Apify: run web scrapers (Actors) and read their results",
+  "category": "search",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.apify.com?telemetry-enabled=false",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "token": {
+      "type": "remote",
+      "url": "https://mcp.apify.com?telemetry-enabled=false",
+      "auth": {
+        "type": "bearer",
+        "secret": "APIFY_TOKEN"
+      }
+    },
+    "local": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@apify/actors-mcp-server@0.16.0",
+        "--telemetry-enabled=false"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "APIFY_TOKEN",
+      "description": "API token (token/local variants)",
+      "help": "https://console.apify.com/account/integrations",
+      "pattern": "^apify_api_"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/apify/apify-mcp-server",
+  "notes": [
+    "Actor runs cost money. Telemetry is turned off by wirebay's URL."
+  ],
+  "guide": "docs/servers/catalog.md#apify",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "grafana",
+  "description": "Grafana: dashboards, Prometheus/Loki queries, alerts and incidents (read-only by default)",
+  "category": "observability",
+  "launch": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": [
+      "mcp-grafana@1.6.0",
+      "--disable-write"
+    ]
+  },
+  "variants": {
+    "read-write": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-grafana@1.6.0"
+      ]
+    },
+    "docker": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "-e",
+        "GRAFANA_URL",
+        "-e",
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN",
+        "grafana/mcp-grafana:1.6.0",
+        "-t",
+        "stdio",
+        "--disable-write"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "GRAFANA_URL",
+      "required": true,
+      "description": "Grafana URL, e.g. https://<stack>.grafana.net or http://localhost:3000"
+    },
+    {
+      "key": "GRAFANA_SERVICE_ACCOUNT_TOKEN",
+      "required": true,
+      "description": "Service account token (Administration > Users and access > Service accounts)",
+      "pattern": "^glsa_"
+    },
+    {
+      "key": "GRAFANA_ORG_ID",
+      "description": "Optional organization ID"
+    }
+  ],
+  "prereqs": [
+    "uvx"
+  ],
+  "docs": "https://github.com/grafana/mcp-grafana",
+  "notes": [
+    "Read-only by default (`--disable-write`); `--variant read-write` allows changes. The service account's role limits what it can see."
+  ],
+  "guide": "docs/servers/catalog.md#grafana",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

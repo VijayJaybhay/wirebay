@@ -1,0 +1,29 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "next-devtools",
+  "description": "Next.js DevTools: errors, routes and logs from your running Next.js 16+ dev server (Vercel)",
+  "category": "dev-tools",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "next-devtools-mcp@0.4.0"
+    ]
+  },
+  "secrets": [],
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/vercel/next-devtools-mcp",
+  "notes": [
+    "Start your Next.js dev server for the live tools. Telemetry is turned off."
+  ],
+  "guide": "docs/servers/catalog.md#next-devtools",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

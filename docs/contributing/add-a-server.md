@@ -21,13 +21,15 @@ From the server's official README or docs, find:
 ## 2. Scaffold
 
 ```bash
-npm run new:server -- linear --npx @linear/mcp-server@1.2.3 --secret LINEAR_API_KEY --description "Linear: issues, projects, cycles"
+npm run new:server -- linear --npx @linear/mcp-server@1.2.3 --secret LINEAR_API_KEY --category productivity --description "Linear: issues, projects, cycles"
 ```
 
-This creates:
-- `presets/linear.json`
-- `docs/servers/linear.md` (from `templates/server-guide.md`)
-- a section in `templates/secrets.env.example`
+This creates `presets/linear.json`. Its documentation is generated into the
+[server catalog](../servers/catalog.md) from the preset itself: description, variants, secrets
+and `notes`.
+
+Add `--guide` to also create a dedicated `docs/servers/<name>.md`. That is worth it for servers
+with a complex setup, like GitHub or AWS.
 
 ## 3. Fill in `presets/<name>.json`
 
@@ -56,16 +58,17 @@ Rules, all checked by `npm run validate`:
 - Remote servers: `{ "type": "remote", "url": "…", "auth": { "type": "bearer", "secret": "KEY" } }`.
   Optional variables in args: `{ "optional": ["--flag", "${VAR}"] }`.
 
-## 4. Write the guide
+## 4. Describe it well
 
-`docs/servers/<name>.md` keeps the six sections: *What it gives you* (with a **Risk** note),
-*Setup guide* (step-by-step credential creation), *Secrets*, *Config guide*, *Verify*,
-*Troubleshooting* (including rotation).
+- Every secret gets a `description` (what it is). Where possible, also add `help` (a link to
+  where it's created) and `pattern` (its prefix).
+- `notes` holds risk notes (can it write, delete or spend money?) and setup tips. They are shown
+  in the catalog.
+- `category` groups it in `wirebay presets` and the README.
 
-## 5. Check the secrets template
+## 5. Keep values out
 
-The new section in `templates/secrets.env.example` should have a one-line comment per key saying
-where to get it.
+Never put real tokens in the preset. `npm run validate` checks for anything that looks like one.
 
 ## 6. Generate, validate, test
 

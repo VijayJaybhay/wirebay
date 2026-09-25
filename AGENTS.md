@@ -13,22 +13,19 @@ each AI tool's MCP config. It never writes secrets into tool configs.
 
 | Path | What lives there |
 |---|---|
-| `src/cli.ts` | Entry point: parse → dispatch → exit code |
-| `src/cli/grammar.ts` | Verbs, aliases, filler words, flags (data) |
-| `src/cli/parse.ts` | Turns any phrasing into `{verb, servers, tools, rest, flags}` |
-| `src/commands/` | One file per command |
-| `src/core/launcher.ts` | `wirebay run`: builds the child env from declared secrets and spawns the server |
-| `src/core/reconcile.ts` | Plans and applies changes to one tool file (conflicts, drift, pruning) |
-| `src/core/sync.ts` | Config → rendered entries → plans → apply |
-| `src/core/render.ts` | What a tool entry looks like (absolute / portable / npx modes) |
-| `src/adapters/` | Generic adapter driven by `tool.json`; `overrides/` only for special tools |
-| `src/merge/` | Comment-preserving JSON/JSONC, TOML (managed block) and YAML edits |
+| `src/app/` | `WirebayApp` (registers commands, runs them, reports errors) and `AppContext` (creates and wires every service) |
+| `src/cli/` | `CommandParser` (any phrasing → canonical command), `Grammar` (flags and words), `Suggester`, `Terminal` |
+| `src/commands/` | `Command` base class, `CommandRegistry`, one `*Command` class per verb |
+| `src/core/` | Domain and services, one class per file: registries, secrets, config formats, adapters, sync, launch, doctor |
+| `src/core/launch/LaunchPlanner.ts` | Security core: which secrets a server receives |
+| `src/core/sync/Reconciler.ts` | Sync rules: conflicts, drift, pruning |
 | `presets/` | Built-in server definitions (JSON, schema `schemas/server.schema.json`) |
 | `tools/<id>/` | Tools directory: `tool.json`, `GUIDE.md`, `examples/` (generated) |
-| `templates/` | `secrets.env.example` and doc templates |
-| `docs/` | User and contributor documentation |
-| `scripts/` | `gen-docs`, `validate`, `new-tool`, `new-server` |
-| `test/` | `node:test` suites: `unit/`, `snapshot/`, `e2e/`, `fixtures/` |
+| `docs/` | User and contributor documentation; `docs/servers/catalog.md` is generated |
+| `scripts/` | `DocsGenerator` (gen-docs), `RepoValidator` (validate), scaffolders |
+| `test/` | `node:test` suites: `unit/`, `snapshot/`, `e2e/`, `fixtures/`; `helpers.ts` has `Sandbox` |
+
+See [docs/architecture.md](docs/architecture.md) for the data flow and key classes.
 
 ## Commands
 
@@ -40,6 +37,7 @@ npm run validate          # schemas, naming rules, generated files up to date
 npm run gen:docs          # regenerate examples, tools/INDEX.md, README tables, CLI reference
 node src/cli.ts <args>    # run the CLI from source (no build step)
 npm run build             # compile to dist/ (only needed for publishing)
+npm run docs:api          # API reference from TSDoc (docs-api/, must have zero warnings)
 ```
 
 When you try the CLI by hand, use a throwaway home so you never touch real configs:
@@ -53,19 +51,27 @@ When you try the CLI by hand, use a throwaway home so you never touch real confi
    manual runs use `WIREBAY_HOME` and `WIREBAY_USER_HOME` pointing to a temp folder.
 3. **The launcher (`wirebay run`) must never write to stdout.** stdout carries the MCP protocol.
    Diagnostics go to stderr and `~/.wirebay/logs/`.
-4. **Tool files are only written through `src/core/io.ts`**: backup first, atomic write, mtime check.
+4. **Tool files are only written through `ToolAdapter.commit`** (`BackupManager` + `SafeFileWriter`): backup first, atomic write, mtime check.
 5. **Only touch entries wirebay manages** (recorded in `state.json`). Foreign entries are conflicts;
    hand-edited managed entries are drift. Both need `--force`.
-6. After changing `presets/`, `tools/`, `src/cli/grammar.ts` or `src/commands/help.ts`, run
+6. After changing `presets/`, `tools/`, `src/cli/Grammar.ts` or a command's `help`, run
    `npm run gen:docs` and commit the regenerated files.
 
 ## Code conventions
 
-- TypeScript with **erasable syntax only** (no `enum`, `namespace` or parameter properties), so
-  Node runs `.ts` files directly. Import with `.ts` extensions.
-- Small single-purpose files, each starting with a short comment that explains what it does.
-- Plain functions over classes; no clever metaprogramming.
-- JSDoc on exported functions.
+Full guide: [docs/contributing/code-guide.md](docs/contributing/code-guide.md).
+
+- **Object-oriented TypeScript:** model concepts as classes with explicit types. Depend on services
+  from `AppContext` or constructor arguments, never on globals like `process.env` deep in the code.
+- **Patterns in use:** Command (`commands/`), Strategy (`core/formats/`), Template Method + Factory
+  (`core/adapters/`), Registry (servers, tools, commands), composition root (`AppContext`). Follow them
+  when extending.
+- **TSDoc on everything exported:** a `@module` comment per file, plus `@param`, `@returns`,
+  `@throws` and `@example` where useful. `npm run docs:api` must stay warning-free.
+- **Erasable TypeScript only** (Node runs `.ts` directly): no `enum` (use `as const`), no
+  `namespace`, no constructor parameter properties. Import with `.ts` extensions, and use
+  `import type` for types.
+- One class per file, named after the class.
 - Every user-facing error says how to fix it: `throw new WirebayError(msg, { hint })`.
 - Minimal dependencies. Ask before adding one, and justify it in CONTRIBUTING.md.
 

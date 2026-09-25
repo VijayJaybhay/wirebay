@@ -39,6 +39,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: API docs build without warnings
+        run: npx typedoc --treatWarningsAsErrors
       - name: Check published file list
         run: |
           npm pack --dry-run --json > pack.json

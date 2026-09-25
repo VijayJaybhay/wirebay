@@ -1,0 +1,59 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "browser-use",
+  "description": "Browser Use: autonomous browser agent (local, or the paid cloud service)",
+  "category": "browser",
+  "launch": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": [
+      "--from",
+      "browser-use[cli]==0.13.10",
+      "browser-use",
+      "--mcp"
+    ]
+  },
+  "variants": {
+    "cloud": {
+      "type": "remote",
+      "url": "https://api.browser-use.com/v3/mcp",
+      "auth": {
+        "type": "header",
+        "header": "x-browser-use-api-key",
+        "secret": "BROWSER_USE_API_KEY"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "OPENAI_API_KEY",
+      "description": "LLM key used by the local agent (or set ANTHROPIC_API_KEY)",
+      "pattern": "^sk-"
+    },
+    {
+      "key": "ANTHROPIC_API_KEY",
+      "description": "Alternative LLM key for the local agent",
+      "pattern": "^sk-ant-"
+    },
+    {
+      "key": "BROWSER_USE_HEADLESS",
+      "description": "false to show the browser window"
+    },
+    {
+      "key": "BROWSER_USE_API_KEY",
+      "description": "Cloud API key (cloud variant only)",
+      "help": "https://cloud.browser-use.com/settings?tab=api-keys"
+    }
+  ],
+  "prereqs": [
+    "uvx"
+  ],
+  "docs": "https://docs.browser-use.com/open-source/customize/integrations/mcp-server",
+  "notes": [
+    "Browses autonomously and can act in logged-in sessions. The cloud variant bills per session."
+  ],
+  "guide": "docs/servers/catalog.md#browser-use",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

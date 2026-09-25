@@ -1,0 +1,52 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "mcp-toolbox-postgres",
+  "description": "Google MCP Toolbox for Databases: prebuilt PostgreSQL tools",
+  "category": "databases",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@toolbox-sdk/server@1.13.0",
+      "--prebuilt=postgres",
+      "--stdio"
+    ]
+  },
+  "secrets": [
+    {
+      "key": "POSTGRES_HOST",
+      "description": "Host (default localhost)"
+    },
+    {
+      "key": "POSTGRES_PORT",
+      "description": "Port (default 5432)"
+    },
+    {
+      "key": "POSTGRES_DATABASE",
+      "required": true,
+      "description": "Database name"
+    },
+    {
+      "key": "POSTGRES_USER",
+      "required": true,
+      "description": "Database user (use a read-only role)"
+    },
+    {
+      "key": "POSTGRES_PASSWORD",
+      "required": true,
+      "description": "Database password"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/googleapis/mcp-toolbox",
+  "notes": [
+    "`execute_sql` can run any statement: connect with a read-only database role. Other databases (MySQL, BigQuery, AlloyDB, Spanner…) work with a custom server: `wirebay add toolbox-mysql --npx @toolbox-sdk/server@1.13.0 --arg --prebuilt=mysql --arg --stdio`."
+  ],
+  "guide": "docs/servers/catalog.md#mcp-toolbox-postgres",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

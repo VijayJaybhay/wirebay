@@ -1,42 +1,114 @@
 # Code guide
 
+wirebay is written in TypeScript with **classes, explicit types and TSDoc on everything public**.
+Design patterns are used where they make the code easier to extend. A newcomer should be able to
+find where to change something from the class names alone.
+
 ## Principles
 
-1. **Readable over clever.** Plain functions, small files, obvious names. A newcomer should
-   understand any file in a few minutes.
-2. **Data over code.** Tools, presets, verbs and aliases are data. Code interprets them.
-3. **Never lose user data.** Back up before every write, write atomically, touch only managed
+1. **Model the domain with classes.** `ServerDefinition`, `Tool`, `SyncEngine`,
+   `LaunchPlanner`… Plain data (JSON shapes) is described with `interface`s in
+   `src/core/types.ts`.
+2. **Depend on services, don't create them.** Commands and services get what they need from
+   `AppContext` (the composition root) or through their constructor. That keeps everything
+   testable with a sandboxed context.
+3. **Data over code.** Tools, presets, flags and grammar words are data. Code interprets them.
+4. **Never lose user data.** Back up before every write, write atomically, touch only managed
    entries, and stop on doubt (drift or conflict) unless `--force` is given.
-4. **Never leak a secret.** Not in output, logs, errors, diffs, exports or tests.
-5. **Errors tell you what to do next.** `throw new WirebayError("what went wrong", { hint: "how to fix it" })`.
+5. **Never leak a secret.** Not in output, logs, errors, diffs, exports or tests.
+6. **Errors tell you what to do next.** Use `throw new WirebayError("what went wrong", { hint: "how to fix it" })`.
 
-## TypeScript without a build
+## Design patterns in use
 
-- Node 24 runs `.ts` files directly by stripping types. Only **erasable** syntax is allowed:
-  no `enum`, `namespace`, parameter properties or `import =`. `tsconfig.json` enforces this with
-  `erasableSyntaxOnly`.
+| Pattern | Where | Why |
+|---|---|---|
+| **Composition root / DI container** | `app/AppContext.ts` | One place creates and wires services, lazily. Tests pass a sandboxed `env`. |
+| **Command** | `commands/Command.ts` + one class per verb | Each command owns its name, aliases, help and `run()`. `CommandRegistry` collects them, and the parser's verb table and the CLI reference are derived from it. |
+| **Strategy** | `core/formats/ConfigFormat.ts` → `JsonConfigFormat`, `TomlConfigFormat`, `YamlConfigFormat` | One interface for reading and editing a config format. `ConfigFormatFactory` picks one from `tool.json → format`. |
+| **Template Method** | `core/adapters/ToolAdapter.ts` → `FileToolAdapter`, `ClaudeCodeAdapter` | The read/render/commit steps are shared; subclasses override only what differs (Claude Code commits through its CLI). |
+| **Factory** | `core/adapters/AdapterFactory.ts`, `ConfigFormatFactory` | Chooses and caches the right implementation for a tool. |
+| **Registry** | `ServerRegistry`, `ToolRegistry`, `CommandRegistry` | Load, validate and cache the known servers, tools and commands. |
+| **Interface for extension** | `core/secrets/SecretsBackend.ts` | A new secrets backend (keychain, 1Password) implements one interface. |
+
+## Where things live
+
+```
+src/
+  cli.ts                     entry point: new WirebayApp().run(argv)
+  app/          WirebayApp (registers commands, error handling), AppContext (services)
+  cli/          CommandParser, Grammar (flags and words), Suggester, Terminal
+  commands/     Command base class, CommandRegistry, one *Command class per verb, support/
+  core/
+    adapters/   ToolAdapter (template method), FileToolAdapter, ClaudeCodeAdapter, AdapterFactory
+    directory/  ToolDirectory (examples, verify, index)
+    doctor/     Doctor
+    formats/    ConfigFormat strategies + factory
+    io/         SafeFileWriter, BackupManager
+    launch/     LaunchPlanner, ProcessCommand, ServerLauncher, LaunchLogger
+    mcp/        McpHandshakeClient
+    platform/   WirebayPaths, ExecutableResolver, FilePermissions
+    schema/     SchemaValidator
+    secrets/    SecretsBackend (interface), SecretMasker, EnvFileSecretsStore
+    servers/    ServerDefinition, ServerRegistry
+    store/      ConfigStore, StateStore, EntryHasher
+    sync/       EntryRenderer, Reconciler, SyncEngine
+    template/   TemplateExpander
+    tools/      Tool, ToolRegistry
+    errors.ts   WirebayError, UsageError, ConfigParseError, ExitCode
+    types.ts    JSON shapes (ServerDef, ToolManifest, WirebayConfig, …)
+```
+
+One class per file, and the file is named after the class. A small group of closely related
+classes may share a file (e.g. `EnableCommands.ts`).
+
+## TypeScript rules
+
+- Node 24 runs `.ts` directly by stripping types, so only **erasable** syntax is allowed:
+  - no `enum` (use `as const` objects, like `ExitCode`)
+  - no `namespace`
+  - no constructor *parameter properties*: declare fields and assign them in the constructor
+  - `abstract`, `readonly`, `private`, `protected` and `override` are fine
+
+  `tsconfig.json` enforces this with `erasableSyntaxOnly`.
 - Import local files with the `.ts` extension; the build rewrites them to `.js`.
 - Use `import type` for type-only imports (`verbatimModuleSyntax`).
+- `strict` is on. Prefer precise types over `any`; `unknown` plus narrowing when needed.
 
-## File conventions
+## Documentation (TSDoc)
 
-- Each file starts with a comment of one to three lines saying what it is for.
-- Exported functions have a JSDoc comment.
-- `src/commands/*` stay thin: parse flags, call `core/`, print. Logic lives in `core/`.
-- Output: human output goes to stdout. The canonical-command echo and warnings go to stderr.
-  `--json` output goes to stdout only.
-- **`wirebay run` never writes to stdout** (MCP protocol).
+- Every file starts with a `/** … @module */` comment saying what it is for.
+- Every exported class, interface, method and non-obvious field has a TSDoc comment.
+- Use `@param`, `@returns`, `@throws` and `@example` where they help.
+- Link across modules with `{@link core/errors!WirebayError}` (module path `!` name).
+- Build the API docs locally with `npm run docs:api`. They are written to `docs-api/`, which is
+  git-ignored; TypeDoc must run with zero warnings.
 
 ## Adding a command
 
-1. Add the verb and aliases to `VERBS` in `src/cli/grammar.ts`, and to `TARGETED_VERBS` if it takes
-   servers/tools.
-2. Add flags to `FLAGS` if needed.
-3. Create `src/commands/<name>.ts` exporting `async function <name>(cmd: ParsedCommand): Promise<number>`.
-4. Dispatch it in `src/cli.ts`.
-5. Add help text to `COMMAND_HELP` in `src/commands/help.ts`.
-6. Tests: parser rows in `test/unit/parse.test.ts`, behaviour in `test/e2e/cli.test.ts`.
-7. `npm run gen:docs` regenerates `docs/cli-reference.md`.
+1. Create `src/commands/<Name>Command.ts` with a class extending `Command`:
+   ```ts
+   export class HelloCommand extends Command {
+     readonly name = "hello";
+     override readonly aliases = ["hi"];
+     readonly help = { usage: "wirebay hello", summary: "Say hello.", examples: ["wirebay hello"] };
+     async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
+       ctx.terminal.out("hello");
+       return ExitCode.Ok;
+     }
+   }
+   ```
+   Set `targeted = true` if its words are servers or tools, and `acceptsFreeWords = true` if it
+   takes other words.
+2. Register it in `WirebayApp.createRegistry()`.
+3. Add flags to `FLAGS` in `src/cli/Grammar.ts` if needed.
+4. Tests: parser rows in `test/unit/parse.test.ts`, behaviour in `test/e2e/cli.test.ts`.
+5. `npm run gen:docs` regenerates `docs/cli-reference.md` from the class metadata.
+
+## Output rules
+
+- Human output goes through `ctx.terminal.out()`. The canonical-command echo and warnings go
+  through `ctx.terminal.note()` (stderr), and `--json` through `ctx.terminal.json()`.
+- **`wirebay run` never writes to stdout** (it carries the MCP protocol).
 
 ## Style
 

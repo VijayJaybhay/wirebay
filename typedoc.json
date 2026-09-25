@@ -1,0 +1,13 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src"],
+  "entryPointStrategy": "expand",
+  "exclude": ["src/cli.ts"],
+  "out": "docs-api",
+  "name": "wirebay API",
+  "readme": "docs/architecture.md",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "githubPages": false,
+  "tsconfig": "tsconfig.build.json"
+}
