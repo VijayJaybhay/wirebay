@@ -1,0 +1,26 @@
+name: "🔌 New MCP server preset"
+description: Suggest a server to ship as a built-in preset (wirebay add <name>).
+labels: ["server"]
+body:
+  - type: markdown
+    attributes:
+      value: "You can already use any server with `wirebay add <name> --npx …`. Presets are for widely useful, maintained servers."
+  - type: input
+    id: server
+    attributes: { label: Server name and official repo/docs URL }
+    validations: { required: true }
+  - type: input
+    id: package
+    attributes: { label: Package / image / URL, placeholder: "@scope/mcp-server (npm) · pkg (PyPI) · https://…/mcp" }
+    validations: { required: true }
+  - type: textarea
+    id: secrets
+    attributes:
+      label: Environment variables / secrets it needs
+      description: Names only. Never paste values.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I'd like to open the PR myself
