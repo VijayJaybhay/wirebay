@@ -8,3 +8,4 @@ wirebay-export/
 coverage/
 .DS_Store
 docs-api/
+junit.xml
