@@ -1,0 +1,20 @@
+{
+  "servers": {
+    "github": {
+      "type": "stdio",
+      "command": "wirebay",
+      "args": [
+        "run",
+        "github"
+      ]
+    },
+    "netlify": {
+      "type": "stdio",
+      "command": "wirebay",
+      "args": [
+        "run",
+        "netlify"
+      ]
+    }
+  }
+}

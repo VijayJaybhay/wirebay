@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "my-tool",
+  "name": "My Tool",
+  "aliases": [],
+  "homepage": "https://example.com",
+  "docs": { "mcp": "https://example.com/docs/mcp" },
+  "detect": { "commands": ["my-tool"], "paths": ["~/.my-tool"] },
+  "configs": {
+    "user": { "path": "~/.my-tool/mcp.json", "createIfMissing": true },
+    "project": { "path": "{cwd}/.my-tool/mcp.json", "createIfMissing": true }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "mergeStrategy": "edit",
+  "entry": { "stdio": { "command": "{command}", "args": "{args}", "env": "{env}" } },
+  "supports": { "stdio": true, "http": false, "envExpansion": false, "cmdShims": false },
+  "restartRequired": false,
+  "status": "beta",
+  "lastVerified": "YYYY-MM-DD",
+  "maintainers": []
+}

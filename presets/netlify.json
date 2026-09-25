@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "netlify",
+  "description": "Netlify: sites, deploys, environment variables, forms, extensions",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "@netlify/mcp@1.15.1"]
+  },
+  "secrets": [
+    {
+      "key": "NETLIFY_PERSONAL_ACCESS_TOKEN",
+      "required": true,
+      "description": "Netlify personal access token",
+      "pattern": "^nfp_",
+      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/netlify.md#1-create-a-token"
+    }
+  ],
+  "prereqs": ["npx"],
+  "docs": "https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/",
+  "guide": "docs/servers/netlify.md",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

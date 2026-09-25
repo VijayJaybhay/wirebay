@@ -1,0 +1,24 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "firebase",
+  "description": "Firebase: projects, Auth, Firestore, Data Connect, Storage, Remote Config, Crashlytics",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "firebase-tools@15.31.0", "mcp", { "optional": ["--dir", "${FIREBASE_PROJECT_DIR}"] }]
+  },
+  "secrets": [
+    {
+      "key": "GOOGLE_APPLICATION_CREDENTIALS",
+      "description": "Path to a service-account JSON (leave empty to use `firebase login`)",
+      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/firebase.md#1-choose-how-to-authenticate"
+    },
+    { "key": "FIREBASE_PROJECT_DIR", "description": "Folder containing firebase.json" }
+  ],
+  "prereqs": ["npx"],
+  "docs": "https://firebase.google.com/docs/ai-assistance/mcp-server",
+  "guide": "docs/servers/firebase.md",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}
