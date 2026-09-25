@@ -1,0 +1,41 @@
+# OpenHands CLI
+
+Official MCP docs: https://docs.openhands.dev/openhands/usage/cli/mcp-servers
+
+## Where the config lives
+
+| Scope | File |
+|---|---|
+| user | `~/.openhands/mcp.json` |
+
+OpenHands 1.0+ uses this JSON file (older versions used TOML). There's no project file.
+
+## How wirebay syncs it
+
+```bash
+wirebay add github to openhands        # also accepted: open-hands
+```
+
+## Doing it by hand
+
+```json
+{
+  "mcpServers": {
+    "github": {"command":"wirebay","args":["run","github"]}
+  }
+}
+```
+
+On Windows, entries written by hand usually need `cmd /c wirebay run <server>`; wirebay's own entries call `node.exe` directly.
+
+## Verify
+
+Start a new OpenHands CLI session; MCP tools are listed at startup.
+
+## Quirks
+
+- None known.
+
+## Changelog
+
+- 2026-09-25: first version, from the official docs linked above.

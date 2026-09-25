@@ -1,40 +1,39 @@
 {
   "$schema": "../../schemas/tool.schema.json",
   "version": 1,
-  "id": "cursor",
-  "name": "Cursor",
+  "id": "factory-droid",
+  "name": "Factory Droid",
   "aliases": [
-    "cursor-cli",
-    "cursor-agent"
+    "droid",
+    "factory"
   ],
-  "homepage": "https://cursor.com",
+  "homepage": "https://factory.ai",
   "docs": {
-    "mcp": "https://cursor.com/docs/context/mcp"
+    "mcp": "https://docs.factory.ai/cli/configuration/mcp"
   },
   "detect": {
     "commands": [
-      "cursor",
-      "cursor-agent"
+      "droid"
     ],
     "paths": [
-      "~/.cursor"
+      "~/.factory"
     ]
   },
   "configs": {
     "user": {
-      "path": "~/.cursor/mcp.json",
+      "path": "~/.factory/mcp.json",
       "createIfMissing": true
     },
     "project": {
-      "path": "{cwd}/.cursor/mcp.json",
+      "path": "{cwd}/.factory/mcp.json",
       "createIfMissing": true
     }
   },
   "format": "json",
   "rootKey": "mcpServers",
-  "mergeStrategy": "edit",
   "entry": {
     "stdio": {
+      "type": "stdio",
       "command": "{command}",
       "args": "{args}",
       "env": "{env}"
@@ -48,6 +47,7 @@
   },
   "restartRequired": false,
   "status": "stable",
+  "mergeStrategy": "edit",
   "lastVerified": "2026-09-25",
   "maintainers": []
 }

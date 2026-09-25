@@ -1,0 +1,67 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "devin",
+  "name": "Devin (Devin CLI and Devin Desktop / Windsurf Cascade)",
+  "aliases": [
+    "windsurf",
+    "devin-cli",
+    "devin-desktop",
+    "cascade",
+    "codeium"
+  ],
+  "homepage": "https://devin.ai/desktop",
+  "docs": {
+    "mcp": "https://docs.devin.ai/cli/extensibility/mcp/configuration",
+    "changelog": "https://docs.devin.ai/desktop/devin-desktop-faq"
+  },
+  "detect": {
+    "commands": [
+      "devin",
+      "devin-desktop",
+      "windsurf"
+    ],
+    "paths": [
+      "~/.codeium",
+      {
+        "win32": "{appdata}/devin",
+        "darwin": "${XDG_CONFIG_HOME:-~/.config}/devin",
+        "linux": "${XDG_CONFIG_HOME:-~/.config}/devin"
+      }
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": {
+        "win32": "{appdata}/devin/mcp_config.json",
+        "darwin": "${XDG_CONFIG_HOME:-~/.config}/devin/mcp_config.json",
+        "linux": "${XDG_CONFIG_HOME:-~/.config}/devin/mcp_config.json"
+      },
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/.devin/mcp_config.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "mergeStrategy": "edit",
+  "entry": {
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": true,
+    "cmdShims": false
+  },
+  "restartRequired": true,
+  "status": "beta",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

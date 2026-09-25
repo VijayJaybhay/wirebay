@@ -1,38 +1,35 @@
 {
   "$schema": "../../schemas/tool.schema.json",
   "version": 1,
-  "id": "cursor",
-  "name": "Cursor",
+  "id": "kimi-code",
+  "name": "Kimi Code CLI (Moonshot)",
   "aliases": [
-    "cursor-cli",
-    "cursor-agent"
+    "kimi"
   ],
-  "homepage": "https://cursor.com",
+  "homepage": "https://www.kimi.com/code",
   "docs": {
-    "mcp": "https://cursor.com/docs/context/mcp"
+    "mcp": "https://www.kimi.com/code/docs/en/kimi-code-cli/customization/mcp.html"
   },
   "detect": {
     "commands": [
-      "cursor",
-      "cursor-agent"
+      "kimi"
     ],
     "paths": [
-      "~/.cursor"
+      "${KIMI_CODE_HOME:-~/.kimi-code}"
     ]
   },
   "configs": {
     "user": {
-      "path": "~/.cursor/mcp.json",
+      "path": "${KIMI_CODE_HOME:-~/.kimi-code}/mcp.json",
       "createIfMissing": true
     },
     "project": {
-      "path": "{cwd}/.cursor/mcp.json",
+      "path": "{cwd}/.kimi-code/mcp.json",
       "createIfMissing": true
     }
   },
   "format": "json",
   "rootKey": "mcpServers",
-  "mergeStrategy": "edit",
   "entry": {
     "stdio": {
       "command": "{command}",
@@ -43,11 +40,12 @@
   "supports": {
     "stdio": true,
     "http": true,
-    "envExpansion": true,
+    "envExpansion": false,
     "cmdShims": false
   },
-  "restartRequired": false,
-  "status": "stable",
+  "restartRequired": true,
+  "status": "beta",
+  "mergeStrategy": "edit",
   "lastVerified": "2026-09-25",
   "maintainers": []
 }

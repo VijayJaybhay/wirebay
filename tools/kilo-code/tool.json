@@ -1,0 +1,54 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "kilo-code",
+  "name": "Kilo Code (extension and CLI)",
+  "aliases": [
+    "kilo",
+    "kilocode"
+  ],
+  "homepage": "https://kilo.ai",
+  "docs": {
+    "mcp": "https://kilo.ai/docs/automate/mcp/using-in-kilo-code"
+  },
+  "detect": {
+    "commands": [
+      "kilo",
+      "kilocode"
+    ],
+    "paths": [
+      "~/.config/kilo"
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": "~/.config/kilo/kilo.jsonc",
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/kilo.jsonc",
+      "createIfMissing": true
+    }
+  },
+  "format": "jsonc",
+  "rootKey": "mcp",
+  "entry": {
+    "stdio": {
+      "type": "local",
+      "command": "{commandLine}",
+      "enabled": true,
+      "environment": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": true,
+    "cmdShims": false
+  },
+  "restartRequired": true,
+  "status": "stable",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

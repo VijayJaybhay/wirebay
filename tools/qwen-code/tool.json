@@ -1,38 +1,35 @@
 {
   "$schema": "../../schemas/tool.schema.json",
   "version": 1,
-  "id": "cursor",
-  "name": "Cursor",
+  "id": "qwen-code",
+  "name": "Qwen Code",
   "aliases": [
-    "cursor-cli",
-    "cursor-agent"
+    "qwen"
   ],
-  "homepage": "https://cursor.com",
+  "homepage": "https://github.com/QwenLM/qwen-code",
   "docs": {
-    "mcp": "https://cursor.com/docs/context/mcp"
+    "mcp": "https://qwenlm.github.io/qwen-code-docs/en/users/features/mcp/"
   },
   "detect": {
     "commands": [
-      "cursor",
-      "cursor-agent"
+      "qwen"
     ],
     "paths": [
-      "~/.cursor"
+      "~/.qwen"
     ]
   },
   "configs": {
     "user": {
-      "path": "~/.cursor/mcp.json",
+      "path": "~/.qwen/settings.json",
       "createIfMissing": true
     },
     "project": {
-      "path": "{cwd}/.cursor/mcp.json",
+      "path": "{cwd}/.qwen/settings.json",
       "createIfMissing": true
     }
   },
-  "format": "json",
+  "format": "jsonc",
   "rootKey": "mcpServers",
-  "mergeStrategy": "edit",
   "entry": {
     "stdio": {
       "command": "{command}",
@@ -46,8 +43,9 @@
     "envExpansion": true,
     "cmdShims": false
   },
-  "restartRequired": false,
+  "restartRequired": true,
   "status": "stable",
+  "mergeStrategy": "edit",
   "lastVerified": "2026-09-25",
   "maintainers": []
 }
