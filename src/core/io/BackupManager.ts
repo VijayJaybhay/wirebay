@@ -10,7 +10,7 @@ import type { SafeFileWriter } from "./SafeFileWriter.ts";
 
 /** One stored backup. */
 export interface BackupInfo {
-  /** Stable identifier, `<timestamp>__<file name>`. */
+  /** Stable identifier, `<timestamp>-<sequence>__<file name>`. */
   id: string;
   /** Tool the backup belongs to. */
   tool: string;
@@ -51,8 +51,7 @@ export class BackupManager {
     if (!existsSync(file)) return undefined;
     const dir = this.dirFor(toolId);
     mkdirSync(dir, { recursive: true });
-    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const dest = path.join(dir, `${stamp}__${path.basename(file)}`);
+    const dest = this.uniqueDestination(dir, path.basename(file));
     copyFileSync(file, dest);
     writeFileSync(dest + BackupManager.metaSuffix, JSON.stringify({ originalPath: path.resolve(file) }));
     this.prune(dir);
@@ -70,7 +69,7 @@ export class BackupManager {
         return {
           id: name,
           tool: toolId,
-          createdAt: name.split("__")[0] ?? "",
+          createdAt: (name.split("__")[0] ?? "").replace(/-\d{3}$/, ""),
           originalPath: meta?.originalPath ?? "",
           backupPath: path.join(dir, name),
         };
@@ -85,6 +84,19 @@ export class BackupManager {
     const safety = this.backup(backup.tool, backup.originalPath);
     copyFileSync(backup.backupPath, backup.originalPath);
     return safety;
+  }
+
+  /**
+   * A backup path that no other backup uses: `<timestamp>-<sequence>__<file name>`. Two backups in
+   * the same millisecond (a restore backs up the current file right away) get different sequence
+   * numbers, so neither overwrites the other and name order stays creation order.
+   */
+  private uniqueDestination(dir: string, baseName: string): string {
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    for (let sequence = 0; ; sequence++) {
+      const dest = path.join(dir, `${stamp}-${String(sequence).padStart(3, "0")}__${baseName}`);
+      if (!existsSync(dest)) return dest;
+    }
   }
 
   private dirFor(toolId: string): string {

@@ -13,6 +13,7 @@ All notable changes are recorded here by [Changesets](https://github.com/changes
 ### Patch Changes
 
 - a69a2b3: Adopt a zero-findings code quality policy: strict type-aware ESLint, Prettier formatting, stricter TypeScript checks, pre-commit and pre-push hooks, and no suppression comments. All findings were fixed in the code.
+- Fix `wirebay restore` silently doing nothing when the backup it restores was taken in the same millisecond: backups now get unique, ordered names.
 
 ## 0.1.0
 

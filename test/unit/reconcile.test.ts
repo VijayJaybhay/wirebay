@@ -111,3 +111,21 @@ await test("writes are backed up and restorable", () =>
     ctx.backups.restore(latest);
     assert.equal(readFileSync(file, "utf8"), before);
   }));
+
+await test("backups taken in the same millisecond never overwrite each other", () =>
+  withSandbox((sb) => {
+    const { ctx, file } = setup(sb);
+    const versions = ["one", "two", "three", "four", "five"];
+    for (const v of versions) {
+      writeFileSync(file, v);
+      ctx.backups.backup("t", file);
+    }
+    const listed = ctx.backups.list("t");
+    assert.equal(new Set(listed.map((b) => b.id)).size, versions.length, "every backup has its own id");
+    assert.deepEqual(
+      listed.map((b) => readFileSync(b.backupPath, "utf8")),
+      [...versions].reverse(),
+      "newest first, each with its own content",
+    );
+    assert.match(listed[0]?.createdAt ?? "", /^\d{4}-\d{2}-\d{2}T[\d-]+Z$/, "createdAt has no sequence suffix");
+  }));
