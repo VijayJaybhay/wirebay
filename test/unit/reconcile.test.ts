@@ -1,7 +1,7 @@
 // Reconcile rules: never touch foreign entries, detect hand edits, prune what's no longer wanted.
 
 import assert from "node:assert/strict";
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 import type { Target } from "../../src/core/adapters/ToolAdapter.ts";
@@ -73,6 +73,16 @@ test("scopeNames limits which managed entries are considered", () =>
     const r = ctx.reconciler;
     r.apply(r.plan(target, state, { desired: { a: entry("a"), b: entry("b") } }), state);
     assert.deepEqual(r.plan(target, state, { desired: {}, scopeNames: new Set(["a"]) }).changes.remove, ["a"]);
+  }));
+
+test("stray files in tools folders are ignored (ENOTDIR on Linux/macOS)", () =>
+  withSandbox((sb) => {
+    const toolsDir = path.join(sb.wirebayHome, "tools");
+    mkdirSync(toolsDir, { recursive: true });
+    writeFileSync(path.join(toolsDir, "NOTES.md"), "not a tool");
+    const ctx = sb.context();
+    assert.ok(ctx.tools.all().length > 20);
+    assert.equal(ctx.writer.read(path.join(toolsDir, "NOTES.md", "tool.json")), undefined);
   }));
 
 test("writes are backed up and restorable", () =>

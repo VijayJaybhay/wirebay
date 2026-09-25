@@ -67,9 +67,10 @@ export class ToolRegistry {
   private readDir(dir: string, source: ToolManifest["source"]): Tool[] {
     if (!existsSync(dir)) return [];
     const out: Tool[] = [];
-    for (const name of readdirSync(dir)) {
-      if (name.startsWith("_")) continue;
-      const file = path.join(dir, name, "tool.json");
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      // Only folders hold tools (skip INDEX.md and _template/).
+      if (!entry.isDirectory() || entry.name.startsWith("_")) continue;
+      const file = path.join(dir, entry.name, "tool.json");
       const manifest = this.writer.readJson<ToolManifest>(file);
       if (!manifest) continue;
       const errors = SchemaValidator.validate("tool", manifest);
