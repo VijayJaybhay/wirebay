@@ -6,8 +6,12 @@ import { applyEdits, findNodeAtLocation, modify, parse, parseTree, type Formatti
 import { WirebayError } from "../core/errors.ts";
 import type { Entry } from "../core/types.ts";
 
+/** Split a root key on dots; `\.` is a literal dot (e.g. `amp\.mcpServers` is one key). */
 export function keyPath(rootKey: string): string[] {
-  return rootKey.split(".").filter(Boolean);
+  return rootKey
+    .split(/(?<!\\)\./)
+    .map((k) => k.replace(/\\\./g, "."))
+    .filter(Boolean);
 }
 
 function parseOrThrow(text: string, file: string): unknown {

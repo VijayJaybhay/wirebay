@@ -1,40 +1,40 @@
 {
   "$schema": "../../schemas/tool.schema.json",
   "version": 1,
-  "id": "cursor",
-  "name": "Cursor",
+  "id": "visual-studio",
+  "name": "Visual Studio 2022/2026 (Windows)",
   "aliases": [
-    "cursor-cli",
-    "cursor-agent"
+    "vs",
+    "visualstudio"
   ],
-  "homepage": "https://cursor.com",
+  "homepage": "https://visualstudio.microsoft.com",
   "docs": {
-    "mcp": "https://cursor.com/docs/context/mcp"
+    "mcp": "https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers"
   },
   "detect": {
-    "commands": [
-      "cursor",
-      "cursor-agent"
-    ],
     "paths": [
-      "~/.cursor"
+      {
+        "win32": "${LOCALAPPDATA:-~/AppData/Local}/Microsoft/VisualStudio"
+      }
     ]
   },
   "configs": {
     "user": {
-      "path": "~/.cursor/mcp.json",
+      "path": {
+        "win32": "~/.mcp.json"
+      },
       "createIfMissing": true
     },
     "project": {
-      "path": "{cwd}/.cursor/mcp.json",
+      "path": "{cwd}/.vs/mcp.json",
       "createIfMissing": true
     }
   },
   "format": "json",
-  "rootKey": "mcpServers",
-  "mergeStrategy": "edit",
+  "rootKey": "servers",
   "entry": {
     "stdio": {
+      "type": "stdio",
       "command": "{command}",
       "args": "{args}",
       "env": "{env}"
@@ -43,11 +43,12 @@
   "supports": {
     "stdio": true,
     "http": true,
-    "envExpansion": true,
+    "envExpansion": false,
     "cmdShims": false
   },
   "restartRequired": false,
-  "status": "stable",
+  "status": "beta",
+  "mergeStrategy": "edit",
   "lastVerified": "2026-09-25",
   "maintainers": []
 }

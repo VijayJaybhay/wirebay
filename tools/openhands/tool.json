@@ -1,38 +1,31 @@
 {
   "$schema": "../../schemas/tool.schema.json",
   "version": 1,
-  "id": "cursor",
-  "name": "Cursor",
+  "id": "openhands",
+  "name": "OpenHands CLI",
   "aliases": [
-    "cursor-cli",
-    "cursor-agent"
+    "open-hands"
   ],
-  "homepage": "https://cursor.com",
+  "homepage": "https://openhands.dev",
   "docs": {
-    "mcp": "https://cursor.com/docs/context/mcp"
+    "mcp": "https://docs.openhands.dev/openhands/usage/cli/mcp-servers"
   },
   "detect": {
     "commands": [
-      "cursor",
-      "cursor-agent"
+      "openhands"
     ],
     "paths": [
-      "~/.cursor"
+      "~/.openhands"
     ]
   },
   "configs": {
     "user": {
-      "path": "~/.cursor/mcp.json",
-      "createIfMissing": true
-    },
-    "project": {
-      "path": "{cwd}/.cursor/mcp.json",
+      "path": "~/.openhands/mcp.json",
       "createIfMissing": true
     }
   },
   "format": "json",
   "rootKey": "mcpServers",
-  "mergeStrategy": "edit",
   "entry": {
     "stdio": {
       "command": "{command}",
@@ -43,11 +36,12 @@
   "supports": {
     "stdio": true,
     "http": true,
-    "envExpansion": true,
+    "envExpansion": false,
     "cmdShims": false
   },
-  "restartRequired": false,
+  "restartRequired": true,
   "status": "stable",
+  "mergeStrategy": "edit",
   "lastVerified": "2026-09-25",
   "maintainers": []
 }

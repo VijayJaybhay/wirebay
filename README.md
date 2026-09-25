@@ -140,6 +140,8 @@ See [custom servers](https://github.com/VijayJaybhay/wirebay/blob/main/docs/serv
 <!-- generated:tools -->
 | Tool | Name in commands | Scopes | Last verified | Guide |
 |---|---|---|---|---|
+| **Amp (Sourcegraph)** | `amp` `ampcode` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/amp/GUIDE.md) |
+| **Google Antigravity** | `antigravity` `google-antigravity` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/antigravity/GUIDE.md) |
 | **Augment Code CLI (auggie)** | `auggie` `augment` `augment-code` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/auggie/GUIDE.md) |
 | **Claude Code** | `claude-code` `claude` `cc` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/claude-code/GUIDE.md) |
 | **Claude Desktop** | `claude-desktop` `desktop` `claude-app` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/claude-desktop/GUIDE.md) |
@@ -147,17 +149,26 @@ See [custom servers](https://github.com/VijayJaybhay/wirebay/blob/main/docs/serv
 | **OpenAI Codex (CLI, IDE extension and desktop app)** | `codex` `codex-cli` `codex-desktop` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/codex/GUIDE.md) |
 | **Continue** | `continue` `continue-dev` | project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/continue/GUIDE.md) |
 | **GitHub Copilot CLI** | `copilot-cli` `copilot` `gh-copilot` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/copilot-cli/GUIDE.md) |
-| **Cursor** | `cursor` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/cursor/GUIDE.md) |
+| **Cursor** | `cursor` `cursor-cli` `cursor-agent` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/cursor/GUIDE.md) |
+| **Devin (Devin CLI and Devin Desktop / Windsurf Cascade)** | `devin` `windsurf` `devin-cli` `devin-desktop` `cascade` `codeium` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/devin/GUIDE.md) |
+| **Factory Droid** | `factory-droid` `droid` `factory` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/factory-droid/GUIDE.md) |
 | **Gemini CLI** | `gemini` `gemini-cli` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/gemini/GUIDE.md) |
 | **Goose** | `goose` `block-goose` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/goose/GUIDE.md) |
 | **JetBrains Junie (IDE plugin and CLI)** | `junie` `jetbrains-junie` `jetbrains` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/junie/GUIDE.md) |
+| **Kilo Code (extension and CLI)** | `kilo-code` `kilo` `kilocode` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/kilo-code/GUIDE.md) |
+| **Kimi Code CLI (Moonshot)** | `kimi-code` `kimi` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/kimi-code/GUIDE.md) |
 | **Kiro (IDE and Kiro CLI, formerly Amazon Q Developer CLI)** | `kiro` `kiro-cli` `amazon-q` `q-cli` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/kiro/GUIDE.md) |
 | **LM Studio** | `lm-studio` `lmstudio` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/lm-studio/GUIDE.md) |
 | **opencode** | `opencode` `open-code` `sst-opencode` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/opencode/GUIDE.md) |
+| **OpenHands CLI** | `openhands` `open-hands` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/openhands/GUIDE.md) |
+| **Qoder CLI** | `qoder` `qodercli` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/qoder/GUIDE.md) |
+| **Qwen Code** | `qwen-code` `qwen` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/qwen-code/GUIDE.md) |
+| **Atlassian Rovo Dev CLI** | `rovo-dev` `rovodev` `rovo` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/rovo-dev/GUIDE.md) |
+| **Tabnine Agent (IDE and CLI)** | `tabnine` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/tabnine/GUIDE.md) |
 | **Trae** | `trae` `trae-ide` `traecode` | project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/trae/GUIDE.md) |
+| **Visual Studio 2022/2026 (Windows)** | `visual-studio` `vs` `visualstudio` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/visual-studio/GUIDE.md) |
 | **Visual Studio Code (GitHub Copilot agent mode)** | `vscode` `code` `vs-code` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/vscode/GUIDE.md) |
 | **Warp** | `warp` `warp-terminal` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/warp/GUIDE.md) |
-| **Windsurf / Devin Desktop (Cascade)** | `windsurf` `devin-desktop` `cascade` `codeium` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/windsurf/GUIDE.md) |
 | **Zed** | `zed` `zed-editor` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/zed/GUIDE.md) |
 <!-- /generated:tools -->
 

@@ -43,4 +43,4 @@ Toggle a server off and on to restart it after changing a secret.
 
 ## Changelog
 
-- 2026-09-25: first version.
+- 2026-09-25: first version. Cursor CLI (`cursor-agent`) uses the same files, so `cursor-cli` is an alias.

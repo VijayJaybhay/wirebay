@@ -1,38 +1,32 @@
 {
   "$schema": "../../schemas/tool.schema.json",
   "version": 1,
-  "id": "cursor",
-  "name": "Cursor",
+  "id": "qoder",
+  "name": "Qoder CLI",
   "aliases": [
-    "cursor-cli",
-    "cursor-agent"
+    "qodercli"
   ],
-  "homepage": "https://cursor.com",
+  "homepage": "https://qoder.com",
   "docs": {
-    "mcp": "https://cursor.com/docs/context/mcp"
+    "mcp": "https://docs.qoder.com/cli/mcp-servers"
   },
   "detect": {
     "commands": [
-      "cursor",
-      "cursor-agent"
+      "qodercli",
+      "qoder"
     ],
     "paths": [
-      "~/.cursor"
+      "~/.qoder"
     ]
   },
   "configs": {
     "user": {
-      "path": "~/.cursor/mcp.json",
-      "createIfMissing": true
-    },
-    "project": {
-      "path": "{cwd}/.cursor/mcp.json",
+      "path": "~/.qoder/settings.json",
       "createIfMissing": true
     }
   },
-  "format": "json",
+  "format": "jsonc",
   "rootKey": "mcpServers",
-  "mergeStrategy": "edit",
   "entry": {
     "stdio": {
       "command": "{command}",
@@ -43,11 +37,12 @@
   "supports": {
     "stdio": true,
     "http": true,
-    "envExpansion": true,
+    "envExpansion": false,
     "cmdShims": false
   },
-  "restartRequired": false,
-  "status": "stable",
+  "restartRequired": true,
+  "status": "beta",
+  "mergeStrategy": "edit",
   "lastVerified": "2026-09-25",
   "maintainers": []
 }

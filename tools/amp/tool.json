@@ -1,0 +1,59 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "amp",
+  "name": "Amp (Sourcegraph)",
+  "aliases": [
+    "ampcode"
+  ],
+  "homepage": "https://ampcode.com",
+  "docs": {
+    "mcp": "https://ampcode.com/docs/customize/mcp"
+  },
+  "detect": {
+    "commands": [
+      "amp"
+    ],
+    "paths": [
+      {
+        "win32": "{appdata}/amp",
+        "darwin": "~/.config/amp",
+        "linux": "~/.config/amp"
+      }
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": {
+        "win32": "{appdata}/amp/settings.json",
+        "darwin": "~/.config/amp/settings.json",
+        "linux": "~/.config/amp/settings.json"
+      },
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/.amp/settings.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "jsonc",
+  "rootKey": "amp\\.mcpServers",
+  "entry": {
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "restartRequired": false,
+  "status": "stable",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}
