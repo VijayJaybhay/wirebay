@@ -1,0 +1,39 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "desktop-commander",
+  "description": "Desktop Commander: terminal commands, file editing and process management (high risk)",
+  "category": "utilities",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@wonderwhy-er/desktop-commander@0.2.51",
+      "--no-onboarding"
+    ]
+  },
+  "variants": {
+    "docker": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/desktop-commander:latest"
+      ]
+    }
+  },
+  "secrets": [],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/wonderwhy-er/DesktopCommanderMCP",
+  "notes": [
+    "**High risk:** unrestricted shell access on your machine. Prefer `--variant docker` for isolation. Telemetry is on by default (set `telemetryEnabled: false` in its config)."
+  ],
+  "guide": "docs/servers/catalog.md#desktop-commander",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

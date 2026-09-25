@@ -1,0 +1,30 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "storybook",
+  "description": "Storybook: component docs, story authoring and tests from your running Storybook",
+  "category": "dev-tools",
+  "launch": {
+    "type": "remote",
+    "url": "${STORYBOOK_MCP_URL:-http://localhost:6006/mcp}",
+    "auth": {
+      "type": "none"
+    }
+  },
+  "secrets": [
+    {
+      "key": "STORYBOOK_MCP_URL",
+      "description": "MCP URL of your Storybook dev server (default http://localhost:6006/mcp)"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://storybook.js.org/docs/ai/mcp/overview",
+  "notes": [
+    "Needs Storybook 10.6+ with the addon (`npx storybook add @storybook/addon-mcp`) and the dev server running."
+  ],
+  "guide": "docs/servers/catalog.md#storybook",
+  "lastVerified": "2026-09-25",
+  "status": "beta"
+}

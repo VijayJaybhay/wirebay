@@ -1,0 +1,31 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "serena",
+  "description": "Serena: language-server-powered code navigation and editing for the current project",
+  "category": "dev-tools",
+  "launch": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": [
+      "-p",
+      "3.13",
+      "serena-agent@1.7.0",
+      "start-mcp-server",
+      "--context",
+      "ide",
+      "--project-from-cwd"
+    ]
+  },
+  "secrets": [],
+  "prereqs": [
+    "uvx"
+  ],
+  "docs": "https://github.com/oraios/serena",
+  "notes": [
+    "Can edit files and run shell commands. Opens a local web dashboard by default. Some languages need extra language servers."
+  ],
+  "guide": "docs/servers/catalog.md#serena",
+  "lastVerified": "2026-09-25",
+  "status": "beta"
+}

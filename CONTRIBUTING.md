@@ -30,7 +30,7 @@ node src/cli.ts add github to cursor --dry-run
 |---|---|---|---|
 | Support a new AI tool (Windsurf, Zed, …) or fix one whose config changed | `tools/<id>/tool.json`, `GUIDE.md` | No | [Add a tool](docs/contributing/add-a-tool.md) |
 | Add a built-in MCP server or update one | `presets/<name>.json`, `docs/servers/<name>.md`, `templates/secrets.env.example` | No | [Add a server](docs/contributing/add-a-server.md) |
-| Improve the CLI itself | `src/`, `test/` | Yes | [Code guide](docs/contributing/code-guide.md) |
+| Improve the CLI itself | `src/`, `test/` | Yes (TypeScript classes) | [Code guide](docs/contributing/code-guide.md) |
 
 Keeping the tools directory fresh matters as much as new features: see
 [Maintaining the directory](docs/contributing/maintaining-directory.md). Entries that haven't been
@@ -43,6 +43,7 @@ npm run lint        # type check
 npm test            # unit, snapshot and end-to-end tests
 npm run validate    # schemas, naming rules, generated files up to date
 npm run gen:docs    # if you changed presets/, tools/, the grammar or command help
+npm run docs:api    # if you changed src/: TSDoc must build without warnings
 npx changeset       # describe user-visible changes (pick patch/minor/major)
 ```
 
@@ -72,6 +73,8 @@ wirebay keeps its dependencies few and boring. Current runtime dependencies and 
 | `ajv` | Validate presets, tool manifests and config against the JSON Schemas |
 | `@clack/prompts` | Friendly prompts and hidden input for secrets |
 | `diff` | Show `--dry-run` diffs |
+
+Development-only: `typescript`, `@types/node`, `@changesets/cli` and `typedoc` (API docs from TSDoc).
 
 Please open an issue before adding a new one.
 

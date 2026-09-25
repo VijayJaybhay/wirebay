@@ -29,7 +29,8 @@
     "gen:docs": "node scripts/gen-docs.ts",
     "prepublishOnly": "npm run lint && npm run build && npm test && npm run validate",
     "release": "npm run build && changeset publish",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "docs:api": "typedoc"
   },
   "keywords": [
     "mcp",
@@ -65,6 +66,7 @@
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
     "@types/node": "^24.13.6",
+    "typedoc": "^0.28.20",
     "typescript": "^5.9.3"
   }
 }

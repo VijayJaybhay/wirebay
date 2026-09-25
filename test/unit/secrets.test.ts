@@ -1,63 +1,60 @@
 import assert from "node:assert/strict";
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
-import { EnvFileBackend, mask } from "../../src/core/secrets.ts";
-import { sandbox } from "../helpers.ts";
+import { SecretMasker } from "../../src/core/secrets/SecretsBackend.ts";
+import { withSandbox } from "../helpers.ts";
 
-test("set, get, unset keep comments and other keys", () => {
-  const sb = sandbox();
-  try {
-    const file = path.join(sb.wirebayHome, "secrets.env");
-    mkdirSync(sb.wirebayHome, { recursive: true });
-    writeFileSync(file, "# comment\nA=1\n\n# ── b ──\nB=\n");
-    const s = new EnvFileBackend(file);
+function prepare(dir: string, content: string): void {
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(path.join(dir, "secrets.env"), content);
+}
+
+test("set, get, unset keep comments and other keys", () =>
+  withSandbox((sb) => {
+    prepare(sb.wirebayHome, "# comment\nA=1\n\n# ── b ──\nB=\n");
+    const s = sb.context().secrets;
     s.set("B", "two words # not comment");
     assert.equal(s.get("B"), "two words # not comment");
     assert.equal(s.get("A"), "1");
     s.set("C", "new", "section-c");
-    assert.match(readFileSync(file, "utf8"), /# ── section-c ──\nC=new/);
-    assert.ok(readFileSync(file, "utf8").startsWith("# comment\n"));
+    const text = readFileSync(s.location, "utf8");
+    assert.match(text, /# ── section-c ──\nC=new/);
+    assert.ok(text.startsWith("# comment\n"));
     s.unset("A");
     assert.equal(s.get("A"), undefined);
     assert.ok(s.keys().includes("A"), "unset keeps the placeholder line");
-  } finally {
-    sb.cleanup();
-  }
-});
+  }));
 
-test("empty values count as unset and ~ is expanded", () => {
-  const sb = sandbox();
-  try {
-    const file = path.join(sb.wirebayHome, "secrets.env");
-    mkdirSync(sb.wirebayHome, { recursive: true });
-    writeFileSync(file, "EMPTY=\nCREDS=~/.wirebay/credentials/sa.json\n");
-    const s = new EnvFileBackend(file);
+test("empty values count as unset and ~ is expanded", () =>
+  withSandbox((sb) => {
+    prepare(sb.wirebayHome, "EMPTY=\nCREDS=~/.wirebay/credentials/sa.json\n");
+    const s = sb.context().secrets;
     assert.equal(s.all().EMPTY, undefined);
     assert.equal(s.get("CREDS"), path.join(sb.home, ".wirebay/credentials/sa.json"));
-  } finally {
-    sb.cleanup();
-  }
-});
+  }));
 
-test("addPlaceholders appends only missing keys under a header", () => {
-  const sb = sandbox();
-  try {
-    const file = path.join(sb.wirebayHome, "secrets.env");
-    mkdirSync(sb.wirebayHome, { recursive: true });
-    writeFileSync(file, "EXISTING=x\n");
-    const s = new EnvFileBackend(file);
+test("addPlaceholders appends only missing keys under a header", () =>
+  withSandbox((sb) => {
+    prepare(sb.wirebayHome, "EXISTING=x\n");
+    const s = sb.context().secrets;
     assert.deepEqual(s.addPlaceholders("svc", [{ key: "EXISTING" }, { key: "NEW_KEY", comment: "what it is" }]), ["NEW_KEY"]);
-    assert.match(readFileSync(file, "utf8"), /# ── svc ──\n# what it is\nNEW_KEY=\n/);
+    assert.match(readFileSync(s.location, "utf8"), /# ── svc ──\n# what it is\nNEW_KEY=\n/);
     assert.deepEqual(s.addPlaceholders("svc", [{ key: "NEW_KEY" }]), []);
-  } finally {
-    sb.cleanup();
-  }
-});
+  }));
+
+test("ensureExists creates the file from the template", () =>
+  withSandbox((sb) => {
+    const s = sb.context().secrets;
+    assert.equal(s.ensureExists(), true);
+    assert.equal(s.ensureExists(), false);
+    assert.ok(s.keys().includes("GITHUB_PERSONAL_ACCESS_TOKEN"));
+  }));
 
 test("mask never reveals short secrets and shows only the ends of long ones", () => {
-  assert.equal(mask(undefined), "(empty)");
-  assert.equal(mask("abc"), "•••");
-  assert.equal(mask("us-east-1a"), "us••••••");
-  assert.equal(mask("ghp_1234567890abcdefXYZ"), "ghp_…fXYZ");
+  assert.equal(SecretMasker.mask(undefined), "(empty)");
+  assert.equal(SecretMasker.mask("abc"), "•••");
+  assert.equal(SecretMasker.mask("us-east-1a"), "us••••••");
+  assert.equal(SecretMasker.mask("ghp_1234567890abcdefXYZ"), "ghp_…fXYZ");
+  assert.equal(SecretMasker.redact("token=abc12345 end", ["abc12345"]), "token=‹redacted› end");
 });

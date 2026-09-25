@@ -1,0 +1,44 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "datadog",
+  "description": "Datadog: logs, metrics, traces, monitors and incidents",
+  "category": "observability",
+  "launch": {
+    "type": "remote",
+    "url": "https://${DD_MCP_HOST:-mcp.datadoghq.com}/v1/mcp",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "token": {
+      "type": "remote",
+      "url": "https://${DD_MCP_HOST:-mcp.datadoghq.com}/v1/mcp",
+      "auth": {
+        "type": "bearer",
+        "secret": "DD_MCP_TOKEN"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "DD_MCP_HOST",
+      "description": "Your site's MCP host, e.g. mcp.datadoghq.eu (default US1: mcp.datadoghq.com)"
+    },
+    {
+      "key": "DD_MCP_TOKEN",
+      "description": "Personal or service access token (token variant only)"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://docs.datadoghq.com/mcp_server/setup/",
+  "notes": [
+    "Signs in through the browser; your org admin may need to allow-list the localhost redirect. Without the `mcp_write` permission the server is read-only. GOV sites are not supported."
+  ],
+  "guide": "docs/servers/catalog.md#datadog",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

@@ -59,8 +59,13 @@ Your editor autocompletes and validates it through `"$schema"`. The important fi
 
 For per-OS paths, use `{ "win32": "…", "darwin": "…", "linux": "…" }`.
 
-**Entry template:** `{command}`, `{args}` and `{env}` are filled in by wirebay (`env` is omitted
-when empty). Put fixed extra fields in `entry.extra`, e.g. `{ "startup_timeout_sec": 60 }`.
+**Entry template:** wirebay fills in these placeholders:
+- `{command}` and `{args}`
+- `{env}`, omitted when empty
+- `{commandLine}`, which is `[command, ...args]` for tools like opencode
+- `{name}`, the server name
+
+Root keys use dots for nesting. Write `\\.` for a literal dot, as in `"amp\\.mcpServers"`. Put fixed extra fields in `entry.extra`, e.g. `{ "startup_timeout_sec": 60 }`.
 
 ## 4. Write `GUIDE.md`
 
@@ -96,8 +101,11 @@ Add a changeset (`npx changeset`, patch) and fill in the PR checklist.
 
 ## When JSON isn't enough
 
-Some tools need code, for example to go through the tool's own CLI or to write a proprietary
-format. Add `src/adapters/overrides/<id>.ts` implementing the `Adapter` interface
-(`src/adapters/types.ts`), register it in `src/adapters/index.ts`, and set `"adapter": "<id>"` in
-the manifest. See `overrides/claude-code.ts` for an example. Please open an issue first so we can
-discuss it.
+Some tools need code, for example to go through the tool's own CLI or to write a proprietary format.
+
+- **To change how a tool is written:** subclass `ToolAdapter` (`src/core/adapters/ToolAdapter.ts`)
+  and override only the step that differs, usually `commit`. `ClaudeCodeAdapter` is the example.
+  Register the subclass in `AdapterFactory.overrides` and set `"adapter": "<id>"` in the manifest.
+- **For a new file format:** implement `ConfigFormat` and register it in `ConfigFormatFactory`.
+
+Please open an issue first so we can discuss it.

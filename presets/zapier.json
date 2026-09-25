@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "zapier",
+  "description": "Zapier: run actions in 9,000+ apps",
+  "category": "productivity",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.zapier.com/api/v1/connect",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "token": {
+      "type": "remote",
+      "url": "https://mcp.zapier.com/api/v1/connect",
+      "auth": {
+        "type": "bearer",
+        "secret": "ZAPIER_MCP_TOKEN"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "ZAPIER_MCP_TOKEN",
+      "description": "Connection token from mcp.zapier.com (token variant only)",
+      "help": "https://mcp.zapier.com"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://docs.zapier.com/mcp/overview/how-connections-work",
+  "notes": [
+    "Can run every action you enable on the Zapier MCP server; usage counts against your Zapier task limit."
+  ],
+  "guide": "docs/servers/catalog.md#zapier",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

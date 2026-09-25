@@ -31,5 +31,5 @@
 | [Code guide](contributing/code-guide.md) | How the code is organised and written |
 | [Testing](contributing/testing.md) | Test suites and how to add tests |
 | [Releasing](contributing/releasing.md) | Changesets and npm publishing |
-| [Architecture](architecture.md) | Module map and data flow |
+| [Architecture](architecture.md) | Layers, key classes and data flow (API reference: `npm run docs:api`) |
 | [Roadmap](roadmap.md) | What's next |

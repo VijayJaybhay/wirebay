@@ -11,4 +11,6 @@
 - Never run `wirebay sync`/`add`/`remove` from source against the real home directory. Always set
   `WIREBAY_USER_HOME` and `WIREBAY_HOME` to a temp folder.
 - For Claude Code's own user scope, wirebay goes through `claude mcp add-json -s user` and never
-  edits `~/.claude.json` directly (see `src/adapters/overrides/claude-code.ts`).
+  edits `~/.claude.json` directly (see `src/core/adapters/ClaudeCodeAdapter.ts`).
+- Write TypeScript as classes with explicit types and full TSDoc, following the patterns in
+  `docs/contributing/code-guide.md`.

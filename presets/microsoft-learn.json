@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "microsoft-learn",
+  "description": "Microsoft Learn: search and read official Microsoft/Azure/.NET docs and code samples",
+  "category": "dev-tools",
+  "launch": {
+    "type": "remote",
+    "url": "https://learn.microsoft.com/api/mcp",
+    "auth": {
+      "type": "none"
+    }
+  },
+  "secrets": [],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/MicrosoftDocs/mcp",
+  "notes": [
+    "Public and read-only; no login needed."
+  ],
+  "guide": "docs/servers/catalog.md#microsoft-learn",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

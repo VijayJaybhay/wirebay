@@ -2,7 +2,9 @@
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { canonical, parse, type Vocabulary } from "../../src/cli/parse.ts";
+import { WirebayApp } from "../../src/app/WirebayApp.ts";
+import { CommandParser, type Vocabulary } from "../../src/cli/CommandParser.ts";
+import { Suggester } from "../../src/cli/Suggester.ts";
 import { UsageError } from "../../src/core/errors.ts";
 
 const servers = new Set(["github", "netlify", "firebase", "aws-api"]);
@@ -18,12 +20,9 @@ const tools: Record<string, string> = {
   code: "vscode",
   gemini: "gemini",
 };
-const vocab: Vocabulary = {
-  isServer: (n) => servers.has(n),
-  toolId: (n) => tools[n],
-  words: () => [...servers, ...Object.keys(tools)],
-};
-const canon = (line: string) => canonical(parse(line.split(" ").filter(Boolean), vocab));
+const vocabulary: Vocabulary = { isServer: (n) => servers.has(n), toolId: (n) => tools[n], words: () => [...servers, ...Object.keys(tools)] };
+const parser = new CommandParser(WirebayApp.createRegistry(), vocabulary);
+const canon = (line: string) => parser.describe(parser.parse(line.split(" ").filter(Boolean)));
 
 const TABLE: [string, string[]][] = [
   ["→ sync servers=default tools=default", ["sync"]],
@@ -48,13 +47,13 @@ const TABLE: [string, string[]][] = [
 ];
 
 for (const [expected, phrasings] of TABLE) {
-  test(`${expected}`, () => {
+  test(expected, () => {
     for (const p of phrasings) assert.equal(canon(p), expected, `phrasing: wirebay ${p}`);
   });
 }
 
 test("a new server name for add goes to rest", () => {
-  const cmd = parse(["add", "linear", "--npx", "@linear/mcp", "--to", "codex"], vocab);
+  const cmd = parser.parse(["add", "linear", "--npx", "@linear/mcp", "--to", "codex"]);
   assert.deepEqual(cmd.rest, ["linear"]);
   assert.deepEqual(cmd.tools, ["codex"]);
   assert.equal(cmd.flags.npx, "@linear/mcp");
@@ -62,17 +61,17 @@ test("a new server name for add goes to rest", () => {
 
 test("unknown words get a did-you-mean hint", () => {
   assert.throws(
-    () => parse(["sync", "gitub"], vocab),
+    () => parser.parse(["sync", "gitub"]),
     (e: unknown) => e instanceof UsageError && /Did you mean "github"/.test(e.hint ?? ""),
   );
   assert.throws(
-    () => parse(["snyc"], vocab),
+    () => parser.parse(["snyc"]),
     (e: unknown) => e instanceof UsageError && /Did you mean "sync"/.test(e.hint ?? ""),
   );
 });
 
 test("flags: short, combined, inline values and repeats", () => {
-  const cmd = parse(["sync", "-ny", "--scope=project", "--to", "codex", "--to", "cursor"], vocab);
+  const cmd = parser.parse(["sync", "-ny", "--scope=project", "--to", "codex", "--to", "cursor"]);
   assert.equal(cmd.flags["dry-run"], true);
   assert.equal(cmd.flags.yes, true);
   assert.equal(cmd.flags.scope, "project");
@@ -80,7 +79,18 @@ test("flags: short, combined, inline values and repeats", () => {
 });
 
 test("non-targeted verbs keep their words", () => {
-  const cmd = parse(["secrets", "set", "GITHUB_PERSONAL_ACCESS_TOKEN"], vocab);
+  const cmd = parser.parse(["secrets", "set", "GITHUB_PERSONAL_ACCESS_TOKEN"]);
   assert.equal(cmd.verb, "secrets");
   assert.deepEqual(cmd.rest, ["set", "GITHUB_PERSONAL_ACCESS_TOKEN"]);
+});
+
+test("edit distance counts a swap of neighbouring letters as one edit", () => {
+  assert.equal(Suggester.distance("snyc", "sync"), 1);
+  assert.equal(Suggester.distance("abc", "abc"), 0);
+});
+
+test("every command word is registered once", () => {
+  const registry = WirebayApp.createRegistry();
+  const words = registry.words();
+  assert.equal(new Set(words).size, words.length);
 });
