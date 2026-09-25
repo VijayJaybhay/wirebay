@@ -1,4 +1,9 @@
-<h1 align="center">wirebay</h1>
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/assets/brand/wirebay_logo_dark.png">
+    <img alt="wirebay" src="https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/assets/brand/wirebay_logo.png" width="420">
+  </picture>
+</h1>
 
 <p align="center">
   <b>Define your MCP servers once. Keep every token in one place. Sync them to every AI coding tool.</b>
