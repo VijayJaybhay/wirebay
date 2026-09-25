@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="theme-light" width="960" height="600" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">wirebay architecture</title>
+  <desc id="desc">Left: when you run a wirebay command, the CLI parses it, AppContext wires the services, the server registry, tools directory and desired state feed the sync engine, which renders launcher entries, reconciles them with what wirebay wrote before, and edits each tool config safely. Right: when an AI tool starts a server, it runs wirebay run, which reads the secrets file, passes only the declared keys, and starts the real MCP server.</desc>
+  <style>
+    .theme-light { --bg: #ffffff; --panel: #f6f8fa; --border: #d0d7de; --text: #1f2328; --muted: #59636e; --box: #ffffff; --accent: #0b2a7a; --key: #9a6700; --key-bg: #fff8c5; --line: #8c959f; }
+    .theme-dark { --bg: #0d1117; --panel: #161b22; --border: #30363d; --text: #e6edf3; --muted: #9198a1; --box: #0d1117; --accent: #79c0ff; --key: #d29922; --key-bg: #2b2111; --line: #6e7681; }
+    text { font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif; fill: var(--text); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace; }
+    .bg { fill: var(--bg); }
+    .panel { fill: var(--panel); stroke: var(--border); }
+    .box { fill: var(--box); stroke: var(--border); }
+    .strong { fill: var(--box); stroke: var(--accent); stroke-width: 1.5; }
+    .key-box { fill: var(--key-bg); stroke: var(--key); }
+    .h1 { font-size: 16px; font-weight: 700; fill: var(--accent); }
+    .h2 { font-size: 13px; font-weight: 600; }
+    .sub { font-size: 11.5px; fill: var(--muted); }
+    .small { font-size: 10.5px; fill: var(--muted); }
+    .key { fill: var(--key); }
+    .wire { stroke: var(--line); stroke-width: 1.6; fill: none; }
+    .link { stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 6 5; fill: none; }
+    .arrow { fill: var(--line); }
+    .arrow-accent { fill: var(--accent); }
+  </style>
+  <defs>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00d4f5" />
+      <stop offset="1" stop-color="#0a3cff" />
+    </linearGradient>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrow" d="M0,0 L10,5 L0,10 z" />
+    </marker>
+    <marker id="head-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrow-accent" d="M0,0 L10,5 L0,10 z" />
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="600" />
+
+  <!-- ───────────── ① Configure & sync ───────────── -->
+  <rect class="panel" x="16" y="16" width="604" height="524" rx="14" />
+  <text class="h1" x="32" y="44">① Configure and sync: when you run a wirebay command</text>
+
+  <rect class="strong" x="32" y="60" width="572" height="58" rx="8" />
+  <text class="h2" x="46" y="82">wirebay CLI</text>
+  <text class="sub" x="46" y="102">CommandParser turns any phrasing into one command  (add · sync · list · remove · export · doctor · …)</text>
+
+  <path class="wire" d="M318,118 L318,136" marker-end="url(#head)" />
+  <rect class="box" x="32" y="138" width="572" height="36" rx="8" />
+  <text class="h2" x="46" y="161">AppContext <tspan class="sub">  creates and wires every service (composition root)</tspan></text>
+
+  <path class="wire" d="M122,174 L122,194" marker-end="url(#head)" />
+  <path class="wire" d="M318,174 L318,194" marker-end="url(#head)" />
+  <path class="wire" d="M514,174 L514,194" marker-end="url(#head)" />
+
+  <rect class="box" x="32" y="196" width="180" height="74" rx="8" />
+  <text class="h2" x="44" y="217">ServerRegistry</text>
+  <text class="small mono" x="44" y="237">presets/  (built-in)</text>
+  <text class="small mono" x="44" y="255">~/.wirebay/servers/</text>
+
+  <rect class="box" x="228" y="196" width="180" height="74" rx="8" />
+  <text class="h2" x="240" y="217">ToolRegistry</text>
+  <text class="small mono" x="240" y="237">tools/&lt;id&gt;/tool.json</text>
+  <text class="small" x="240" y="255">config path per OS · format</text>
+
+  <rect class="box" x="424" y="196" width="180" height="74" rx="8" />
+  <text class="h2" x="436" y="217">DesiredState</text>
+  <text class="small mono" x="436" y="237">config.json    global</text>
+  <text class="small mono" x="436" y="255">.wirebay.json  project</text>
+
+  <path class="wire" d="M122,270 C122,282 300,280 312,292" marker-end="url(#head)" />
+  <path class="wire" d="M318,270 L318,292" marker-end="url(#head)" />
+  <path class="wire" d="M514,270 C514,282 336,280 324,292" marker-end="url(#head)" />
+
+  <rect class="strong" x="32" y="294" width="572" height="36" rx="8" />
+  <text class="h2" x="46" y="317">SyncEngine <tspan class="sub">  for each tool and scope: what should be there vs what is there</tspan></text>
+
+  <path class="wire" d="M97,330 L97,350" marker-end="url(#head)" />
+
+  <rect class="box" x="32" y="352" width="131" height="76" rx="8" />
+  <text class="h2" x="42" y="373">EntryRenderer</text>
+  <text class="small mono" x="42" y="393">wirebay run &lt;srv&gt;</text>
+  <text class="small" x="42" y="411">absolute · portable</text>
+
+  <path class="wire" d="M163,390 L177,390" marker-end="url(#head)" />
+  <rect class="box" x="179" y="352" width="131" height="76" rx="8" />
+  <text class="h2" x="189" y="373">Reconciler</text>
+  <text class="small mono" x="189" y="393">state.json</text>
+  <text class="small" x="189" y="411">conflict · drift · prune</text>
+
+  <path class="wire" d="M310,390 L324,390" marker-end="url(#head)" />
+  <rect class="box" x="326" y="352" width="131" height="76" rx="8" />
+  <text class="h2" x="336" y="373">ToolAdapter</text>
+  <text class="small" x="336" y="393">JSON · JSONC</text>
+  <text class="small" x="336" y="411">TOML · YAML · CLI</text>
+
+  <path class="wire" d="M457,390 L471,390" marker-end="url(#head)" />
+  <rect class="box" x="473" y="352" width="131" height="76" rx="8" />
+  <text class="h2" x="483" y="373">SafeFileWriter</text>
+  <text class="small" x="483" y="393">backup first</text>
+  <text class="small" x="483" y="411">atomic write</text>
+
+  <path class="wire" d="M538,428 L538,450" marker-end="url(#head)" />
+
+  <rect class="strong" x="32" y="452" width="572" height="72" rx="8" />
+  <text class="h2" x="46" y="474">Tool config files  <tspan class="sub">(global and per project)</tspan></text>
+  <text class="small mono" x="46" y="494">~/.cursor/mcp.json · ~/.codex/config.toml · .mcp.json · .vscode/mcp.json · …</text>
+  <text class="small" x="46" y="512">Only wirebay's own entries change. No secrets are ever written here.</text>
+
+  <!-- tool reads its config -->
+  <path class="link" d="M604,488 L624,488 L624,91 L646,91" marker-end="url(#head-accent)" />
+
+  <!-- ───────────── ② Run ───────────── -->
+  <rect class="panel" x="632" y="16" width="312" height="524" rx="14" />
+  <text class="h1" x="648" y="44">② Run: when a tool starts a server</text>
+
+  <rect class="strong" x="648" y="60" width="280" height="62" rx="8" />
+  <text class="h2" x="660" y="84">AI tool <tspan class="sub">  Claude, Codex, Cursor, VS Code, …</tspan></text>
+  <text class="small" x="660" y="106">reads its config and starts the entry</text>
+
+  <path class="wire" d="M788,122 L788,142" marker-end="url(#head)" />
+  <rect class="box" x="648" y="144" width="280" height="54" rx="8" />
+  <text class="h2 mono" x="660" y="166">wirebay run github</text>
+  <text class="small" x="660" y="186">the launcher · never writes to stdout</text>
+
+  <path class="wire" d="M788,198 L788,218" marker-end="url(#head)" />
+  <rect class="key-box" x="648" y="220" width="280" height="96" rx="8" />
+  <text class="h2" x="660" y="242">LaunchPlanner</text>
+  <text class="small mono key" x="660" y="262">~/.wirebay/secrets.env</text>
+  <text class="small" x="660" y="280">passes only the keys github declares;</text>
+  <text class="small" x="660" y="298">every other secret stays out</text>
+
+  <path class="wire" d="M788,316 L788,336" marker-end="url(#head)" />
+  <rect class="box" x="648" y="338" width="280" height="54" rx="8" />
+  <text class="h2" x="660" y="360">ServerLauncher</text>
+  <text class="small mono" x="660" y="380">npx · uvx · docker · remote URL</text>
+
+  <path class="wire" d="M788,392 L788,412" marker-end="url(#head)" />
+  <rect x="648" y="414" width="280" height="50" rx="25" fill="url(#brand)" />
+  <text x="788" y="445" text-anchor="middle" style="fill:#ffffff;font-size:15px;font-weight:700">Real MCP server</text>
+
+  <text class="small" x="648" y="492">Rotate a token in secrets.env and every tool</text>
+  <text class="small" x="648" y="508">uses it on its next start. No re-sync needed.</text>
+
+  <text class="small" x="480" y="566" text-anchor="middle">Solid arrows: data flow inside wirebay  ·  Dashed arrow: the AI tool reads the file wirebay wrote</text>
+</svg>

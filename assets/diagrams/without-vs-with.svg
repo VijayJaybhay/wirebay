@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="theme-light" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Without wirebay vs with wirebay</title>
+  <desc id="desc">Without wirebay, each AI tool has its own config file in its own format with a copy of your token. With wirebay, tokens live in one private secrets file, servers in one list, and wirebay sync writes token-free entries into every tool.</desc>
+  <style>
+    .theme-light { --bg: #ffffff; --panel: #f6f8fa; --border: #d0d7de; --text: #1f2328; --muted: #59636e; --box: #ffffff; --bad: #cf222e; --bad-bg: #ffebe9; --good: #1a7f37; --good-bg: #dafbe1; --line: #8c959f; }
+    .theme-dark { --bg: #0d1117; --panel: #161b22; --border: #30363d; --text: #e6edf3; --muted: #9198a1; --box: #0d1117; --bad: #ff7b72; --bad-bg: #2d1214; --good: #3fb950; --good-bg: #0f2a18; --line: #6e7681; }
+    text { font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif; fill: var(--text); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace; }
+    .bg { fill: var(--bg); }
+    .panel { fill: var(--panel); stroke: var(--border); }
+    .box { fill: var(--box); stroke: var(--border); }
+    .bad-box { fill: var(--bad-bg); stroke: var(--bad); }
+    .good-box { fill: var(--good-bg); stroke: var(--good); }
+    .h1 { font-size: 20px; font-weight: 700; }
+    .h2 { font-size: 13px; font-weight: 600; }
+    .sub { font-size: 12px; fill: var(--muted); }
+    .path { font-size: 10.5px; fill: var(--muted); }
+    .tag { font-size: 10px; font-weight: 600; fill: var(--muted); }
+    .bad { fill: var(--bad); }
+    .good { fill: var(--good); }
+    .note { font-size: 13px; }
+    .wire { stroke: var(--line); stroke-width: 1.6; fill: none; }
+    .arrow { fill: var(--line); }
+    .dash { stroke: var(--good); stroke-dasharray: 5 4; fill: none; }
+  </style>
+  <defs>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00d4f5" />
+      <stop offset="1" stop-color="#0a3cff" />
+    </linearGradient>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrow" d="M0,0 L10,5 L0,10 z" />
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540" />
+
+  <!-- ───────────── Without wirebay ───────────── -->
+  <rect class="panel" x="16" y="16" width="456" height="508" rx="14" />
+  <text class="h1 bad" x="36" y="50">✗  Without wirebay</text>
+  <text class="sub" x="36" y="72">Every tool: its own file, its own format, its own copy of your token</text>
+
+  <g>
+    <rect class="box" x="36" y="92" width="196" height="72" rx="8" />
+    <text class="h2" x="48" y="113">Claude Code</text><text class="tag" x="220" y="113" text-anchor="end">JSON</text>
+    <text class="path mono" x="48" y="131">~/.claude.json</text>
+    <text class="path mono bad" x="48" y="151">"TOKEN": "ghp_••••••"</text>
+
+    <rect class="box" x="256" y="92" width="196" height="72" rx="8" />
+    <text class="h2" x="268" y="113">Claude Desktop</text><text class="tag" x="440" y="113" text-anchor="end">JSON</text>
+    <text class="path mono" x="268" y="131">claude_desktop_config.json</text>
+    <text class="path mono bad" x="268" y="151">"TOKEN": "ghp_••••••"</text>
+
+    <rect class="box" x="36" y="176" width="196" height="72" rx="8" />
+    <text class="h2" x="48" y="197">Codex</text><text class="tag" x="220" y="197" text-anchor="end">TOML</text>
+    <text class="path mono" x="48" y="215">~/.codex/config.toml</text>
+    <text class="path mono bad" x="48" y="235">TOKEN = "ghp_••••••"</text>
+
+    <rect class="box" x="256" y="176" width="196" height="72" rx="8" />
+    <text class="h2" x="268" y="197">Cursor</text><text class="tag" x="440" y="197" text-anchor="end">JSON</text>
+    <text class="path mono" x="268" y="215">~/.cursor/mcp.json</text>
+    <text class="path mono bad" x="268" y="235">"TOKEN": "ghp_••••••"</text>
+
+    <rect class="box" x="36" y="260" width="196" height="72" rx="8" />
+    <text class="h2" x="48" y="281">VS Code</text><text class="tag" x="220" y="281" text-anchor="end">JSONC</text>
+    <text class="path mono" x="48" y="299">…/Code/User/mcp.json</text>
+    <text class="path mono bad" x="48" y="319">"TOKEN": "ghp_••••••"</text>
+
+    <rect class="box" x="256" y="260" width="196" height="72" rx="8" />
+    <text class="h2" x="268" y="281">Gemini CLI</text><text class="tag" x="440" y="281" text-anchor="end">JSON</text>
+    <text class="path mono" x="268" y="299">~/.gemini/settings.json</text>
+    <text class="path mono bad" x="268" y="319">"TOKEN": "ghp_••••••"</text>
+  </g>
+
+  <rect class="bad-box" x="36" y="352" width="416" height="152" rx="10" />
+  <text class="note" x="54" y="382"><tspan class="bad">✗</tspan>  The same token pasted into 6+ files</text>
+  <text class="note" x="54" y="412"><tspan class="bad">✗</tspan>  6 formats and layouts to learn and get right</text>
+  <text class="note" x="54" y="442"><tspan class="bad">✗</tspan>  Rotating a token means editing every file</text>
+  <text class="note" x="54" y="472"><tspan class="bad">✗</tspan>  Easy to commit a secret or break a config</text>
+
+  <!-- ───────────── With wirebay ───────────── -->
+  <rect class="panel" x="488" y="16" width="456" height="508" rx="14" />
+  <text class="h1 good" x="508" y="50">✓  With wirebay</text>
+  <text class="sub" x="508" y="72">One list, one secrets file, one command</text>
+
+  <rect class="box" x="508" y="92" width="200" height="64" rx="8" />
+  <text class="h2" x="520" y="114">Your tokens</text>
+  <text class="path mono" x="520" y="132">~/.wirebay/secrets.env</text>
+  <text class="path" x="520" y="148">one private file (owner-only)</text>
+
+  <rect class="box" x="724" y="92" width="200" height="64" rx="8" />
+  <text class="h2" x="736" y="114">Your servers</text>
+  <text class="path mono" x="736" y="132">github → all tools</text>
+  <text class="path" x="736" y="148">global or per project</text>
+
+  <path class="wire" d="M608,156 C608,172 690,170 700,184" marker-end="url(#head)" />
+  <path class="wire" d="M824,156 C824,172 742,170 732,184" marker-end="url(#head)" />
+
+  <rect x="626" y="186" width="180" height="42" rx="21" fill="url(#brand)" />
+  <text x="716" y="212" text-anchor="middle" style="fill:#ffffff;font-size:15px;font-weight:700" class="mono">wirebay sync</text>
+
+  <path class="wire" d="M716,228 L716,250" marker-end="url(#head)" />
+
+  <rect class="dash" x="508" y="254" width="424" height="116" rx="10" />
+  <g>
+    <rect class="box" x="518" y="264" width="130" height="44" rx="7" />
+    <text class="h2" x="528" y="282" style="font-size:12px">Claude Code</text>
+    <text class="path mono good" x="528" y="298" style="font-size:9.5px">wirebay run github</text>
+
+    <rect class="box" x="656" y="264" width="130" height="44" rx="7" />
+    <text class="h2" x="666" y="282" style="font-size:12px">Claude Desktop</text>
+    <text class="path mono good" x="666" y="298" style="font-size:9.5px">wirebay run github</text>
+
+    <rect class="box" x="794" y="264" width="130" height="44" rx="7" />
+    <text class="h2" x="804" y="282" style="font-size:12px">Codex</text>
+    <text class="path mono good" x="804" y="298" style="font-size:9.5px">wirebay run github</text>
+
+    <rect class="box" x="518" y="316" width="130" height="44" rx="7" />
+    <text class="h2" x="528" y="334" style="font-size:12px">Cursor</text>
+    <text class="path mono good" x="528" y="350" style="font-size:9.5px">wirebay run github</text>
+
+    <rect class="box" x="656" y="316" width="130" height="44" rx="7" />
+    <text class="h2" x="666" y="334" style="font-size:12px">VS Code</text>
+    <text class="path mono good" x="666" y="350" style="font-size:9.5px">wirebay run github</text>
+
+    <rect class="box" x="794" y="316" width="130" height="44" rx="7" />
+    <text class="h2" x="804" y="334" style="font-size:12px">Gemini + 24 more</text>
+    <text class="path mono good" x="804" y="350" style="font-size:9.5px">wirebay run github</text>
+  </g>
+
+  <rect class="good-box" x="508" y="382" width="424" height="122" rx="10" />
+  <text class="note" x="526" y="408"><tspan class="good">✓</tspan>  Tool configs hold no secrets, only a launcher</text>
+  <text class="note" x="526" y="434"><tspan class="good">✓</tspan>  Each server gets only the keys it declares</text>
+  <text class="note" x="526" y="460"><tspan class="good">✓</tspan>  Rotate once: every tool uses it on next start</text>
+  <text class="note" x="526" y="486"><tspan class="good">✓</tspan>  Your own entries, comments and formatting kept</text>
+</svg>

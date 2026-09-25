@@ -35,6 +35,60 @@ $ wirebay add github to all
 Restart to pick up the changes: Claude Desktop, Gemini CLI
 ```
 
+## Without vs with wirebay
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/assets/diagrams/without-vs-with-dark.png">
+    <img alt="Without wirebay, each tool has its own config file with a copy of your token. With wirebay, tokens live in one secrets file and wirebay sync writes token-free entries into every tool." src="https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/assets/diagrams/without-vs-with-light.png" width="900">
+  </picture>
+</p>
+
+|                           | Without wirebay                                            | With wirebay                                                |
+| ------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| Where your tokens live    | Pasted into every tool's config file                       | One private file: `~/.wirebay/secrets.env`                  |
+| Adding a server           | Learn each tool's file, format and key, then edit each one | `wirebay add github to all`                                 |
+| Rotating a token          | Find and edit every file                                   | `wirebay secrets set KEY`; tools use it on their next start |
+| What a server can see     | Whatever env you pasted into that entry                    | Only the keys that server declares                          |
+| Committing project config | Risky: the file may hold a token                           | Safe: entries only say `wirebay run <server>`               |
+| Your hand-written entries | Easy to break while editing                                | Never touched; comments and formatting kept, backups taken  |
+
+The same GitHub server, before and after:
+
+<table>
+<tr><th>Before: <code>~/.cursor/mcp.json</code>, and 5 more files like it</th><th>After: what wirebay writes (no token)</th></tr>
+<tr><td>
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_xxxxxxxxxxxx"
+      }
+    }
+  }
+}
+```
+
+</td><td>
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "command": "/usr/local/bin/node",
+      "args": ["/usr/local/lib/node_modules/wirebay/dist/cli.js", "run", "github"]
+    }
+  }
+}
+```
+
+</td></tr>
+</table>
+
 ## Why wirebay
 
 - **No tokens in tool configs.** Every entry wirebay writes runs `wirebay run <server>`. At start-up,
@@ -199,14 +253,26 @@ See [custom servers](https://github.com/VijayJaybhay/wirebay/blob/main/docs/serv
 
 ## How it works
 
-```
- ~/.wirebay/config.json ──(wirebay sync)──▶  tool configs (no secrets)
-   "github → codex, cursor"                   { "command": "node", "args": [".../wirebay", "run", "github"] }
-                                                              │
-                                   tool starts the server     ▼
- ~/.wirebay/secrets.env ──────────────────▶  wirebay run github ──▶ real MCP server
-   GITHUB_PERSONAL_ACCESS_TOKEN=…            (only github's keys)     (npx / uvx / docker / remote)
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/assets/diagrams/architecture-dark.png">
+    <img alt="wirebay architecture: the CLI, services and sync pipeline that write tool configs, and the launcher that starts servers with only their declared secrets." src="https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/assets/diagrams/architecture-light.png" width="900">
+  </picture>
+</p>
+
+wirebay does two separate jobs:
+
+1. **Configure and sync** (when you run a command). `CommandParser` turns any phrasing into one
+   command. The `SyncEngine` combines three inputs: the servers (built-in presets plus your own),
+   the tools directory (where each tool keeps its config, and in which format), and your desired
+   state (`~/.wirebay/config.json` globally, `.wirebay.json` per project). For each tool it renders
+   a launcher entry, compares it with what wirebay wrote last time (`state.json`) to catch
+   conflicts and hand edits, then edits the tool's file in place: backup first, atomic write, and
+   only its own entries.
+2. **Run** (when an AI tool starts a server). The tool runs `wirebay run github`. The launcher reads
+   `secrets.env`, gives the server **only the keys it declares**, and starts the real server
+   (`npx`, `uvx`, `docker`, or a remote URL through `mcp-remote`), passing MCP traffic straight
+   through. Secrets never touch the tool's config file.
 
 Read more in [concepts](https://github.com/VijayJaybhay/wirebay/blob/main/docs/concepts.md) and
 [architecture](https://github.com/VijayJaybhay/wirebay/blob/main/docs/architecture.md).
