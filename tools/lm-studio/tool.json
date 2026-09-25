@@ -1,0 +1,48 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "lm-studio",
+  "name": "LM Studio",
+  "aliases": [
+    "lmstudio"
+  ],
+  "homepage": "https://lmstudio.ai",
+  "docs": {
+    "mcp": "https://lmstudio.ai/docs/app/mcp"
+  },
+  "detect": {
+    "commands": [
+      "lms"
+    ],
+    "paths": [
+      "~/.lmstudio",
+      "~/.cache/lm-studio"
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": "~/.lmstudio/mcp.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "entry": {
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "restartRequired": false,
+  "status": "beta",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

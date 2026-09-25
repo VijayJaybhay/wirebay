@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "trae",
+  "name": "Trae",
+  "aliases": [
+    "trae-ide",
+    "traecode"
+  ],
+  "homepage": "https://www.trae.ai",
+  "docs": {
+    "mcp": "https://docs.trae.ai/ide/add-mcp-servers"
+  },
+  "detect": {
+    "commands": [
+      "trae"
+    ]
+  },
+  "configs": {
+    "project": {
+      "path": "{cwd}/.trae/mcp.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "entry": {
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "restartRequired": false,
+  "status": "beta",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

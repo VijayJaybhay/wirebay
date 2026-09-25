@@ -1,0 +1,21 @@
+extensions:
+  github:
+    type: stdio
+    name: github
+    enabled: true
+    cmd: "{{NODE}}"
+    args:
+      - "{{WIREBAY_CLI}}"
+      - run
+      - github
+    timeout: 300
+  netlify:
+    type: stdio
+    name: netlify
+    enabled: true
+    cmd: "{{NODE}}"
+    args:
+      - "{{WIREBAY_CLI}}"
+      - run
+      - netlify
+    timeout: 300

@@ -8,8 +8,9 @@ Ideas and planned work. Open an issue or discussion to propose something.
   `secrets.env`, and replace the entries with managed ones (dry-run first, with backups).
 - Interactive `wirebay add` wizard when no options are given.
 - `wirebay presets verify` (like `tools verify`).
-- More tools: Windsurf, Zed, Cline, Continue, JetBrains AI Assistant, Amazon Q Developer.
-- More presets (community-driven).
+- Tools that need a new writer: Crush (`crushrc` Bash config), Continue user scope (YAML list in `config.yaml`).
+- Tools with UI-only config today: JetBrains AI Assistant, Trae user scope, Augment IDE extensions.
+- More presets (community-driven), and presets for servers that currently need a partner client (Slack, Figma, Asana).
 
 ## Later
 

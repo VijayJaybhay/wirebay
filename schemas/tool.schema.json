@@ -60,7 +60,7 @@
       "required": ["stdio"],
       "additionalProperties": false,
       "properties": {
-        "stdio": { "type": "object", "description": "Template using {command}, {args}, {env}" },
+        "stdio": { "type": "object", "description": "Template using {command}, {args}, {commandLine}, {env}, {name}" },
         "extra": { "type": "object" }
       }
     },

@@ -1,0 +1,51 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "warp",
+  "name": "Warp",
+  "aliases": [
+    "warp-terminal"
+  ],
+  "homepage": "https://www.warp.dev",
+  "docs": {
+    "mcp": "https://docs.warp.dev/knowledge-and-collaboration/mcp"
+  },
+  "detect": {
+    "commands": [
+      "warp"
+    ],
+    "paths": [
+      "~/.warp"
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": "~/.warp/.mcp.json",
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/.warp/.mcp.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "entry": {
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "restartRequired": false,
+  "status": "beta",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

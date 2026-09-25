@@ -1,0 +1,31 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "memory",
+  "description": "Memory: persistent knowledge-graph memory across sessions (MCP reference server)",
+  "category": "ai",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-memory@2026.8.31"
+    ]
+  },
+  "secrets": [
+    {
+      "key": "MEMORY_FILE_PATH",
+      "description": "Optional: where to store the memory file"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory",
+  "notes": [
+    "Stores its knowledge graph in a local file (MEMORY_FILE_PATH)."
+  ],
+  "guide": "docs/servers/catalog.md#memory",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "gitlab",
+  "description": "GitLab: issues, merge requests, CI pipelines and repositories",
+  "category": "code-hosting",
+  "status": "beta",
+  "launch": {
+    "type": "remote",
+    "url": "${GITLAB_MCP_URL:-https://gitlab.com/api/v4/mcp}",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "secrets": [
+    {
+      "key": "GITLAB_MCP_URL",
+      "description": "Self-managed GitLab: https://<host>/api/v4/mcp (empty = gitlab.com)"
+    }
+  ],
+  "docs": "https://docs.gitlab.com/user/model_context_protocol/mcp_server/",
+  "notes": [
+    "Beta (GitLab 18.6+). Signs in through the browser. For self-managed GitLab set GITLAB_MCP_URL."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#gitlab",
+  "lastVerified": "2026-09-25"
+}

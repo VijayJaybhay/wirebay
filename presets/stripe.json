@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "stripe",
+  "description": "Stripe: payments API and docs search (prefer a sandbox)",
+  "category": "payments",
+  "status": "beta",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.stripe.com",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "token": {
+      "type": "remote",
+      "url": "https://mcp.stripe.com",
+      "auth": {
+        "type": "bearer",
+        "secret": "STRIPE_AGENT_API_KEY"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "STRIPE_AGENT_API_KEY",
+      "description": "Agent API key (token variant only; plain sk_ keys are rejected from 2026-10-31)",
+      "help": "https://docs.stripe.com/mcp"
+    }
+  ],
+  "docs": "https://docs.stripe.com/mcp",
+  "notes": [
+    "High risk: can create refunds, subscriptions and payment links. Prefer a sandbox. From 2026-10-31 only Agent API keys or browser sign-in work."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#stripe",
+  "lastVerified": "2026-09-25"
+}

@@ -70,7 +70,7 @@ for (const f of readdirSync(presetsDir).filter((x) => x.endsWith(".json") && !x.
   if (toolNames.has(def.name)) fail(rel(file), `server name "${def.name}" clashes with tool ${toolNames.get(def.name)}`);
   if (RESERVED_WORDS.has(def.name)) fail(rel(file), `"${def.name}" is a reserved word`);
   if (!def.guide) fail(rel(file), 'missing "guide" (path to docs/servers/<name>.md)');
-  else if (!existsSync(path.join(packageRoot, def.guide))) fail(rel(file), `guide ${def.guide} does not exist`);
+  else if (!existsSync(path.join(packageRoot, def.guide.split("#")[0]!))) fail(rel(file), `guide ${def.guide} does not exist`);
   if (!def.lastVerified) fail(rel(file), 'missing "lastVerified"');
   const launchText = JSON.stringify(def.launch) + JSON.stringify(def.variants ?? {});
   if (/@latest\b/.test(launchText)) fail(rel(file), "pin package versions instead of @latest");
@@ -81,9 +81,12 @@ for (const f of readdirSync(presetsDir).filter((x) => x.endsWith(".json") && !x.
 const template = readFileSync(path.join(packageRoot, "templates", "secrets.env.example"), "utf8");
 if (SECRET_LIKE.test(template)) fail("templates/secrets.env.example", "contains something that looks like a real token");
 for (const def of presets) {
+  // Every required key must be explained, so users know what to create.
   for (const key of requiredKeys(def)) {
-    if (!new RegExp(`^${key}=`, "m").test(template)) fail("templates/secrets.env.example", `missing a line for ${key} (required by ${def.name})`);
+    const spec = def.secrets?.find((s) => s.key === key);
+    if (!spec?.description) fail(`presets/${def.name}.json`, `required key ${key} needs a "description"`);
   }
+  if (!def.category) fail(`presets/${def.name}.json`, 'missing "category"');
 }
 
 // ── generated files ──

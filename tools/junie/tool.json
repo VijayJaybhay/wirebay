@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "junie",
+  "name": "JetBrains Junie (IDE plugin and CLI)",
+  "aliases": [
+    "jetbrains-junie",
+    "jetbrains"
+  ],
+  "homepage": "https://www.jetbrains.com/junie/",
+  "docs": {
+    "mcp": "https://junie.jetbrains.com/docs/junie-cli-mcp-configuration.html"
+  },
+  "detect": {
+    "commands": [
+      "junie"
+    ],
+    "paths": [
+      "~/.junie"
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": "~/.junie/mcp/mcp.json",
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/.junie/mcp/mcp.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "entry": {
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "restartRequired": false,
+  "status": "stable",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

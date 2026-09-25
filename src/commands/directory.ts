@@ -11,6 +11,7 @@ import { packageRoot } from "../core/paths.ts";
 import { loadPresets } from "../core/servers.ts";
 import { loadConfig } from "../core/store.ts";
 import { getTool, isInstalled, loadTools, toolConfigPath } from "../core/tools.ts";
+import type { ServerDef } from "../core/types.ts";
 
 export function daysSince(date: string | undefined, now = new Date()): number {
   if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return Infinity;
@@ -94,13 +95,17 @@ function writeIndex(): number {
   return 0;
 }
 
+/** `wirebay presets [search]`: built-in servers grouped by category; the search matches name, description or category. */
 export async function presetsCommand(cmd: ParsedCommand): Promise<number> {
   const config = loadConfig();
   const stale = staleDays(cmd);
+  const search = cmd.rest.join(" ").toLowerCase();
   const rows = [...loadPresets().values()]
     .map((p) => ({
       name: p.name,
+      category: p.category ?? "utilities",
       description: p.description ?? "",
+      auth: authLabel(p),
       added: !!config.servers[p.name],
       status: p.status ?? "beta",
       lastVerified: p.lastVerified ?? null,
@@ -108,12 +113,33 @@ export async function presetsCommand(cmd: ParsedCommand): Promise<number> {
       guide: p.guide ?? null,
     }))
     .filter((r) => stale === undefined || r.ageDays > stale)
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .filter((r) => !search || `${r.name} ${r.category} ${r.description}`.toLowerCase().includes(search))
+    .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
   if (cmd.flags.json) {
     printJson(rows.map((r) => ({ ...r, ageDays: Number.isFinite(r.ageDays) ? r.ageDays : null })));
     return 0;
   }
-  out(table(["PRESET", "ADDED", "DESCRIPTION"], rows.map((r) => [r.name, r.added ? c.ok("yes") : c.dim("no"), r.description])));
-  out(c.dim("\nAdd one with: wirebay add <preset> to all   ·   any other server: wirebay add <name> --npx <package>"));
+  if (!rows.length) {
+    out(`No preset matches "${search}". Any server works with: wirebay add <name> --npx <package> (or --uvx, --docker, --url)`);
+    return 0;
+  }
+  out(
+    table(
+      ["CATEGORY", "PRESET", "AUTH", "ADDED", "DESCRIPTION"],
+      rows.map((r) => [c.dim(r.category), r.name, r.auth, r.added ? c.ok("yes") : c.dim("no"), r.description]),
+    ),
+  );
+  out(c.dim("\nAdd one: wirebay add <preset> to all   ·   search: wirebay presets <word>   ·   anything else: wirebay add <name> --npx <package>"));
   return 0;
+}
+
+/** Short description of how a preset authenticates. */
+export function authLabel(def: ServerDef): string {
+  const launch = def.variant && def.variants?.[def.variant] ? def.variants[def.variant]! : def.launch;
+  if (launch.type === "remote" && launch.auth?.type === "oauth") return "browser login";
+  if (launch.type === "remote" && (!launch.auth || launch.auth.type === "none")) return "none";
+  const required = (def.secrets ?? []).filter((s) => s.required);
+  if (launch.type === "remote" && launch.auth && "secret" in launch.auth) return "token";
+  if (required.length) return required.length === 1 ? "token" : `${required.length} keys`;
+  return (def.secrets ?? []).length ? "optional" : "none";
 }

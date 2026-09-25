@@ -1,0 +1,24 @@
+{
+  "mcp": {
+    "github": {
+      "type": "local",
+      "command": [
+        "{{NODE}}",
+        "{{WIREBAY_CLI}}",
+        "run",
+        "github"
+      ],
+      "enabled": true
+    },
+    "netlify": {
+      "type": "local",
+      "command": [
+        "{{NODE}}",
+        "{{WIREBAY_CLI}}",
+        "run",
+        "netlify"
+      ],
+      "enabled": true
+    }
+  }
+}

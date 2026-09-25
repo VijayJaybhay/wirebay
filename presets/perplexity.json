@@ -1,0 +1,44 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "perplexity",
+  "description": "Perplexity: search, ask, research and reasoning",
+  "category": "search",
+  "launch": {
+    "type": "remote",
+    "url": "https://api.perplexity.ai/mcp",
+    "auth": {
+      "type": "bearer",
+      "secret": "PERPLEXITY_API_KEY"
+    }
+  },
+  "variants": {
+    "local": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@perplexity-ai/mcp-server@1.2.1"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "PERPLEXITY_API_KEY",
+      "required": true,
+      "description": "Perplexity API key",
+      "pattern": "^pplx-",
+      "help": "https://console.perplexity.ai/project/keys"
+    }
+  ],
+  "docs": "https://docs.perplexity.ai/guides/mcp-server",
+  "notes": [
+    "Read-only; billed per use."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#perplexity",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

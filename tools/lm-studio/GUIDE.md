@@ -1,0 +1,43 @@
+# LM Studio
+
+Run local models with MCP tools (0.3.17+). Official docs: https://lmstudio.ai/docs/app/mcp
+
+> **Status:** beta: some versions keep the file in `~/.cache/lm-studio/mcp.json` instead. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+
+## Where the config lives
+
+| Scope | File |
+|---|---|
+| user | `~/.lmstudio/mcp.json` (`%USERPROFILE%\.lmstudio\mcp.json` on Windows) |
+
+Servers live under `mcpServers` (Cursor format). LM Studio reloads the file when it changes.
+
+## How wirebay syncs it
+
+```bash
+wirebay add fetch to lm-studio
+```
+
+## Doing it by hand
+
+```json
+{
+  "mcpServers": {
+    "fetch": { "command": "wirebay", "args": ["run", "fetch"] }
+  }
+}
+```
+
+On Windows, entries written by hand usually need `cmd /c wirebay run <server>`; wirebay's own entries call `node.exe` directly.
+
+## Verify
+
+Program tab → the server and its tools are listed. Tool permissions: App Settings → Tools & Integrations.
+
+## Quirks
+
+- If your install uses `~/.cache/lm-studio/mcp.json`, point wirebay there with `~/.wirebay/tools/lm-studio/tool.json`.
+
+## Changelog
+
+- 2026-09-25: first version, from the official docs linked above.

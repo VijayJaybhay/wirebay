@@ -1,0 +1,57 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "azure",
+  "description": "Azure: work with 45+ Azure services using your Azure login (read-only by default)",
+  "category": "cloud",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@azure/mcp@2.0.5",
+      "server",
+      "start",
+      "--read-only"
+    ]
+  },
+  "variants": {
+    "read-write": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@azure/mcp@2.0.5",
+        "server",
+        "start"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "AZURE_TENANT_ID",
+      "description": "Service principal tenant (optional; default is your `az login`)"
+    },
+    {
+      "key": "AZURE_CLIENT_ID",
+      "description": "Service principal client ID (optional)"
+    },
+    {
+      "key": "AZURE_CLIENT_SECRET",
+      "description": "Service principal secret (optional)"
+    }
+  ],
+  "env": {
+    "AZURE_MCP_COLLECT_TELEMETRY": "false"
+  },
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/microsoft/mcp/tree/main/servers/Azure.Mcp.Server",
+  "notes": [
+    "Read-only by default; `--variant read-write` allows changes. Signs in with `az login` or a service principal. Telemetry is turned off."
+  ],
+  "guide": "docs/servers/catalog.md#azure",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

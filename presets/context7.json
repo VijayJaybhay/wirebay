@@ -1,0 +1,44 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "context7",
+  "description": "Context7: up-to-date library documentation and code examples for LLMs",
+  "category": "dev-tools",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@upstash/context7-mcp@4.1.1"
+    ]
+  },
+  "variants": {
+    "remote": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "auth": {
+        "type": "header",
+        "header": "CONTEXT7_API_KEY",
+        "secret": "CONTEXT7_API_KEY"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "CONTEXT7_API_KEY",
+      "description": "Optional API key for higher rate limits (remote variant)",
+      "pattern": "^ctx7sk-",
+      "help": "https://context7.com/dashboard"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/upstash/context7",
+  "notes": [
+    "Read-only. Queries are sent to Upstash. A free API key raises rate limits: use `wirebay add context7 --variant remote` after `wirebay secrets set CONTEXT7_API_KEY`."
+  ],
+  "guide": "docs/servers/catalog.md#context7",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

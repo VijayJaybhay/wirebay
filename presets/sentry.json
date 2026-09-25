@@ -1,0 +1,45 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "sentry",
+  "description": "Sentry: errors, issues, traces and Seer root-cause analysis",
+  "category": "observability",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.sentry.dev/mcp",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "local": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sentry/mcp-server@0.41.0"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "SENTRY_ACCESS_TOKEN",
+      "description": "User auth token (local variant only)",
+      "help": "https://sentry.io/settings/account/api/auth-tokens/"
+    },
+    {
+      "key": "SENTRY_HOST",
+      "description": "Self-hosted Sentry host (local variant, optional)"
+    }
+  ],
+  "docs": "https://mcp.sentry.dev",
+  "notes": [
+    "Signs in through the browser. For self-hosted Sentry use `--variant local` with SENTRY_ACCESS_TOKEN and SENTRY_HOST."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#sentry",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

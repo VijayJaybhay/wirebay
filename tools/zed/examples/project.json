@@ -1,0 +1,18 @@
+{
+  "context_servers": {
+    "github": {
+      "command": "wirebay",
+      "args": [
+        "run",
+        "github"
+      ]
+    },
+    "netlify": {
+      "command": "wirebay",
+      "args": [
+        "run",
+        "netlify"
+      ]
+    }
+  }
+}

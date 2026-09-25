@@ -1,0 +1,38 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "docker",
+  "description": "Docker MCP Toolkit gateway: one entry point to containerized catalog servers",
+  "category": "dev-tools",
+  "status": "beta",
+  "launch": {
+    "type": "stdio",
+    "command": "docker",
+    "args": [
+      "mcp",
+      "gateway",
+      "run",
+      {
+        "optional": [
+          "--profile",
+          "${DOCKER_MCP_PROFILE}"
+        ]
+      }
+    ]
+  },
+  "secrets": [
+    {
+      "key": "DOCKER_MCP_PROFILE",
+      "description": "Optional: MCP Toolkit profile to serve"
+    }
+  ],
+  "prereqs": [
+    "docker"
+  ],
+  "docs": "https://docs.docker.com/ai/mcp-catalog-and-toolkit/",
+  "notes": [
+    "Requires Docker Desktop 4.62+ with the MCP Toolkit. Secrets for catalog servers are managed by Docker, not wirebay."
+  ],
+  "guide": "docs/servers/catalog.md#docker",
+  "lastVerified": "2026-09-25"
+}

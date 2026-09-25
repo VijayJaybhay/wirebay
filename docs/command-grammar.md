@@ -45,16 +45,9 @@ $ wirebay push github to codex and cursor
 
 ## Tool names
 
-Every tool has an id and aliases (from its `tool.json`):
-
-| Tool | Accepted names |
-|---|---|
-| Claude Code | `claude-code`, `claude`, `cc` |
-| Claude Desktop | `claude-desktop`, `desktop`, `claude-app` |
-| Codex | `codex`, `codex-cli`, `codex-desktop` |
-| Cursor | `cursor` |
-| VS Code | `vscode`, `code`, `vs-code` |
-| Gemini CLI | `gemini`, `gemini-cli` |
+Every tool has an id and aliases (from its `tool.json`), e.g. `claude`/`cc` for Claude Code, `desktop` for
+Claude Desktop, `code` for VS Code, `copilot` for GitHub Copilot CLI, `kiro-cli` / `amazon-q` for Kiro.
+The full list is in the [tools directory](../tools/INDEX.md) and in `wirebay tools`.
 
 ## Equivalent phrasings
 

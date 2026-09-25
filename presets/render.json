@@ -1,0 +1,34 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "render",
+  "description": "Render: services, deploys, logs, metrics and Postgres queries",
+  "category": "cloud",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.render.com/mcp",
+    "auth": {
+      "type": "bearer",
+      "secret": "RENDER_API_KEY"
+    }
+  },
+  "secrets": [
+    {
+      "key": "RENDER_API_KEY",
+      "required": true,
+      "description": "Render API key",
+      "pattern": "^rnd_",
+      "help": "https://dashboard.render.com/u/settings#api-keys"
+    }
+  ],
+  "docs": "https://render.com/docs/mcp-server",
+  "notes": [
+    "Can create services, trigger deploys and edit environment variables. SQL queries are read-only. Choose the workspace in your first prompt."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#render",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

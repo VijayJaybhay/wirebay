@@ -1,0 +1,57 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "opencode",
+  "name": "opencode",
+  "aliases": [
+    "open-code",
+    "sst-opencode"
+  ],
+  "homepage": "https://opencode.ai",
+  "docs": {
+    "mcp": "https://opencode.ai/docs/mcp-servers/",
+    "changelog": "https://github.com/sst/opencode/releases"
+  },
+  "detect": {
+    "commands": [
+      "opencode"
+    ],
+    "paths": [
+      "~/.config/opencode"
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": "~/.config/opencode/opencode.json",
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/opencode.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "jsonc",
+  "rootKey": "mcp",
+  "entry": {
+    "stdio": {
+      "type": "local",
+      "command": "{commandLine}",
+      "enabled": true,
+      "environment": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": true,
+    "cmdShims": false
+  },
+  "cli": {
+    "list": "opencode mcp list"
+  },
+  "restartRequired": true,
+  "status": "beta",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

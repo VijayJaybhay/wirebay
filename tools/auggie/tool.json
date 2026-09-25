@@ -1,0 +1,52 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "auggie",
+  "name": "Augment Code CLI (auggie)",
+  "aliases": [
+    "augment",
+    "augment-code"
+  ],
+  "homepage": "https://www.augmentcode.com",
+  "docs": {
+    "mcp": "https://docs.augmentcode.com/cli/integrations"
+  },
+  "detect": {
+    "commands": [
+      "auggie"
+    ],
+    "paths": [
+      "~/.augment"
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": "~/.augment/settings.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "entry": {
+    "stdio": {
+      "type": "stdio",
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "cli": {
+    "list": "auggie mcp list"
+  },
+  "restartRequired": true,
+  "status": "beta",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

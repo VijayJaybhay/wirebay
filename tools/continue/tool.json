@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "continue",
+  "name": "Continue",
+  "aliases": [
+    "continue-dev"
+  ],
+  "homepage": "https://continue.dev",
+  "docs": {
+    "mcp": "https://docs.continue.dev/customize/deep-dives/mcp",
+    "changelog": "https://github.com/continuedev/continue/releases"
+  },
+  "detect": {
+    "paths": [
+      "~/.continue"
+    ]
+  },
+  "configs": {
+    "project": {
+      "path": "{cwd}/.continue/mcpServers/wirebay.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "entry": {
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "restartRequired": false,
+  "status": "beta",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

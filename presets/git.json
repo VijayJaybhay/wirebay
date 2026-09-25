@@ -1,0 +1,36 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "git",
+  "description": "Git: read and operate on a local git repository (MCP reference server)",
+  "category": "dev-tools",
+  "launch": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": [
+      "mcp-server-git@2026.8.18",
+      {
+        "optional": [
+          "--repository",
+          "${GIT_REPOSITORY}"
+        ]
+      }
+    ]
+  },
+  "secrets": [
+    {
+      "key": "GIT_REPOSITORY",
+      "description": "Optional: default repository path"
+    }
+  ],
+  "prereqs": [
+    "uvx"
+  ],
+  "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/git",
+  "notes": [
+    "Can commit, reset and check out branches. Requires uv."
+  ],
+  "guide": "docs/servers/catalog.md#git",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

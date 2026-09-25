@@ -1,0 +1,42 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "exa",
+  "description": "Exa: AI web search and page fetching",
+  "category": "search",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.exa.ai/mcp",
+    "auth": {
+      "type": "none"
+    }
+  },
+  "variants": {
+    "key": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp",
+      "auth": {
+        "type": "header",
+        "header": "x-api-key",
+        "secret": "EXA_API_KEY"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "EXA_API_KEY",
+      "description": "API key for higher limits (key variant)",
+      "help": "https://dashboard.exa.ai/api-keys"
+    }
+  ],
+  "docs": "https://exa.ai/docs/reference/exa-mcp",
+  "notes": [
+    "Works without a key (rate-limited). For higher limits: `wirebay secrets set EXA_API_KEY` and `--variant key`."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#exa",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

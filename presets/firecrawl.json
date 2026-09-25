@@ -1,0 +1,44 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "firecrawl",
+  "description": "Firecrawl: scrape, crawl, search and extract web data",
+  "category": "search",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.firecrawl.dev/v2/mcp",
+    "auth": {
+      "type": "bearer",
+      "secret": "FIRECRAWL_API_KEY"
+    }
+  },
+  "variants": {
+    "local": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "firecrawl-mcp@3.25.5"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "FIRECRAWL_API_KEY",
+      "required": true,
+      "description": "Firecrawl API key",
+      "pattern": "^fc-",
+      "help": "https://www.firecrawl.dev/app/api-keys"
+    }
+  ],
+  "docs": "https://docs.firecrawl.dev/mcp-server",
+  "notes": [
+    "Read-only; uses credits. `--variant local` runs the npm package instead of the hosted server."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#firecrawl",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

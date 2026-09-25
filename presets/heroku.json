@@ -1,0 +1,40 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "heroku",
+  "description": "Heroku: apps, dynos, add-ons and Postgres",
+  "category": "cloud",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.heroku.com/mcp",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "local": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@heroku/mcp-server@1.2.9"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "HEROKU_API_KEY",
+      "description": "API key (local variant only): `heroku authorizations:create`"
+    }
+  ],
+  "docs": "https://devcenter.heroku.com/articles/heroku-remote-mcp-server",
+  "notes": [
+    "Can scale, deploy and delete apps. `--variant local` uses HEROKU_API_KEY instead of browser sign-in."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#heroku",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "upstash",
+  "description": "Upstash: manage Redis, QStash and Workflow resources",
+  "category": "databases",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@upstash/mcp-server@0.3.0"
+    ]
+  },
+  "secrets": [
+    {
+      "key": "UPSTASH_EMAIL",
+      "required": true,
+      "description": "Upstash account email"
+    },
+    {
+      "key": "UPSTASH_API_KEY",
+      "required": true,
+      "description": "Management API key (a read-only key disables write tools)",
+      "help": "https://console.upstash.com/account/api"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/upstash/mcp-server",
+  "notes": [
+    "Can create and delete databases. A read-only management key disables all write tools."
+  ],
+  "guide": "docs/servers/catalog.md#upstash",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

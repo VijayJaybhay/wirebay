@@ -1,0 +1,44 @@
+# Trae
+
+The Trae AI IDE. Official docs: https://docs.trae.ai/ide/add-mcp-servers
+
+> **Status:** beta, project scope only. If something is off, please [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
+
+## Where the config lives
+
+| Scope | File |
+|---|---|
+| project | `<project>/.trae/mcp.json` |
+
+Trae's global MCP list is edited in its UI (Settings → MCP → Add → Raw Config), and the file
+location isn't documented, so wirebay only writes project scope.
+
+## How wirebay syncs it
+
+```bash
+wirebay add github to trae --scope project
+```
+
+## Doing it by hand
+
+```json
+{
+  "mcpServers": {
+    "github": { "command": "wirebay", "args": ["run", "github"] }
+  }
+}
+```
+
+On Windows, entries written by hand usually need `cmd /c wirebay run <server>`; wirebay's own entries call `node.exe` directly.
+
+## Verify
+
+Enable **Settings → MCP → Enable Project MCP** once, then check the server list in the same panel.
+
+## Quirks
+
+- `command` must not contain spaces. wirebay's portable project entries use `wirebay`, which is fine.
+
+## Changelog
+
+- 2026-09-25: first version, from the official docs linked above.

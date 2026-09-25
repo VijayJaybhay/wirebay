@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "kubernetes",
+  "description": "Kubernetes: pods, resources and Helm via your kubeconfig (containers/kubernetes-mcp-server)",
+  "category": "cloud",
+  "status": "beta",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "kubernetes-mcp-server@0.0.67",
+      {
+        "optional": [
+          "--config",
+          "${K8S_MCP_CONFIG}"
+        ]
+      }
+    ]
+  },
+  "secrets": [
+    {
+      "key": "KUBECONFIG",
+      "description": "Optional: kubeconfig path (default ~/.kube/config)"
+    },
+    {
+      "key": "K8S_MCP_CONFIG",
+      "description": "Optional: TOML config, e.g. with read_only = true"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/containers/kubernetes-mcp-server",
+  "notes": [
+    "Uses your kubeconfig and can change or delete resources. For read-only, create a TOML file with `read_only = true` and set K8S_MCP_CONFIG to its path."
+  ],
+  "guide": "docs/servers/catalog.md#kubernetes",
+  "lastVerified": "2026-09-25"
+}
