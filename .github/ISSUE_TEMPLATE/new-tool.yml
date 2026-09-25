@@ -1,0 +1,34 @@
+name: "🧰 New tool request"
+description: Ask wirebay to support another AI coding tool / MCP client.
+labels: ["tool", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks! Supporting a tool is usually just a JSON manifest, so you may be able to add it yourself: see docs/contributing/add-a-tool.md."
+  - type: input
+    id: tool
+    attributes: { label: Tool name, placeholder: Windsurf }
+    validations: { required: true }
+  - type: input
+    id: docs
+    attributes: { label: Official MCP docs URL }
+    validations: { required: true }
+  - type: textarea
+    id: paths
+    attributes:
+      label: Config file location(s)
+      description: Per OS and scope (user / project), if you know them.
+      placeholder: |
+        Windows: %USERPROFILE%\.codeium\windsurf\mcp_config.json
+        macOS/Linux: ~/.codeium/windsurf/mcp_config.json
+  - type: textarea
+    id: example
+    attributes:
+      label: Example config with one server (no secrets!)
+      render: json
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I'd like to open the PR myself

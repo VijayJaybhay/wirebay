@@ -1,0 +1,53 @@
+name: Stale directory check
+
+on:
+  schedule:
+    - cron: "0 6 1 * *" # 06:00 UTC on the 1st of every month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Find stale tools and presets
+        run: |
+          export WIREBAY_HOME="$RUNNER_TEMP/wb" WIREBAY_USER_HOME="$RUNNER_TEMP"
+          node src/cli.ts tools --stale --json > stale-tools.json
+          node src/cli.ts presets --stale --json > stale-presets.json
+      - name: Open or update the tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const tools = JSON.parse(fs.readFileSync("stale-tools.json", "utf8"));
+            const presets = JSON.parse(fs.readFileSync("stale-presets.json", "utf8"));
+            const title = "Re-verify stale tools and presets";
+            const { data: open } = await github.rest.issues.listForRepo({ ...context.repo, state: "open", labels: "maintenance" });
+            const existing = open.find((i) => i.title === title);
+            if (!tools.length && !presets.length) {
+              if (existing) await github.rest.issues.update({ ...context.repo, issue_number: existing.number, state: "closed" });
+              return;
+            }
+            const rows = [
+              ...tools.map((t) => `- [ ] tool **${t.id}** (last verified ${t.lastVerified ?? "never"})`),
+              ...presets.map((p) => `- [ ] preset **${p.name}** (last verified ${p.lastVerified ?? "never"})`),
+            ];
+            const body = [
+              "These entries haven't been re-verified in 90+ days. Pick one, follow",
+              "[Maintaining the directory](../blob/main/docs/contributing/maintaining-directory.md), and open a PR.",
+              "Coding agents can use the `update-tool-directory` skill.",
+              "",
+              ...rows,
+            ].join("\n");
+            if (existing) await github.rest.issues.update({ ...context.repo, issue_number: existing.number, body });
+            else await github.rest.issues.create({ ...context.repo, title, body, labels: ["maintenance", "good first issue"] });

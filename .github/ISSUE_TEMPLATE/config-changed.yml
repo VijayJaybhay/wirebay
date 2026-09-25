@@ -1,0 +1,17 @@
+name: "⚠️ Tool or server config changed"
+description: A tool moved its config file / changed format, or a preset's package changed.
+labels: ["maintenance"]
+body:
+  - type: input
+    id: what
+    attributes: { label: Which tool or preset?, placeholder: "cursor / netlify" }
+    validations: { required: true }
+  - type: textarea
+    id: change
+    attributes:
+      label: What changed?
+      description: Link to release notes or docs if possible.
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes: { label: Tool / package version where you saw it }
