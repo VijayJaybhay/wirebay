@@ -3,22 +3,14 @@
   "version": 1,
   "id": "cursor",
   "name": "Cursor",
-  "aliases": [
-    "cursor-cli",
-    "cursor-agent"
-  ],
+  "aliases": ["cursor-cli", "cursor-agent"],
   "homepage": "https://cursor.com",
   "docs": {
     "mcp": "https://cursor.com/docs/context/mcp"
   },
   "detect": {
-    "commands": [
-      "cursor",
-      "cursor-agent"
-    ],
-    "paths": [
-      "~/.cursor"
-    ]
+    "commands": ["cursor", "cursor-agent"],
+    "paths": ["~/.cursor"]
   },
   "configs": {
     "user": {

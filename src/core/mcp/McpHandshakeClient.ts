@@ -23,12 +23,20 @@ export interface HandshakeResult {
   ms: number;
 }
 
+/** The subset of a JSON-RPC response the handshake reads. */
+interface RpcResponse {
+  id?: number;
+  result?: { serverInfo?: HandshakeResult["serverInfo"]; protocolVersion?: string; tools?: unknown[] };
+  error?: { message?: string };
+}
+
 /** Runs one MCP handshake against a planned server. */
 export class McpHandshakeClient {
   /** Protocol version sent in `initialize`. */
   static readonly protocolVersion = "2025-06-18";
 
   private readonly timeoutMs: number;
+  private readonly masker = new SecretMasker();
 
   /** @param timeoutMs - Give up after this long (first runs may download packages). */
   constructor(timeoutMs = 90_000) {
@@ -39,52 +47,66 @@ export class McpHandshakeClient {
   run(plan: LaunchPlan): Promise<HandshakeResult> {
     const started = Date.now();
     return new Promise((resolve) => {
-      const child = spawn(plan.command, plan.args, { env: plan.env, stdio: ["pipe", "pipe", "pipe"], windowsHide: true, windowsVerbatimArguments: plan.verbatim });
+      const child = spawn(plan.command, plan.args, {
+        env: plan.env,
+        stdio: ["pipe", "pipe", "pipe"],
+        windowsHide: true,
+        windowsVerbatimArguments: plan.verbatim,
+      });
       let stdoutBuf = "";
       let stderrBuf = "";
       const noise: string[] = [];
       let partial: Partial<HandshakeResult> = {};
       let done = false;
 
-      const finish = (extra: Partial<HandshakeResult>) => {
+      const finish = (extra: Partial<HandshakeResult>): void => {
         if (done) return;
         done = true;
         clearTimeout(timer);
         child.stdin.end();
         child.kill();
-        const tail = SecretMasker.redact(stderrBuf.split(/\r?\n/).filter(Boolean).slice(-8).join("\n"), plan.redact);
+        const tail = this.masker.redact(stderrBuf.split(/\r?\n/).filter(Boolean).slice(-8).join("\n"), plan.redact);
         resolve({ ok: false, stdoutNoise: noise, ms: Date.now() - started, stderrTail: tail || undefined, ...partial, ...extra });
       };
-      const timer = setTimeout(() => finish({ error: `No response within ${Math.round(this.timeoutMs / 1000)}s` }), this.timeoutMs);
-      const send = (msg: unknown) => child.stdin.write(JSON.stringify(msg) + "\n");
+      const timer = setTimeout(() => {
+        finish({ error: `No response within ${String(Math.round(this.timeoutMs / 1000))}s` });
+      }, this.timeoutMs);
+      const send = (msg: unknown): void => {
+        child.stdin.write(JSON.stringify(msg) + "\n");
+      };
 
-      child.on("error", (err) => finish({ error: SecretMasker.redact(err.message, plan.redact) }));
-      child.on("exit", (code) => finish({ error: `Server exited with code ${code} before finishing the handshake` }));
+      child.on("error", (err) => {
+        finish({ error: this.masker.redact(err.message, plan.redact) });
+      });
+      child.on("exit", (code) => {
+        finish({ error: `Server exited with code ${String(code)} before finishing the handshake` });
+      });
       child.stderr.on("data", (d: Buffer) => {
         stderrBuf = (stderrBuf + d.toString()).slice(-20_000);
       });
       child.stdout.on("data", (d: Buffer) => {
         stdoutBuf += d.toString();
-        let nl: number;
-        while ((nl = stdoutBuf.indexOf("\n")) >= 0) {
+        let nl = stdoutBuf.indexOf("\n");
+        while (nl >= 0) {
           const line = stdoutBuf.slice(0, nl).trim();
           stdoutBuf = stdoutBuf.slice(nl + 1);
+          nl = stdoutBuf.indexOf("\n");
           if (!line) continue;
-          let msg: { id?: number; result?: Record<string, unknown>; error?: { message?: string } };
-          try {
-            msg = JSON.parse(line);
-          } catch {
-            noise.push(SecretMasker.redact(line.slice(0, 200), plan.redact));
-            continue;
-          }
-          if (msg.id === 1) {
-            if (msg.error) return finish({ error: `initialize failed: ${msg.error.message}` });
-            partial = { serverInfo: msg.result?.serverInfo as HandshakeResult["serverInfo"], protocolVersion: msg.result?.protocolVersion as string };
+          const msg = McpHandshakeClient.parse(line);
+          if (!msg) {
+            noise.push(this.masker.redact(line.slice(0, 200), plan.redact));
+          } else if (msg.id === 1) {
+            if (msg.error) {
+              finish({ error: `initialize failed: ${msg.error.message ?? "unknown error"}` });
+              return;
+            }
+            partial = { serverInfo: msg.result?.serverInfo, protocolVersion: msg.result?.protocolVersion };
             send({ jsonrpc: "2.0", method: "notifications/initialized" });
             send({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} });
           } else if (msg.id === 2) {
-            if (msg.error) return finish({ ok: true, error: `tools/list failed: ${msg.error.message}` });
-            return finish({ ok: true, toolCount: ((msg.result?.tools as unknown[]) ?? []).length });
+            if (msg.error) finish({ ok: true, error: `tools/list failed: ${msg.error.message ?? "unknown error"}` });
+            else finish({ ok: true, toolCount: msg.result?.tools?.length ?? 0 });
+            return;
           }
         }
       });
@@ -93,8 +115,21 @@ export class McpHandshakeClient {
         jsonrpc: "2.0",
         id: 1,
         method: "initialize",
-        params: { protocolVersion: McpHandshakeClient.protocolVersion, capabilities: {}, clientInfo: { name: "wirebay-doctor", version: "1" } },
+        params: {
+          protocolVersion: McpHandshakeClient.protocolVersion,
+          capabilities: {},
+          clientInfo: { name: "wirebay-doctor", version: "1" },
+        },
       });
     });
+  }
+
+  /** Parse one line of JSON-RPC, or `undefined` when it isn't JSON. */
+  private static parse(line: string): RpcResponse | undefined {
+    try {
+      return JSON.parse(line) as RpcResponse;
+    } catch {
+      return undefined;
+    }
   }
 }

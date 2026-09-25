@@ -4,9 +4,9 @@ Official MCP docs: https://docs.factory.ai/cli/configuration/mcp
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.factory/mcp.json` |
+| Scope   | File                                                          |
+| ------- | ------------------------------------------------------------- |
+| user    | `~/.factory/mcp.json`                                         |
 | project | `<project>/.factory/mcp.json` (also read from parent folders) |
 
 Servers live under `mcpServers`.
@@ -22,7 +22,7 @@ wirebay add github to factory-droid        # also accepted: droid, factory
 ```json
 {
   "mcpServers": {
-    "github": {"type":"stdio","command":"wirebay","args":["run","github"]}
+    "github": { "type": "stdio", "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

@@ -3,22 +3,14 @@
   "version": 1,
   "id": "kilo-code",
   "name": "Kilo Code (extension and CLI)",
-  "aliases": [
-    "kilo",
-    "kilocode"
-  ],
+  "aliases": ["kilo", "kilocode"],
   "homepage": "https://kilo.ai",
   "docs": {
     "mcp": "https://kilo.ai/docs/automate/mcp/using-in-kilo-code"
   },
   "detect": {
-    "commands": [
-      "kilo",
-      "kilocode"
-    ],
-    "paths": [
-      "~/.config/kilo"
-    ]
+    "commands": ["kilo", "kilocode"],
+    "paths": ["~/.config/kilo"]
   },
   "configs": {
     "user": {

@@ -7,23 +7,15 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "mobilebuildmcp@2.7.1",
-      "mcp"
-    ]
+    "args": ["-y", "mobilebuildmcp@2.7.1", "mcp"]
   },
   "secrets": [],
   "env": {
     "MOBILEBUILDMCP_SENTRY_DISABLED": "true"
   },
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/getsentry/MobileBuildMCP",
-  "notes": [
-    "macOS 14.5+ with Xcode 16+ only. Renamed from XcodeBuildMCP on 2026-09-23; error telemetry is turned off."
-  ],
+  "notes": ["macOS 14.5+ with Xcode 16+ only. Renamed from XcodeBuildMCP on 2026-09-23; error telemetry is turned off."],
   "guide": "docs/servers/catalog.md#mobilebuildmcp",
   "lastVerified": "2026-09-25",
   "status": "stable"

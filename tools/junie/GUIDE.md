@@ -4,10 +4,10 @@ JetBrains' coding agent (IDE plugin and Junie CLI). Official docs: https://junie
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.junie/mcp/mcp.json` (`%USERPROFILE%\.junie\mcp\mcp.json` on Windows) |
-| project | `<project>/.junie/mcp/mcp.json` |
+| Scope   | File                                                                     |
+| ------- | ------------------------------------------------------------------------ |
+| user    | `~/.junie/mcp/mcp.json` (`%USERPROFILE%\.junie\mcp\mcp.json` on Windows) |
+| project | `<project>/.junie/mcp/mcp.json`                                          |
 
 The plugin and the CLI share these files. Servers live under `mcpServers`.
 

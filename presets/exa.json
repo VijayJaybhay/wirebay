@@ -30,12 +30,8 @@
     }
   ],
   "docs": "https://exa.ai/docs/reference/exa-mcp",
-  "notes": [
-    "Works without a key (rate-limited). For higher limits: `wirebay secrets set EXA_API_KEY` and `--variant key`."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Works without a key (rate-limited). For higher limits: `wirebay secrets set EXA_API_KEY` and `--variant key`."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#exa",
   "lastVerified": "2026-09-25",
   "status": "stable"

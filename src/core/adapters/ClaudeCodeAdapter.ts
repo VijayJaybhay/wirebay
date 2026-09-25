@@ -20,6 +20,7 @@ import { type AdapterDeps, type CommitResult, type Snapshot, type Target, ToolAd
 export class ClaudeCodeAdapter extends ToolAdapter {
   private readonly resolver: ExecutableResolver;
   private readonly paths: WirebayPaths;
+  private readonly processes = new ProcessCommand();
 
   constructor(format: ConfigFormat, deps: AdapterDeps, resolver: ExecutableResolver, paths: WirebayPaths) {
     super(format, deps);
@@ -52,8 +53,8 @@ export class ClaudeCodeAdapter extends ToolAdapter {
   private claude(args: string[]): { ok: boolean; output: string } {
     const exe = this.resolver.resolve("claude");
     if (!exe) return { ok: false, output: "claude CLI not found" };
-    const cmd = ProcessCommand.forExecutable(exe, args);
+    const cmd = this.processes.forExecutable(exe, args);
     const r = spawnSync(cmd.command, cmd.args, { encoding: "utf8", windowsHide: true, windowsVerbatimArguments: cmd.verbatim });
-    return { ok: r.status === 0, output: `${r.stdout ?? ""}${r.stderr ?? ""}`.trim() };
+    return { ok: r.status === 0, output: `${r.stdout}${r.stderr}`.trim() };
   }
 }

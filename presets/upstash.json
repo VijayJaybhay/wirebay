@@ -7,10 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@upstash/mcp-server@0.3.0"
-    ]
+    "args": ["-y", "@upstash/mcp-server@0.3.0"]
   },
   "secrets": [
     {
@@ -25,13 +22,9 @@
       "help": "https://console.upstash.com/account/api"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/upstash/mcp-server",
-  "notes": [
-    "Can create and delete databases. A read-only management key disables all write tools."
-  ],
+  "notes": ["Can create and delete databases. A read-only management key disables all write tools."],
   "guide": "docs/servers/catalog.md#upstash",
   "lastVerified": "2026-09-25",
   "status": "stable"

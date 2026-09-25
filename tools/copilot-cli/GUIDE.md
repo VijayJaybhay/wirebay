@@ -5,10 +5,10 @@ Official docs: https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.copilot/mcp-config.json` (`$COPILOT_HOME/mcp-config.json` if set) |
-| project | `<repo>/.github/mcp.json` (committed) |
+| Scope   | File                                                                  |
+| ------- | --------------------------------------------------------------------- |
+| user    | `~/.copilot/mcp-config.json` (`$COPILOT_HOME/mcp-config.json` if set) |
+| project | `<repo>/.github/mcp.json` (committed)                                 |
 
 Copilot CLI also reads a per-checkout `.mcp.json`. wirebay uses `.github/mcp.json` for project scope
 so it never collides with Claude Code, which owns `.mcp.json`. `.vscode/mcp.json` is not read by

@@ -74,7 +74,10 @@ export class ServerScaffolder {
     const file = WirebayPaths.packagePath("docs", "servers", `${this.options.name}.md`);
     if (existsSync(file)) return;
     const template = readFileSync(WirebayPaths.packagePath("templates", "server-guide.md"), "utf8");
-    writeFileSync(file, template.replaceAll("{{name}}", this.options.name).replaceAll("{{KEY}}", this.options.secrets[0] ?? "MY_SERVER_TOKEN"));
+    writeFileSync(
+      file,
+      template.replaceAll("{{name}}", this.options.name).replaceAll("{{KEY}}", this.options.secrets[0] ?? "MY_SERVER_TOKEN"),
+    );
   }
 }
 
@@ -92,7 +95,9 @@ const { positionals, values } = parseArgs({
 });
 const name = positionals[0];
 if (!name || !/^[a-z0-9][a-z0-9-]*$/.test(name)) {
-  console.error('Usage: npm run new:server -- <name> [--npx pkg@version | --uvx pkg@version | --url https://…] [--secret KEY]… [--category dev-tools] [--description "…"] [--guide]');
+  console.error(
+    'Usage: npm run new:server -- <name> [--npx pkg@version | --uvx pkg@version | --url https://…] [--secret KEY]… [--category dev-tools] [--description "…"] [--guide]',
+  );
   process.exit(2);
 }
 const scaffolder = new ServerScaffolder({

@@ -13,12 +13,8 @@
   },
   "secrets": [],
   "docs": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
-  "notes": [
-    "Public and read-only; no login needed."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Public and read-only; no login needed."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#cloudflare-docs",
   "lastVerified": "2026-09-25",
   "status": "stable"

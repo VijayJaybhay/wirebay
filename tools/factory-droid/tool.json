@@ -3,21 +3,14 @@
   "version": 1,
   "id": "factory-droid",
   "name": "Factory Droid",
-  "aliases": [
-    "droid",
-    "factory"
-  ],
+  "aliases": ["droid", "factory"],
   "homepage": "https://factory.ai",
   "docs": {
     "mcp": "https://docs.factory.ai/cli/configuration/mcp"
   },
   "detect": {
-    "commands": [
-      "droid"
-    ],
-    "paths": [
-      "~/.factory"
-    ]
+    "commands": ["droid"],
+    "paths": ["~/.factory"]
   },
   "configs": {
     "user": {

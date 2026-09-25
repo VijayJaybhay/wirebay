@@ -8,8 +8,8 @@ import type { AppContext } from "../app/AppContext.ts";
 import type { ParsedCommand } from "../cli/CommandParser.ts";
 import { ExitCode, UsageError } from "../core/errors.ts";
 import { EnvFileSecretsStore } from "../core/secrets/EnvFileSecretsStore.ts";
-import { SecretMasker } from "../core/secrets/SecretsBackend.ts";
 import type { SecretSpec } from "../core/types.ts";
+import { nonEmpty } from "../core/util/values.ts";
 import { Command } from "./Command.ts";
 
 /** Who declares a key, and whether they require it. */
@@ -61,7 +61,8 @@ export class SecretsCommand extends Command {
     const map = new Map<string, KeyUse[]>();
     for (const def of ctx.servers.all().values()) {
       const required = new Set(def.requiredKeys());
-      for (const spec of def.secrets) map.set(spec.key, [...(map.get(spec.key) ?? []), { server: def.name, spec, required: required.has(spec.key) }]);
+      for (const spec of def.secrets)
+        map.set(spec.key, [...(map.get(spec.key) ?? []), { server: def.name, spec, required: required.has(spec.key) }]);
     }
     return map;
   }
@@ -76,20 +77,29 @@ export class SecretsCommand extends Command {
       [key, value] = first.split(/=(.*)/s, 2) as [string, string];
       t.note(t.warn("! Passing a secret on the command line can leave it in your shell history. Prefer the prompt or --stdin."));
     }
-    if (!EnvFileSecretsStore.isValidKey(key)) throw new UsageError(`"${key}" is not a valid key name.`, "Use letters, digits and underscores, e.g. MY_TOKEN.");
+    if (!EnvFileSecretsStore.isValidKey(key))
+      throw new UsageError(`"${key}" is not a valid key name.`, "Use letters, digits and underscores, e.g. MY_TOKEN.");
     ctx.secrets.ensureExists();
     if (value === undefined && input.flags.stdin) value = await t.readStdin();
     if (value === undefined) {
-      if (!t.canPrompt(input.flags)) throw new UsageError(`No value given for ${key}.`, `Pipe it in: <command> | wirebay secrets set ${key} --stdin`);
+      if (!t.canPrompt(input.flags))
+        throw new UsageError(`No value given for ${key}.`, `Pipe it in: <command> | wirebay secrets set ${key} --stdin`);
       value = await t.askSecret(`Value for ${key}`);
       if (value === undefined) return ExitCode.Error;
     }
     value = value.trim();
     const users = this.uses(ctx).get(key) ?? [];
     const withPattern = users.find((u) => u.spec.pattern && value && !new RegExp(u.spec.pattern).test(value));
-    if (withPattern) t.note(t.warn(`! This doesn't look like a ${withPattern.spec.description ?? key} (expected to match ${withPattern.spec.pattern}). Saved anyway.`));
+    if (withPattern)
+      t.note(
+        t.warn(
+          `! This doesn't look like a ${withPattern.spec.description ?? key} (expected to match ${withPattern.spec.pattern ?? "its usual format"}). Saved anyway.`,
+        ),
+      );
     ctx.secrets.set(key, value, users[0]?.server);
-    t.out(`${t.ok("✓")} ${key} saved ${t.dim(`(${SecretMasker.mask(value)})`)}${users.length ? t.dim(` · used by ${users.map((u) => u.server).join(", ")}`) : ""}`);
+    t.out(
+      `${t.ok("✓")} ${key} saved ${t.dim(`(${ctx.masker.mask(value)})`)}${users.length ? t.dim(` · used by ${users.map((u) => u.server).join(", ")}`) : ""}`,
+    );
     t.out(t.dim("  Running servers pick it up the next time they start."));
     return ExitCode.Ok;
   }
@@ -106,11 +116,14 @@ export class SecretsCommand extends Command {
     const values = ctx.secrets.all();
     const uses = this.uses(ctx);
     const enabled = new Set(Object.keys(ctx.config.load().servers));
-    const keys = new Set([...ctx.secrets.keys(), ...[...uses.entries()].filter(([, us]) => us.some((u) => enabled.has(u.server))).map(([k]) => k)]);
+    const keys = new Set([
+      ...ctx.secrets.keys(),
+      ...[...uses.entries()].filter(([, us]) => us.some((u) => enabled.has(u.server))).map(([k]) => k),
+    ]);
     const rows = [...keys].sort().map((key) => {
       const users = (uses.get(key) ?? []).filter((u) => enabled.has(u.server) || values[key]);
       const missingRequired = users.some((u) => u.required && enabled.has(u.server)) && !values[key];
-      return { key, set: !!values[key], masked: SecretMasker.mask(values[key]), usedBy: users.map((u) => u.server), missingRequired };
+      return { key, set: !!values[key], masked: ctx.masker.mask(values[key]), usedBy: users.map((u) => u.server), missingRequired };
     });
     if (input.flags.json) {
       t.json({ file: ctx.secrets.location, secrets: rows });
@@ -120,7 +133,11 @@ export class SecretsCommand extends Command {
     t.out(
       t.table(
         ["KEY", "VALUE", "USED BY"],
-        rows.map((r) => [r.missingRequired ? t.err(r.key) : r.key, r.set ? r.masked : r.missingRequired ? t.err("missing (required)") : t.dim("(empty)"), r.usedBy.join(", ")]),
+        rows.map((r) => [
+          r.missingRequired ? t.err(r.key) : r.key,
+          r.set ? r.masked : r.missingRequired ? t.err("missing (required)") : t.dim("(empty)"),
+          r.usedBy.join(", "),
+        ]),
       ),
     );
     const missing = rows.filter((r) => r.missingRequired);
@@ -131,7 +148,7 @@ export class SecretsCommand extends Command {
   private edit(ctx: AppContext): number {
     ctx.secrets.ensureExists();
     const windows = ctx.paths.os === "win32";
-    const editor = ctx.env.VISUAL || ctx.env.EDITOR || (windows ? "notepad" : "vi");
+    const editor = nonEmpty(ctx.env.VISUAL) ?? nonEmpty(ctx.env.EDITOR) ?? (windows ? "notepad" : "vi");
     return spawnSync(editor, [ctx.secrets.location], { stdio: "inherit", shell: windows }).status ?? ExitCode.Ok;
   }
 }

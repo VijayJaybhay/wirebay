@@ -3,21 +3,14 @@
   "version": 1,
   "id": "qoder",
   "name": "Qoder CLI",
-  "aliases": [
-    "qodercli"
-  ],
+  "aliases": ["qodercli"],
   "homepage": "https://qoder.com",
   "docs": {
     "mcp": "https://docs.qoder.com/cli/mcp-servers"
   },
   "detect": {
-    "commands": [
-      "qodercli",
-      "qoder"
-    ],
-    "paths": [
-      "~/.qoder"
-    ]
+    "commands": ["qodercli", "qoder"],
+    "paths": ["~/.qoder"]
   },
   "configs": {
     "user": {

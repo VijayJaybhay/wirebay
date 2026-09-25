@@ -30,24 +30,31 @@ export interface SecretsBackend {
   ensureExists(): boolean;
 }
 
-/** Masks secret values for display: never shows a whole secret. */
+/** Masks secret values for display and redacts them from text. Never shows a whole secret. */
 export class SecretMasker {
+  private readonly replacement: string;
+
+  /** @param replacement - Text that replaces redacted values. */
+  constructor(replacement = "‹redacted›") {
+    this.replacement = replacement;
+  }
+
   /**
    * @example
-   * SecretMasker.mask("ghp_1234567890abcdefXYZ"); // "ghp_…fXYZ"
-   * SecretMasker.mask("short");                   // "•••••"
+   * new SecretMasker().mask("ghp_1234567890abcdefXYZ"); // "ghp_…fXYZ"
+   * new SecretMasker().mask("short");                   // "•••••"
    */
-  static mask(value: string | undefined): string {
-    if (!value) return "(empty)";
+  mask(value: string | undefined): string {
+    if (value === undefined || value === "") return "(empty)";
     if (value.length <= 8) return "•".repeat(value.length);
     if (value.length < 16) return `${value.slice(0, 2)}${"•".repeat(6)}`;
     return `${value.slice(0, 4)}…${value.slice(-4)}`;
   }
 
-  /** Replace every occurrence of the given secret values in a text. */
-  static redact(text: string, secrets: string[]): string {
+  /** Replace every occurrence of the given secret values (4+ characters) in a text. */
+  redact(text: string, secrets: string[]): string {
     let out = text;
-    for (const secret of secrets) if (secret.length >= 4) out = out.split(secret).join("‹redacted›");
+    for (const secret of secrets) if (secret.length >= 4) out = out.split(secret).join(this.replacement);
     return out;
   }
 }

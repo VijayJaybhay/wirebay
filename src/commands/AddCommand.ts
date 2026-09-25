@@ -6,7 +6,6 @@
 import type { AppContext } from "../app/AppContext.ts";
 import type { Flags, ParsedCommand } from "../cli/CommandParser.ts";
 import { ExitCode, UsageError } from "../core/errors.ts";
-import { SecretMasker } from "../core/secrets/SecretsBackend.ts";
 import { ServerRegistry } from "../core/servers/ServerRegistry.ts";
 import { ConfigStore } from "../core/store/ConfigStore.ts";
 import type { ArgSpec, Launch, ServerDef } from "../core/types.ts";
@@ -44,7 +43,11 @@ export class AddCommand extends Command {
 
     const selector = new TargetSelector(ctx, input);
     const tools = selector.toolsForAdd(config);
-    if (!tools.length) throw new UsageError("No AI tools detected on this machine.", "Name them explicitly (wirebay add github to codex) or use --include-missing.");
+    if (!tools.length)
+      throw new UsageError(
+        "No AI tools detected on this machine.",
+        "Name them explicitly (wirebay add github to codex) or use --include-missing.",
+      );
     ConfigStore.enable(config, names, tools);
     ctx.config.save(config);
     t.out(`${t.ok("✓")} enabled ${names.map((n) => t.bold(n)).join(", ")} for ${tools.join(", ")}`);
@@ -68,31 +71,42 @@ export class AddCommand extends Command {
 
   /** Known servers from the command line, plus a new custom server defined by flags. */
   private collectNames(input: ParsedCommand, ctx: AppContext): string[] {
-    if (input.servers === "all") throw new UsageError("`add all` is ambiguous.", "Name the servers to add, e.g. wirebay add github netlify");
+    if (input.servers === "all")
+      throw new UsageError("`add all` is ambiguous.", "Name the servers to add, e.g. wirebay add github netlify");
     const names = [...(input.servers ?? [])];
     const hasSource = AddCommand.sourceFlags.some((f) => input.flags[f]);
-    if (input.rest.length) {
-      if (input.rest.length > 1) throw new UsageError(`Add one custom server at a time (got ${input.rest.join(", ")}).`);
-      const name = input.rest[0]!.toLowerCase();
+    const [customName, ...extra] = input.rest;
+    if (customName !== undefined) {
+      if (extra.length) throw new UsageError(`Add one custom server at a time (got ${input.rest.join(", ")}).`);
+      const name = customName.toLowerCase();
       ServerRegistry.assertValidName(name, ctx.tools.aliasMap().keys());
       const file = ctx.servers.saveUserDefinition(AddCommand.customDefinition(name, input.flags));
       ctx.terminal.out(`${ctx.terminal.ok("✓")} defined ${ctx.terminal.bold(name)} ${ctx.terminal.dim(file)}`);
       names.push(name);
     } else if (hasSource && names.length) {
-      const flag = AddCommand.sourceFlags.find((f) => input.flags[f]);
-      throw new UsageError(`"${names[0]}" already exists, so --${flag} can't redefine it.`, `Pick a new name, e.g. wirebay add ${names[0]}-2 ...`);
+      const flag = AddCommand.sourceFlags.find((f) => input.flags[f]) ?? "npx";
+      const existing = names.join(", ");
+      throw new UsageError(
+        `"${existing}" already exists, so --${flag} can't redefine it.`,
+        `Pick a new name, e.g. wirebay add my-${flag}-server --${flag} …`,
+      );
     }
     if (!names.length) {
-      throw new UsageError("Which server?", "Examples: wirebay add github to all · wirebay add my-server --npx @scope/package\nSee built-in servers: wirebay presets");
+      throw new UsageError(
+        "Which server?",
+        "Examples: wirebay add github to all · wirebay add my-server --npx @scope/package\nSee built-in servers: wirebay presets",
+      );
     }
     return names;
   }
 
   private selectVariant(names: string[], variant: string, ctx: AppContext): void {
-    if (names.length !== 1) throw new UsageError("--variant works with one server at a time.");
-    const def = ctx.servers.get(names[0]!);
-    if (!def.variantNames.includes(variant)) throw new UsageError(`"${def.name}" has no variant "${variant}".`, `Available: ${def.variantNames.join(", ") || "none"}`);
-    ctx.servers.saveUserDefinition({ name: def.name, variant } as ServerDef);
+    const [only, ...others] = names;
+    if (only === undefined || others.length) throw new UsageError("--variant works with one server at a time.");
+    const def = ctx.servers.get(only);
+    if (!def.variantNames.includes(variant))
+      throw new UsageError(`"${def.name}" has no variant "${variant}".`, `Available: ${def.variantNames.join(", ") || "none"}`);
+    ctx.servers.saveUserDefinition({ name: def.name, variant });
   }
 
   /** Add placeholders for each server's keys, then ask for missing required ones (when interactive). */
@@ -101,16 +115,20 @@ export class AddCommand extends Command {
     ctx.secrets.ensureExists();
     for (const name of names) {
       const def = ctx.servers.get(name);
-      ctx.secrets.addPlaceholders(name, def.secrets.map((s) => ({ key: s.key, comment: s.description })));
+      ctx.secrets.addPlaceholders(
+        name,
+        def.secrets.map((s) => ({ key: s.key, comment: s.description })),
+      );
       for (const key of def.requiredKeys().filter((k) => !ctx.secrets.get(k) && !ctx.env[k])) {
         const spec = def.secretSpec(key);
         if (t.canPrompt(input.flags)) {
           if (spec?.help) t.out(t.dim(`  How to get it: ${spec.help}`));
           const value = await t.askSecret(`${name} needs ${key}${spec?.description ? ` (${spec.description})` : ""}`);
           if (value) {
-            if (spec?.pattern && !new RegExp(spec.pattern).test(value)) t.note(t.warn("! That doesn't look like the expected format. Saved anyway."));
+            if (spec?.pattern && !new RegExp(spec.pattern).test(value))
+              t.note(t.warn("! That doesn't look like the expected format. Saved anyway."));
             ctx.secrets.set(key, value.trim(), name);
-            t.out(`${t.ok("✓")} saved ${key} ${t.dim(`(${SecretMasker.mask(value)})`)}`);
+            t.out(`${t.ok("✓")} saved ${key} ${t.dim(`(${ctx.masker.mask(value)})`)}`);
             continue;
           }
         }
@@ -127,7 +145,9 @@ export class AddCommand extends Command {
     const given = AddCommand.sourceFlags.filter((f) => flags[f]);
     if (given.length !== 1) {
       throw new UsageError(
-        given.length ? `Use only one of --${given.join(", --")}.` : `"${name}" is not a built-in server, so wirebay needs to know how to start it.`,
+        given.length
+          ? `Use only one of --${given.join(", --")}.`
+          : `"${name}" is not a built-in server, so wirebay needs to know how to start it.`,
         `Examples:\n  wirebay add ${name} --npx @scope/package\n  wirebay add ${name} --uvx python-package\n  wirebay add ${name} --docker image/name\n  wirebay add ${name} --url https://example.com/mcp\n(See \`wirebay presets\` for built-in servers.)`,
       );
     }
@@ -176,7 +196,10 @@ export class AddCommand extends Command {
       name,
       description: (flags.description as string | undefined) ?? "Custom server added with wirebay add",
       launch,
-      secrets: [...required.map((key) => ({ key, required: true, description: `${key} for ${name}` })), ...optional.map((key) => ({ key }))],
+      secrets: [
+        ...required.map((key) => ({ key, required: true, description: `${key} for ${name}` })),
+        ...optional.map((key) => ({ key })),
+      ],
       ...(Object.keys(env).length ? { env } : {}),
       status: "beta",
     };

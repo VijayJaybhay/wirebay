@@ -24,7 +24,7 @@ export interface CommandHelp {
  * class HelloCommand extends Command {
  *   readonly name = "hello";
  *   readonly help = { usage: "wirebay hello", summary: "Say hello.", examples: ["wirebay hello"] };
- *   async run(_input: ParsedCommand, ctx: AppContext) {
+ *   run(_input: ParsedCommand, ctx: AppContext): number {
  *     ctx.terminal.out("hello");
  *     return ExitCode.Ok;
  *   }
@@ -48,7 +48,7 @@ export abstract class Command {
    * Execute the command.
    * @param input - The parsed command line.
    * @param ctx - Services.
-   * @returns The process exit code.
+   * @returns The process exit code (commands that prompt or wait return a promise).
    */
-  abstract run(input: ParsedCommand, ctx: AppContext): Promise<number>;
+  abstract run(input: ParsedCommand, ctx: AppContext): number | Promise<number>;
 }

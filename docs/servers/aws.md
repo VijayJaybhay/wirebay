@@ -2,10 +2,10 @@
 
 Official AWS Labs servers: https://github.com/awslabs/mcp
 
-| Preset | Server | Credentials |
-|---|---|---|
-| `aws-api` | [AWS API MCP server](https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server): runs AWS CLI commands | yes |
-| `aws-docs` | [AWS Documentation MCP server](https://github.com/awslabs/mcp/tree/main/src/aws-documentation-mcp-server): searches and reads AWS docs | none |
+| Preset     | Server                                                                                                                                 | Credentials |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `aws-api`  | [AWS API MCP server](https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server): runs AWS CLI commands                           | yes         |
+| `aws-docs` | [AWS Documentation MCP server](https://github.com/awslabs/mcp/tree/main/src/aws-documentation-mcp-server): searches and reads AWS docs | none        |
 
 ## What it gives you
 
@@ -38,7 +38,7 @@ aws configure --profile mcp           # access key of a dedicated IAM user
 Give the identity **read-only** permissions to start with, for example the AWS-managed
 `ReadOnlyAccess` policy (or a narrower policy for just the services you need).
 
-The profile's keys stay in `~/.aws/`; wirebay only stores the profile *name*.
+The profile's keys stay in `~/.aws/`; wirebay only stores the profile _name_.
 
 **Fallback: static keys** in `secrets.env` (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, optional
 `AWS_SESSION_TOKEN`). Use these only if you can't use a profile, and rotate them regularly.
@@ -71,16 +71,16 @@ one, add it to the preset's `env` in `~/.wirebay/servers/aws-api.json`, or decla
 wirebay doctor aws-api aws-docs
 ```
 
-Then ask: *"Using AWS, list my S3 buckets in us-east-1."* and *"Search the AWS docs for S3 object lock."*
+Then ask: _"Using AWS, list my S3 buckets in us-east-1."_ and _"Search the AWS docs for S3 object lock."_
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| `Cannot find "uvx"` | Install uv, open a new terminal, run `wirebay init`. |
+| Symptom                                       | Fix                                                                                       |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `Cannot find "uvx"`                           | Install uv, open a new terminal, run `wirebay init`.                                      |
 | `The config profile (mcp) could not be found` | Create it with `aws configure --profile mcp` or set `AWS_PROFILE` to an existing profile. |
-| SSO token expired | `aws sso login --profile mcp` |
-| Access denied | Expected in read-only mode for write operations; otherwise extend the IAM policy. |
+| SSO token expired                             | `aws sso login --profile mcp`                                                             |
+| Access denied                                 | Expected in read-only mode for write operations; otherwise extend the IAM policy.         |
 
 **Rotating keys:** for profiles, rotate in IAM or re-login with SSO. No wirebay change is needed.
 For static keys, run `wirebay secrets set AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`.

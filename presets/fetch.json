@@ -7,18 +7,12 @@
   "launch": {
     "type": "stdio",
     "command": "uvx",
-    "args": [
-      "mcp-server-fetch@2026.8.18"
-    ]
+    "args": ["mcp-server-fetch@2026.8.18"]
   },
   "secrets": [],
-  "prereqs": [
-    "uvx"
-  ],
+  "prereqs": ["uvx"],
   "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/fetch",
-  "notes": [
-    "Can reach local and internal network addresses (SSRF risk). Requires uv."
-  ],
+  "notes": ["Can reach local and internal network addresses (SSRF risk). Requires uv."],
   "guide": "docs/servers/catalog.md#fetch",
   "lastVerified": "2026-09-25",
   "status": "stable"

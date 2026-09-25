@@ -7,7 +7,6 @@ import type { AppContext } from "../app/AppContext.ts";
 import type { ParsedCommand } from "../cli/CommandParser.ts";
 import { ExitCode } from "../core/errors.ts";
 import { ConfigStore } from "../core/store/ConfigStore.ts";
-import { EntryHasher } from "../core/store/EntryHasher.ts";
 import { StateStore } from "../core/store/StateStore.ts";
 import type { Entry } from "../core/types.ts";
 import { Command } from "./Command.ts";
@@ -23,14 +22,20 @@ export class ListCommand extends Command {
   readonly name = "list";
   override readonly aliases = ["ls", "status"];
   override readonly targeted = true;
-  readonly help = { usage: "wirebay list [server|tool] [--json]", summary: "Show which servers are synced to which tools.", examples: ["wirebay list", "wirebay ls codex"] };
+  readonly help = {
+    usage: "wirebay list [server|tool] [--json]",
+    summary: "Show which servers are synced to which tools.",
+    examples: ["wirebay list", "wirebay ls codex"],
+  };
 
-  async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
+  run(input: ParsedCommand, ctx: AppContext): number {
     const t = ctx.terminal;
     const config = ctx.config.load();
     const state = ctx.state.load();
     const secretValues = ctx.secrets.all();
-    const toolIds = Array.isArray(input.tools) ? input.tools : [...new Set([...ConfigStore.toolsInUse(config), ...StateStore.toolsWithEntries(state)])].sort();
+    const toolIds = Array.isArray(input.tools)
+      ? input.tools
+      : [...new Set([...ConfigStore.toolsInUse(config), ...StateStore.toolsWithEntries(state)])].sort();
     const serverNames = Array.isArray(input.servers) ? input.servers : Object.keys(config.servers).sort();
     const files = this.readToolFiles(toolIds, ctx);
 
@@ -40,7 +45,7 @@ export class ListCommand extends Command {
       const recorded = file?.recorded[server];
       const present = file?.entries[server];
       if (recorded && present) {
-        if (EntryHasher.hash(present) !== recorded) return "drift";
+        if (ctx.hasher.hash(present) !== recorded) return "drift";
         return enabled ? "synced" : "stray";
       }
       return enabled ? "enabled" : "none";
@@ -48,8 +53,14 @@ export class ListCommand extends Command {
 
     const rows = serverNames.map((name) => {
       const known = ctx.servers.has(name);
-      const missing = known ? ctx.servers.get(name).requiredKeys().filter((k) => !secretValues[k] && !ctx.env[k]) : [];
-      return { server: name, known, missingSecrets: missing, tools: Object.fromEntries(toolIds.map((id) => [id, cell(name, id)])) };
+      const missing = known
+        ? ctx.servers
+            .get(name)
+            .requiredKeys()
+            .filter((k) => !secretValues[k] && !ctx.env[k])
+        : [];
+      const tools: Record<string, Cell> = Object.fromEntries(toolIds.map((id) => [id, cell(name, id)]));
+      return { server: name, known, missingSecrets: missing, tools };
     });
 
     if (input.flags.json) {
@@ -60,13 +71,19 @@ export class ListCommand extends Command {
       t.out("No servers added yet. Start with: wirebay add github to all   (see `wirebay presets`)");
       return ExitCode.Ok;
     }
-    const symbol: Record<Cell, string> = { synced: t.ok("✓"), enabled: t.warn("○"), drift: t.warn("~"), stray: t.warn("?"), none: t.dim("·") };
+    const symbol: Record<Cell, string> = {
+      synced: t.ok("✓"),
+      enabled: t.warn("○"),
+      drift: t.warn("~"),
+      stray: t.warn("?"),
+      none: t.dim("·"),
+    };
     t.out(
       t.table(
         ["SERVER", ...toolIds, "SECRETS"],
         rows.map((r) => [
           r.known ? r.server : t.err(`${r.server} (unknown)`),
-          ...toolIds.map((id) => symbol[r.tools[id] as Cell]),
+          ...toolIds.map((id) => symbol[r.tools[id] ?? "none"]),
           r.missingSecrets.length ? t.err(`! ${r.missingSecrets.join(", ")}`) : t.ok("ok"),
         ]),
       ),
@@ -76,7 +93,10 @@ export class ListCommand extends Command {
   }
 
   /** Read each tool's files once: current entries and what wirebay recorded. */
-  private readToolFiles(toolIds: string[], ctx: AppContext): Map<string, { entries: Record<string, Entry>; recorded: Record<string, string> }> {
+  private readToolFiles(
+    toolIds: string[],
+    ctx: AppContext,
+  ): Map<string, { entries: Record<string, Entry>; recorded: Record<string, string> }> {
     const state = ctx.state.load();
     const out = new Map<string, { entries: Record<string, Entry>; recorded: Record<string, string> }>();
     for (const id of toolIds) {

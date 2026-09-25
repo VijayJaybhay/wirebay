@@ -37,7 +37,13 @@ export class Sandbox {
 
   /** Run the real CLI in this sandbox. */
   run(args: string[], input?: string): { code: number; stdout: string; stderr: string } {
-    const r = spawnSync(process.execPath, ["--no-warnings", cliPath, ...args], { env: this.env, cwd: this.root, input, encoding: "utf8", timeout: 60_000 });
+    const r = spawnSync(process.execPath, ["--no-warnings", cliPath, ...args], {
+      env: this.env,
+      cwd: this.root,
+      input,
+      encoding: "utf8",
+      timeout: 60_000,
+    });
     return { code: r.status ?? -1, stdout: r.stdout, stderr: r.stderr };
   }
 

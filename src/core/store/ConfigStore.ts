@@ -35,7 +35,7 @@ export class ConfigStore {
 
   /** Read the config, filling in defaults for anything missing. */
   load(): WirebayConfig {
-    const found = this.writer.readJson<Partial<WirebayConfig>>(this.paths.configFile);
+    const found = this.writer.readJson(this.paths.configFile) as Partial<WirebayConfig> | undefined;
     return { ...ConfigStore.defaults(), ...found, servers: { ...(found?.servers ?? {}) }, paths: { ...(found?.paths ?? {}) } };
   }
 
@@ -63,6 +63,12 @@ export class ConfigStore {
       const prev = config.servers[s]?.tools ?? [];
       config.servers[s] = { tools: [...new Set([...prev, ...tools])].sort() };
     }
+  }
+
+  /** Remove servers from the config entirely. */
+  static removeServers(config: WirebayConfig, servers: string[]): void {
+    const gone = new Set(servers);
+    config.servers = Object.fromEntries(Object.entries(config.servers).filter(([name]) => !gone.has(name)));
   }
 
   /** Disable servers for tools (servers stay added, possibly with no tools). */

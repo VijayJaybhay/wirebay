@@ -50,7 +50,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: API docs build without warnings
-        run: npx typedoc --treatWarningsAsErrors
+        run: npm run lint:docs
       - name: Check published file list
         run: |
           npm pack --dry-run --json > pack.json

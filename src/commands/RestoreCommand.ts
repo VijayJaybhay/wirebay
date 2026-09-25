@@ -27,12 +27,18 @@ export class RestoreCommand extends Command {
     if (input.flags.list || !backups.length) {
       if (input.flags.json) t.json(backups);
       else if (!backups.length) t.out(`No backups for ${tool} yet.`);
-      else t.out(t.table(["BACKUP ID", "FILE"], backups.map((b) => [b.id.split("__")[0]!, b.originalPath])));
+      else
+        t.out(
+          t.table(
+            ["BACKUP ID", "FILE"],
+            backups.map((b) => [b.createdAt, b.originalPath]),
+          ),
+        );
       return ExitCode.Ok;
     }
-    const wanted = input.rest[0];
-    const backup = wanted ? backups.find((b) => b.id.startsWith(wanted)) : backups[0];
-    if (!backup) throw new UsageError(`No backup "${wanted}" for ${tool}.`, `See them with: wirebay restore ${tool} --list`);
+    const [wanted] = input.rest;
+    const backup = wanted === undefined ? backups[0] : backups.find((b) => b.id.startsWith(wanted));
+    if (!backup) throw new UsageError(`No backup "${wanted ?? "latest"}" for ${tool}.`, `See them with: wirebay restore ${tool} --list`);
     if (!(await t.confirm(`Restore ${backup.originalPath} from ${backup.createdAt}?`, input.flags))) {
       t.out(t.dim("Cancelled. Pass --yes to skip this question."));
       return ExitCode.Error;

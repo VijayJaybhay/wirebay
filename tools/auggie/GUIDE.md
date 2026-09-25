@@ -6,9 +6,9 @@ Augment's terminal agent. Official docs: https://docs.augmentcode.com/cli/integr
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.augment/settings.json` |
+| Scope | File                       |
+| ----- | -------------------------- |
+| user  | `~/.augment/settings.json` |
 
 Servers live under `mcpServers` inside auggie's settings file; other settings are left untouched.
 

@@ -7,10 +7,18 @@
   "properties": {
     "$schema": { "type": "string" },
     "version": { "type": "integer" },
-    "defaultTools": { "type": "array", "items": { "type": "string" }, "description": "Tools a new server is enabled for when none are named" },
+    "defaultTools": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Tools a new server is enabled for when none are named"
+    },
     "defaultScope": { "enum": ["user", "project"] },
     "renderMode": { "enum": ["auto", "absolute", "portable"] },
-    "paths": { "type": "object", "additionalProperties": { "type": "string" }, "description": "Absolute paths to executables such as npx, uvx, docker" },
+    "paths": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Absolute paths to executables such as npx, uvx, docker"
+    },
     "servers": {
       "type": "object",
       "additionalProperties": {

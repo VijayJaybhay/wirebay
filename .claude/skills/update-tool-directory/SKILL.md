@@ -19,7 +19,7 @@ The canonical steps are in `docs/contributing/maintaining-directory.md`. Read it
    1. Fetch `docs.mcp` (and `docs.changelog` if present).
    2. Compare with `tool.json`: paths per OS and scope, format, `rootKey`, entry fields,
       `supports.*`, `restartRequired`.
-   3. Update the manifest if anything changed and add a dated line to the *Changelog* in `GUIDE.md`.
+   3. Update the manifest if anything changed and add a dated line to the _Changelog_ in `GUIDE.md`.
    4. Always bump `lastVerified` to today; set `verifiedVersion` if you know the tool version.
 3. **For each preset:**
    1. Look up the latest version (npm, PyPI, container registry) and read the release notes since

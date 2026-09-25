@@ -6,7 +6,7 @@
 
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { WirebayPaths } from "../platform/WirebayPaths.ts";
+import { type OsName, WirebayPaths } from "../platform/WirebayPaths.ts";
 
 /** A ready-to-spawn command. */
 export interface SpawnSpec {
@@ -20,13 +20,24 @@ export interface SpawnSpec {
 export class ProcessCommand {
   private static readonly cmdMeta = /([()\][%!^"`<>&|;, *?])/g;
 
+  private readonly os: OsName;
+  private readonly comspec: string;
+
+  /**
+   * @param osName - Target OS (defaults to the current one).
+   * @param comspec - Windows command interpreter (defaults to `%ComSpec%` or `cmd.exe`).
+   */
+  constructor(osName: OsName = WirebayPaths.detectOs(), comspec: string = process.env.ComSpec ?? "cmd.exe") {
+    this.os = osName;
+    this.comspec = comspec;
+  }
+
   /**
    * @param resolved - Absolute path of the executable.
    * @param args - Arguments to pass.
-   * @param os - Target OS (defaults to the current one).
    */
-  static forExecutable(resolved: string, args: string[], os = WirebayPaths.detectOs()): SpawnSpec {
-    if (os !== "win32" || !/\.(cmd|bat)$/i.test(resolved)) return { command: resolved, args, verbatim: false };
+  forExecutable(resolved: string, args: string[]): SpawnSpec {
+    if (this.os !== "win32" || !/\.(cmd|bat)$/i.test(resolved)) return { command: resolved, args, verbatim: false };
 
     // npx/npm: run their JavaScript entry with Node directly. No shell, no quoting problems.
     const dir = path.dirname(resolved);
@@ -37,16 +48,16 @@ export class ProcessCommand {
       if (existsSync(script)) return { command: node, args: [script, ...args], verbatim: false };
     }
     // Other shims: go through cmd.exe with careful escaping.
-    const line = [ProcessCommand.escapeCommand(resolved), ...args.map((a) => ProcessCommand.escapeArg(a))].join(" ");
-    return { command: process.env.ComSpec || "cmd.exe", args: ["/d", "/s", "/c", `"${line}"`], verbatim: true };
+    const line = [this.escapeCommand(resolved), ...args.map((a) => this.escapeArg(a))].join(" ");
+    return { command: this.comspec, args: ["/d", "/s", "/c", `"${line}"`], verbatim: true };
   }
 
-  private static escapeCommand(cmd: string): string {
+  private escapeCommand(cmd: string): string {
     return cmd.replace(ProcessCommand.cmdMeta, "^$1");
   }
 
   /** Quote for CommandLineToArgvW, then escape cmd.exe metacharacters (twice: `.cmd` shims re-parse). */
-  private static escapeArg(arg: string): string {
+  private escapeArg(arg: string): string {
     let quoted = `"${arg.replace(/(\\*)"/g, '$1$1\\"').replace(/(\\*)$/, "$1$1")}"`;
     quoted = quoted.replace(ProcessCommand.cmdMeta, "^$1");
     return quoted.replace(ProcessCommand.cmdMeta, "^$1");

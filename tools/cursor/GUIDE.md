@@ -5,9 +5,9 @@ Official MCP docs: https://cursor.com/docs/context/mcp
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.cursor/mcp.json` |
+| Scope   | File                         |
+| ------- | ---------------------------- |
+| user    | `~/.cursor/mcp.json`         |
 | project | `<project>/.cursor/mcp.json` |
 
 Servers live under `mcpServers` with `command`, `args` and `env`.

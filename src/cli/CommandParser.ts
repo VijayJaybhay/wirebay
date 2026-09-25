@@ -53,7 +53,7 @@ export interface VerbTable {
 /** Parses argv into a {@link ParsedCommand}. */
 export class CommandParser {
   private static readonly byName = new Map(FLAGS.map((f) => [f.name, f]));
-  private static readonly byShort = new Map(FLAGS.filter((f) => f.short).map((f) => [f.short!, f]));
+  private static readonly byShort = new Map(FLAGS.flatMap((f) => (f.short === undefined ? [] : [[f.short, f] as const])));
 
   private readonly verbs: VerbTable;
   private readonly vocabulary: Vocabulary;
@@ -70,13 +70,17 @@ export class CommandParser {
   parse(argv: string[]): ParsedCommand {
     const { positionals, flags } = CommandParser.split(argv);
     const empty = (verb: string, rest: string[] = []): ParsedCommand => ({ verb, servers: undefined, tools: undefined, rest, flags });
-    if (flags.version && positionals.length === 0) return empty("version");
-    if (positionals.length === 0) return empty("help");
+    const [firstWord, ...words] = positionals;
+    if (firstWord === undefined) return empty(flags.version ? "version" : "help");
 
-    const first = positionals[0]!.toLowerCase();
+    const first = firstWord.toLowerCase();
     const verb = this.verbs.resolve(first);
-    if (!verb) throw new UsageError(`Unknown command "${positionals[0]}".`, Suggester.suggest(first, this.verbs.words()) ?? "Run `wirebay help` to see all commands.");
-    const words = positionals.slice(1);
+    if (verb === undefined) {
+      throw new UsageError(
+        `Unknown command "${firstWord}".`,
+        new Suggester(this.verbs.words()).suggest(first) ?? "Run `wirebay help` to see all commands.",
+      );
+    }
     if (flags.help) return empty("help", [verb]);
     if (!this.verbs.isTargeted(verb)) return empty(verb, words);
 
@@ -84,11 +88,12 @@ export class CommandParser {
     this.classifyWords(cmd, words);
     this.applySelectionFlags(cmd);
 
-    if (cmd.rest.length && !this.verbs.acceptsFreeWords(verb)) {
-      const word = cmd.rest[0]!;
+    const [freeWord] = cmd.rest;
+    if (freeWord !== undefined && !this.verbs.acceptsFreeWords(verb)) {
       throw new UsageError(
-        `"${word}" is not a known server or tool.`,
-        Suggester.suggest(word, this.vocabulary.words()) ?? "Run `wirebay list` for your servers and `wirebay tools` for supported tools.",
+        `"${freeWord}" is not a known server or tool.`,
+        new Suggester(this.vocabulary.words()).suggest(freeWord) ??
+          "Run `wirebay list` for your servers and `wirebay tools` for supported tools.",
       );
     }
     return cmd;
@@ -96,7 +101,7 @@ export class CommandParser {
 
   /** One line showing what a command was understood as, e.g. `→ sync servers=[github] tools=all`. */
   describe(cmd: ParsedCommand): string {
-    const sel = (s: Selection) => (s === "all" ? "all" : s ? `[${s.join(",")}]` : "default");
+    const sel = (s: Selection): string => (s === "all" ? "all" : s ? `[${s.join(",")}]` : "default");
     const parts = [cmd.verb];
     if (this.verbs.isTargeted(cmd.verb)) parts.push(`servers=${sel(cmd.servers)}`, `tools=${sel(cmd.tools)}`);
     if (cmd.rest.length) parts.push(`args=[${cmd.rest.join(",")}]`);
@@ -107,41 +112,52 @@ export class CommandParser {
   static split(argv: string[]): { positionals: string[]; flags: Flags } {
     const flags: Flags = {};
     const positionals: string[] = [];
-    for (let i = 0; i < argv.length; i++) {
-      const a = argv[i]!;
-      if (a === "--") {
-        positionals.push(...argv.slice(i + 1));
-        break;
-      }
-      if (a.startsWith("--")) {
-        const [name, inline] = a.slice(2).split(/=(.*)/s, 2) as [string, string | undefined];
-        const spec = CommandParser.byName.get(name);
-        if (!spec) throw new UsageError(`Unknown option --${name}.`, Suggester.suggest(`--${name}`, FLAGS.map((f) => `--${f.name}`)));
-        if (spec.value) {
-          const value = inline ?? argv[++i];
-          if (value === undefined) throw new UsageError(`--${spec.name} needs a value.`);
-          CommandParser.setFlag(flags, spec, value);
-        } else {
-          CommandParser.setFlag(flags, spec, true);
-        }
-      } else if (/^-[A-Za-z]+$/.test(a)) {
-        for (const ch of a.slice(1)) {
+    const queue = [...argv];
+    for (let arg = queue.shift(); arg !== undefined; arg = queue.shift()) {
+      if (arg === "--") {
+        positionals.push(...queue.splice(0));
+      } else if (arg.startsWith("--")) {
+        CommandParser.readLongFlag(arg, queue, flags);
+      } else if (/^-[A-Za-z]+$/.test(arg)) {
+        for (const ch of arg.slice(1)) {
           const spec = CommandParser.byShort.get(ch);
           if (!spec) throw new UsageError(`Unknown option -${ch}.`);
           CommandParser.setFlag(flags, spec, true);
         }
       } else {
-        positionals.push(a);
+        positionals.push(arg);
       }
     }
     return { positionals, flags };
   }
 
+  private static readLongFlag(arg: string, queue: string[], flags: Flags): void {
+    const body = arg.slice(2);
+    const eq = body.indexOf("=");
+    const name = eq < 0 ? body : body.slice(0, eq);
+    const inline = eq < 0 ? undefined : body.slice(eq + 1);
+    const spec = CommandParser.byName.get(name);
+    if (!spec) throw new UsageError(`Unknown option --${name}.`, new Suggester(FLAGS.map((f) => `--${f.name}`)).suggest(`--${name}`));
+    if (!spec.value) {
+      CommandParser.setFlag(flags, spec, true);
+      return;
+    }
+    const value = inline ?? queue.shift();
+    if (value === undefined) throw new UsageError(`--${spec.name} needs a value.`);
+    CommandParser.setFlag(flags, spec, value);
+  }
+
   private static setFlag(flags: Flags, spec: FlagSpec, value: string | boolean): void {
     if (spec.multiple && typeof value === "string") {
-      const prev = (flags[spec.name] as string[] | undefined) ?? [];
-      const values = spec.list ? value.split(",").map((s) => s.trim()).filter(Boolean) : [value];
-      flags[spec.name] = [...prev, ...values];
+      const prev = flags[spec.name];
+      const existing = Array.isArray(prev) ? prev : [];
+      const values = spec.list
+        ? value
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [value];
+      flags[spec.name] = [...existing, ...values];
     } else {
       flags[spec.name] = value;
     }
@@ -150,8 +166,13 @@ export class CommandParser {
   /** Classify each word as a server, a tool, an `all`, a filler word, or a free word. */
   private classifyWords(cmd: ParsedCommand, words: string[]): void {
     let direction: "servers" | "tools" = "servers";
-    for (const raw of words.flatMap((w) => w.split(",")).map((w) => w.trim()).filter(Boolean)) {
+    const tokens = words
+      .flatMap((w) => w.split(","))
+      .map((w) => w.trim())
+      .filter(Boolean);
+    for (const raw of tokens) {
       const w = raw.toLowerCase();
+      const toolId = this.vocabulary.toolId(w);
       if (TOOL_DIRECTION_WORDS.has(w)) {
         direction = "tools";
       } else if (FILLER_WORDS.has(w)) {
@@ -162,8 +183,8 @@ export class CommandParser {
       } else if (ALL_WORDS.has(w)) {
         if (direction === "tools") cmd.tools = "all";
         else cmd.servers = "all";
-      } else if (this.vocabulary.toolId(w) && !this.vocabulary.isServer(w)) {
-        cmd.tools = CommandParser.add(cmd.tools, this.vocabulary.toolId(w)!);
+      } else if (toolId !== undefined && !this.vocabulary.isServer(w)) {
+        cmd.tools = CommandParser.add(cmd.tools, toolId);
       } else if (this.vocabulary.isServer(w)) {
         cmd.servers = CommandParser.add(cmd.servers, w);
       } else {
@@ -175,23 +196,32 @@ export class CommandParser {
   /** Apply `--to/--from/--for/--server/--all…` on top of the words. */
   private applySelectionFlags(cmd: ParsedCommand): void {
     for (const key of ["to", "from", "for"]) {
-      for (const t of (cmd.flags[key] as string[] | undefined) ?? []) {
+      for (const t of CommandParser.list(cmd.flags[key])) {
         if (ALL_WORDS.has(t.toLowerCase())) {
           cmd.tools = "all";
           continue;
         }
         const id = this.vocabulary.toolId(t.toLowerCase());
-        if (!id) throw new UsageError(`Unknown tool "${t}".`, Suggester.suggest(t, this.vocabulary.words()) ?? "Run `wirebay tools` to see supported tools.");
+        if (id === undefined) {
+          throw new UsageError(
+            `Unknown tool "${t}".`,
+            new Suggester(this.vocabulary.words()).suggest(t) ?? "Run `wirebay tools` to see supported tools.",
+          );
+        }
         cmd.tools = CommandParser.add(cmd.tools, id);
       }
     }
-    for (const s of (cmd.flags.server as string[] | undefined) ?? []) cmd.servers = CommandParser.add(cmd.servers, s);
+    for (const s of CommandParser.list(cmd.flags.server)) cmd.servers = CommandParser.add(cmd.servers, s);
     if (cmd.flags["all-tools"]) cmd.tools = "all";
     if (cmd.flags["all-servers"]) cmd.servers = "all";
     if (cmd.flags.all) {
       if (cmd.servers && cmd.servers !== "all") cmd.tools = "all";
       else cmd.servers = "all";
     }
+  }
+
+  private static list(value: Flags[string] | undefined): string[] {
+    return Array.isArray(value) ? value : [];
   }
 
   private static add(sel: Selection, value: string): Selection {

@@ -12,10 +12,7 @@
       "-y",
       "kubernetes-mcp-server@0.0.67",
       {
-        "optional": [
-          "--config",
-          "${K8S_MCP_CONFIG}"
-        ]
+        "optional": ["--config", "${K8S_MCP_CONFIG}"]
       }
     ]
   },
@@ -29,9 +26,7 @@
       "description": "Optional: TOML config, e.g. with read_only = true"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/containers/kubernetes-mcp-server",
   "notes": [
     "Uses your kubeconfig and can change or delete resources. For read-only, create a TOML file with `read_only = true` and set K8S_MCP_CONFIG to its path."

@@ -5,9 +5,9 @@ Official MCP docs: https://example.com/docs/mcp
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.my-tool/mcp.json` |
+| Scope   | File                          |
+| ------- | ----------------------------- |
+| user    | `~/.my-tool/mcp.json`         |
 | project | `<project>/.my-tool/mcp.json` |
 
 Name the key servers live under, and the shape of one entry.

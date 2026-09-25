@@ -5,10 +5,10 @@ Both read the same MCP files. Official docs: https://kiro.dev/docs/mcp/configura
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.kiro/settings/mcp.json` (`$KIRO_HOME/settings/mcp.json` if set) |
-| project | `<project>/.kiro/settings/mcp.json` |
+| Scope   | File                                                                |
+| ------- | ------------------------------------------------------------------- |
+| user    | `~/.kiro/settings/mcp.json` (`$KIRO_HOME/settings/mcp.json` if set) |
+| project | `<project>/.kiro/settings/mcp.json`                                 |
 
 Kiro merges them; the workspace file wins over the user file for the same server name.
 

@@ -24,15 +24,15 @@ wirebay add sentry --url https://mcp.sentry.dev/mcp --oauth
 wirebay add local --command /path/to/server --arg --stdio
 ```
 
-| Option | Meaning |
-|---|---|
-| `--secret KEY` | Required secret (repeatable). wirebay asks for it and adds a placeholder to `secrets.env` |
-| `--optional-secret KEY` | Optional secret (repeatable) |
-| `--env KEY=value` | Non-secret environment value (repeatable) |
-| `--arg value` | Extra argument for the server (repeatable) |
-| `--header "Name: value"` | Non-secret HTTP header for `--url` servers (repeatable) |
-| `--oauth` | Remote server authenticates in the browser (via mcp-remote) |
-| `--description "…"` | One-line description stored in the definition |
+| Option                   | Meaning                                                                                   |
+| ------------------------ | ----------------------------------------------------------------------------------------- |
+| `--secret KEY`           | Required secret (repeatable). wirebay asks for it and adds a placeholder to `secrets.env` |
+| `--optional-secret KEY`  | Optional secret (repeatable)                                                              |
+| `--env KEY=value`        | Non-secret environment value (repeatable)                                                 |
+| `--arg value`            | Extra argument for the server (repeatable)                                                |
+| `--header "Name: value"` | Non-secret HTTP header for `--url` servers (repeatable)                                   |
+| `--oauth`                | Remote server authenticates in the browser (via mcp-remote)                               |
+| `--description "…"`      | One-line description stored in the definition                                             |
 
 Names must be lowercase letters, digits and dashes, and can't clash with a tool name (like `cursor`)
 or a reserved word (like `all`).

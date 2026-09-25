@@ -54,9 +54,7 @@
       "description": "GitHub Enterprise Server hostname (docker variant only)"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/github/github-mcp-server",
   "guide": "docs/servers/github.md",
   "lastVerified": "2026-09-25",

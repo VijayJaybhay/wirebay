@@ -38,7 +38,14 @@ export class UnsyncCommand extends Command {
       t.out(t.dim("Cancelled. Pass --yes to skip this question."));
       return ExitCode.Error;
     }
-    const outcome = ctx.sync.run({ tools, servers, scope: selector.scope(config), force: !!input.flags.force, dryRun: !!input.flags["dry-run"], removeOnly: true });
+    const outcome = ctx.sync.run({
+      tools,
+      servers,
+      scope: selector.scope(config),
+      force: !!input.flags.force,
+      dryRun: !!input.flags["dry-run"],
+      removeOnly: true,
+    });
     const problems = new SyncReporter(t).print(outcome, { dryRun: !!input.flags["dry-run"] });
     if (!input.flags["dry-run"]) t.out(t.dim("Run `wirebay sync` to put them back."));
     return problems ? ExitCode.Conflict : ExitCode.Ok;

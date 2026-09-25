@@ -8,9 +8,12 @@
   - `update-tool-directory`: re-verify stale tools and presets against their official docs
 
   Each skill follows the matching guide in `docs/contributing/`.
+
 - Never run `wirebay sync`/`add`/`remove` from source against the real home directory. Always set
   `WIREBAY_USER_HOME` and `WIREBAY_HOME` to a temp folder.
 - For Claude Code's own user scope, wirebay goes through `claude mcp add-json -s user` and never
   edits `~/.claude.json` directly (see `src/core/adapters/ClaudeCodeAdapter.ts`).
+- Zero lint findings and no suppressions: fix the code rather than silencing ESLint, TypeScript or
+  Prettier (see AGENTS.md hard rule 6). Run `npm run check` before finishing.
 - Write TypeScript as classes with explicit types and full TSDoc, following the patterns in
   `docs/contributing/code-guide.md`.

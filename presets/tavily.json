@@ -16,10 +16,7 @@
     "local": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "tavily-mcp@0.2.22"
-      ]
+      "args": ["-y", "tavily-mcp@0.2.22"]
     }
   },
   "secrets": [
@@ -32,12 +29,8 @@
     }
   ],
   "docs": "https://docs.tavily.com/documentation/mcp",
-  "notes": [
-    "Read-only; uses credits."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Read-only; uses credits."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#tavily",
   "lastVerified": "2026-09-25",
   "status": "stable"

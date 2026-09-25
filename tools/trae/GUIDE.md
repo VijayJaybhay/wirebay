@@ -6,8 +6,8 @@ The Trae AI IDE. Official docs: https://docs.trae.ai/ide/add-mcp-servers
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
+| Scope   | File                       |
+| ------- | -------------------------- |
 | project | `<project>/.trae/mcp.json` |
 
 Trae's global MCP list is edited in its UI (Settings → MCP → Add → Raw Config), and the file

@@ -37,9 +37,7 @@
   "env": {
     "ENABLE_TF_OPERATIONS": "false"
   },
-  "prereqs": [
-    "docker"
-  ],
+  "prereqs": ["docker"],
   "docs": "https://github.com/hashicorp/terraform-mcp-server",
   "notes": [
     "Runs Docker. Registry tools work without a token; set TFE_TOKEN for HCP Terraform. Applies/destroys stay off unless ENABLE_TF_OPERATIONS=true."

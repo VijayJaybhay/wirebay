@@ -1,0 +1,10 @@
+# Generated or build output only.
+dist/
+docs-api/
+coverage/
+wirebay-export/
+package-lock.json
+# Changesets writes this file.
+CHANGELOG.md
+# Byte-exact snapshots of what wirebay writes into tool configs (checked by tests).
+tools/*/examples/

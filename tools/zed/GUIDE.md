@@ -4,10 +4,10 @@ The Zed editor's agent panel. Official docs: https://zed.dev/docs/ai/mcp
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | macOS/Linux `~/.config/zed/settings.json` (or `$XDG_CONFIG_HOME/zed/settings.json`), Windows `%APPDATA%\Zed\settings.json` |
-| project | `<project>/.zed/settings.json` |
+| Scope   | File                                                                                                                       |
+| ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| user    | macOS/Linux `~/.config/zed/settings.json` (or `$XDG_CONFIG_HOME/zed/settings.json`), Windows `%APPDATA%\Zed\settings.json` |
+| project | `<project>/.zed/settings.json`                                                                                             |
 
 Servers live under **`context_servers`** inside Zed's general settings file (JSONC). wirebay only
 edits that key and keeps comments and every other setting.
@@ -37,7 +37,7 @@ Settings → AI → MCP Servers. A green dot ("Server is active") means it's run
 ## Quirks
 
 - Older Zed builds used a nested `"command": { "path", "args" }` form with `"source": "custom"`. Current Zed uses the flat form wirebay writes.
-- The macOS/Linux path is the *settings* folder, not Zed's data folder in `~/Library/Application Support`.
+- The macOS/Linux path is the _settings_ folder, not Zed's data folder in `~/Library/Application Support`.
 
 ## Changelog
 

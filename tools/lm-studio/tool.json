@@ -3,21 +3,14 @@
   "version": 1,
   "id": "lm-studio",
   "name": "LM Studio",
-  "aliases": [
-    "lmstudio"
-  ],
+  "aliases": ["lmstudio"],
   "homepage": "https://lmstudio.ai",
   "docs": {
     "mcp": "https://lmstudio.ai/docs/app/mcp"
   },
   "detect": {
-    "commands": [
-      "lms"
-    ],
-    "paths": [
-      "~/.lmstudio",
-      "~/.cache/lm-studio"
-    ]
+    "commands": ["lms"],
+    "paths": ["~/.lmstudio", "~/.cache/lm-studio"]
   },
   "configs": {
     "user": {

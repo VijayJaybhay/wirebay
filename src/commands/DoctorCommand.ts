@@ -23,7 +23,7 @@ export class DoctorCommand extends Command {
   async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
     const t = ctx.terminal;
     const json = !!input.flags.json;
-    const print = (c: DoctorCheck) => {
+    const print = (c: DoctorCheck): void => {
       if (json) return;
       const icon = c.status === "ok" ? t.ok("✓") : c.status === "warn" ? t.warn("!") : t.err("✗");
       t.out(`${icon} ${t.dim(c.area + ":")} ${c.name}${c.detail ? t.dim(`  ${c.detail}`) : ""}`);
@@ -42,7 +42,12 @@ export class DoctorCommand extends Command {
     const fails = checks.filter((c) => c.status === "fail").length;
     const warns = checks.filter((c) => c.status === "warn").length;
     if (json) t.json({ ok: fails === 0, fails, warnings: warns, checks });
-    else t.out(fails ? t.err(`\n${fails} problem(s), ${warns} warning(s).`) : t.ok(`\nAll good${warns ? ` (${warns} warning(s))` : ""}.`));
+    else
+      t.out(
+        fails
+          ? t.err(`\n${String(fails)} problem(s), ${String(warns)} warning(s).`)
+          : t.ok(`\nAll good${warns ? ` (${String(warns)} warning(s))` : ""}.`),
+      );
     return fails ? ExitCode.DoctorProblems : ExitCode.Ok;
   }
 }

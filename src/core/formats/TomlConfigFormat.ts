@@ -37,9 +37,11 @@ export class TomlConfigFormat implements ConfigFormat {
   write(text: string, rootKey: string, changes: Changes, file: string): string {
     const split = TomlConfigFormat.split(text);
     const managed = split.block.trim() ? TomlConfigFormat.dig(TomlConfigFormat.parseOrThrow(split.block, file), rootKey) : {};
-    const next: Record<string, Entry> = { ...managed };
-    for (const name of changes.remove) delete next[name];
-    Object.assign(next, changes.set);
+    const removed = new Set(changes.remove);
+    const next: Record<string, Entry> = {
+      ...Object.fromEntries(Object.entries(managed).filter(([name]) => !removed.has(name))),
+      ...changes.set,
+    };
 
     const body = Object.keys(next).length
       ? `${TomlConfigFormat.blockStart}\n${stringify(TomlConfigFormat.nest(rootKey, next)).trim()}\n${TomlConfigFormat.blockEnd}\n`
@@ -70,9 +72,10 @@ export class TomlConfigFormat implements ConfigFormat {
 
   private static parseOrThrow(text: string, file: string): Record<string, unknown> {
     try {
-      return parse(text) as Record<string, unknown>;
+      return parse(text);
     } catch (err) {
-      throw new ConfigParseError(file, `invalid TOML (${(err as Error).message.split("\n")[0]})`);
+      const firstLine = (err as Error).message.split("\n")[0] ?? "";
+      throw new ConfigParseError(file, `invalid TOML (${firstLine})`);
     }
   }
 

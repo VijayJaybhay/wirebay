@@ -6,9 +6,9 @@ The Warp terminal's agents. Official docs: https://docs.warp.dev/knowledge-and-c
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.warp/.mcp.json` |
+| Scope   | File                        |
+| ------- | --------------------------- |
+| user    | `~/.warp/.mcp.json`         |
 | project | `<project>/.warp/.mcp.json` |
 
 Warp can also read other tools' files (Claude Code, Codex). If you already sync to those, you may

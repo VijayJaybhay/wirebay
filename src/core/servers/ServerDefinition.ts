@@ -17,6 +17,8 @@ import type { Launch, SecretSpec, ServerCategory, ServerDef } from "../types.ts"
  * def.authLabel();      // "token"
  */
 export class ServerDefinition {
+  private static readonly templates = new TemplateExpander();
+
   /** The raw definition as stored in JSON. */
   readonly data: ServerDef;
 
@@ -98,13 +100,13 @@ export class ServerDefinition {
   /** Every environment key this server may receive: declared secrets plus variables it references. */
   declaredKeys(): string[] {
     const keys = new Set(this.secrets.map((s) => s.key));
-    for (const v of Object.values(this.env)) TemplateExpander.variablesIn(v).forEach((k) => keys.add(k));
+    for (const v of Object.values(this.env)) ServerDefinition.templates.variablesIn(v).forEach((k) => keys.add(k));
     const launch = this.launch;
     if (launch.type === "stdio") {
-      TemplateExpander.variablesInArgs(launch.args).forEach((k) => keys.add(k));
+      ServerDefinition.templates.variablesInArgs(launch.args).forEach((k) => keys.add(k));
     } else {
-      TemplateExpander.variablesIn(launch.url).forEach((k) => keys.add(k));
-      for (const h of Object.values(launch.headers ?? {})) TemplateExpander.variablesIn(h).forEach((k) => keys.add(k));
+      ServerDefinition.templates.variablesIn(launch.url).forEach((k) => keys.add(k));
+      for (const h of Object.values(launch.headers ?? {})) ServerDefinition.templates.variablesIn(h).forEach((k) => keys.add(k));
       if (launch.auth && "secret" in launch.auth) keys.add(launch.auth.secret);
     }
     return [...keys];
@@ -114,7 +116,8 @@ export class ServerDefinition {
   requiredKeys(): string[] {
     const keys = this.secrets.filter((s) => s.required).map((s) => s.key);
     const launch = this.launch;
-    if (launch.type === "remote" && launch.auth && "secret" in launch.auth && !keys.includes(launch.auth.secret)) keys.push(launch.auth.secret);
+    if (launch.type === "remote" && launch.auth && "secret" in launch.auth && !keys.includes(launch.auth.secret))
+      keys.push(launch.auth.secret);
     return keys;
   }
 
@@ -125,7 +128,7 @@ export class ServerDefinition {
     if (launch.type === "remote" && (!launch.auth || launch.auth.type === "none")) return "none";
     if (launch.type === "remote" && launch.auth && "secret" in launch.auth) return "token";
     const required = this.secrets.filter((s) => s.required);
-    if (required.length) return required.length === 1 ? "token" : `${required.length} keys`;
+    if (required.length) return required.length === 1 ? "token" : `${String(required.length)} keys`;
     return this.secrets.length ? "optional" : "none";
   }
 

@@ -18,6 +18,7 @@ export class ToolRegistry {
   private readonly paths: WirebayPaths;
   private readonly writer: SafeFileWriter;
   private cache?: Tool[];
+  private readonly validator = new SchemaValidator();
 
   constructor(paths: WirebayPaths, writer: SafeFileWriter) {
     this.paths = paths;
@@ -71,11 +72,13 @@ export class ToolRegistry {
       // Only folders hold tools (skip INDEX.md and _template/).
       if (!entry.isDirectory() || entry.name.startsWith("_")) continue;
       const file = path.join(dir, entry.name, "tool.json");
-      const manifest = this.writer.readJson<ToolManifest>(file);
+      const manifest = this.writer.readJson(file) as ToolManifest | undefined;
       if (!manifest) continue;
-      const errors = SchemaValidator.validate("tool", manifest);
+      const errors = this.validator.validate("tool", manifest);
       if (errors.length) {
-        throw new WirebayError(`Invalid tool manifest ${file}:\n  ${errors.join("\n  ")}`, { hint: "Fix the manifest (see schemas/tool.schema.json) or remove it." });
+        throw new WirebayError(`Invalid tool manifest ${file}:\n  ${errors.join("\n  ")}`, {
+          hint: "Fix the manifest (see schemas/tool.schema.json) or remove it.",
+        });
       }
       out.push(new Tool({ ...manifest, source }));
     }

@@ -5,15 +5,15 @@ Windsurf was renamed **Devin Desktop** on 2026-06-02. Its **Cascade** agent and 
 https://docs.devin.ai/cli/extensibility/mcp/configuration. Cascade docs: https://docs.devin.ai/desktop/cascade/mcp
 (`docs.windsurf.com/windsurf/cascade/mcp` redirects there).
 
-> **Status: beta.** The Devin Desktop FAQ still mentions the old `~/.codeium` location (see *Quirks*). If your
+> **Status: beta.** The Devin Desktop FAQ still mentions the old `~/.codeium` location (see _Quirks_). If your
 > servers don't show up, use the override below and please
 > [report it](https://github.com/VijayJaybhay/wirebay/issues/new?template=config-changed.yml).
 
 ## Where the config lives
 
-| OS | File (per the Cascade MCP docs) |
-|---|---|
-| Windows | `%APPDATA%\devin\mcp_config.json` |
+| OS            | File (per the Cascade MCP docs)                                                 |
+| ------------- | ------------------------------------------------------------------------------- |
+| Windows       | `%APPDATA%\devin\mcp_config.json`                                               |
 | macOS / Linux | `~/.config/devin/mcp_config.json` (or `$XDG_CONFIG_HOME/devin/mcp_config.json`) |
 
 Project scope: `<project>/.devin/mcp_config.json` (Devin CLI; `.devin/mcp_config.local.json` is the git-ignored variant). The Devin CLI also honours a `DEVIN_MCP_CONFIG` path override. Servers live under
@@ -52,6 +52,7 @@ at most 100 tools across all servers.
   mkdir -p ~/.wirebay/tools/devin
   # copy tools/devin/tool.json there and set configs.user.path to "~/.codeium/windsurf/mcp_config.json"
   ```
+
 - Cascade supports `${env:VAR}` and `${file:/path}` placeholders; wirebay doesn't need them.
 - If an admin allowlists MCP servers, any server not on the list is blocked.
 - The "Devin Local" agent in Devin Desktop uses the Devin CLI config, which is this same file.

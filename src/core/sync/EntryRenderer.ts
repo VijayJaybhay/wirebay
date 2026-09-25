@@ -70,10 +70,10 @@ export class EntryRenderer {
     const ctx = this.context;
     const env: Record<string, string> = ctx.wirebayHome ? { WIREBAY_HOME: ctx.wirebayHome } : {};
     if (ctx.mode === "absolute") return { command: ctx.nodePath, args: [ctx.cliPath, "run", server], env };
-    const base = ctx.mode === "portable" ? ["wirebay", "run", server] : ["npx", "-y", "wirebay@latest", "run", server];
+    const [command, ...args] = ctx.mode === "portable" ? ["wirebay", "run", server] : ["npx", "-y", "wirebay@latest", "run", server];
     // Most tools cannot start Windows .cmd shims (wirebay.cmd, npx.cmd) directly.
-    if (ctx.os === "win32" && !tool.supportsCmdShims) return { command: "cmd", args: ["/c", ...base], env };
-    return { command: base[0]!, args: base.slice(1), env };
+    if (ctx.os === "win32" && !tool.supportsCmdShims) return { command: "cmd", args: ["/c", command, ...args], env };
+    return { command, args, env };
   }
 
   /** The full entry for a server in a tool's config. */
@@ -92,7 +92,8 @@ export class EntryRenderer {
       else if (raw === "{name}") out[key] = values.name;
       else if (raw === "{env}") {
         if (Object.keys(values.env).length) out[key] = values.env;
-      } else if (raw && typeof raw === "object" && !Array.isArray(raw)) out[key] = EntryRenderer.fill(raw as Record<string, unknown>, values);
+      } else if (raw && typeof raw === "object" && !Array.isArray(raw))
+        out[key] = EntryRenderer.fill(raw as Record<string, unknown>, values);
       else out[key] = raw;
     }
     return out;

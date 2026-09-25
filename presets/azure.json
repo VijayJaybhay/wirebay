@@ -7,24 +7,13 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@azure/mcp@2.0.5",
-      "server",
-      "start",
-      "--read-only"
-    ]
+    "args": ["-y", "@azure/mcp@2.0.5", "server", "start", "--read-only"]
   },
   "variants": {
     "read-write": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@azure/mcp@2.0.5",
-        "server",
-        "start"
-      ]
+      "args": ["-y", "@azure/mcp@2.0.5", "server", "start"]
     }
   },
   "secrets": [
@@ -44,9 +33,7 @@
   "env": {
     "AZURE_MCP_COLLECT_TELEMETRY": "false"
   },
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/microsoft/mcp/tree/main/servers/Azure.Mcp.Server",
   "notes": [
     "Read-only by default; `--variant read-write` allows changes. Signs in with `az login` or a service principal. Telemetry is turned off."

@@ -15,10 +15,7 @@
     "local": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@heroku/mcp-server@1.2.9"
-      ]
+      "args": ["-y", "@heroku/mcp-server@1.2.9"]
     }
   },
   "secrets": [
@@ -28,12 +25,8 @@
     }
   ],
   "docs": "https://devcenter.heroku.com/articles/heroku-remote-mcp-server",
-  "notes": [
-    "Can scale, deploy and delete apps. `--variant local` uses HEROKU_API_KEY instead of browser sign-in."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Can scale, deploy and delete apps. `--variant local` uses HEROKU_API_KEY instead of browser sign-in."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#heroku",
   "lastVerified": "2026-09-25",
   "status": "stable"

@@ -7,22 +7,15 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@mobilenext/mobile-mcp@1.0.5"
-    ]
+    "args": ["-y", "@mobilenext/mobile-mcp@1.0.5"]
   },
   "secrets": [],
   "env": {
     "MOBILEMCP_DISABLE_TELEMETRY": "1"
   },
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/mobile-next/mobile-mcp",
-  "notes": [
-    "Android needs `adb` (Platform Tools); iOS needs macOS with Xcode command line tools. Telemetry is turned off."
-  ],
+  "notes": ["Android needs `adb` (Platform Tools); iOS needs macOS with Xcode command line tools. Telemetry is turned off."],
   "guide": "docs/servers/catalog.md#mobile-mcp",
   "lastVerified": "2026-09-25",
   "status": "stable"

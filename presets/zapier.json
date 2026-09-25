@@ -28,13 +28,9 @@
       "help": "https://mcp.zapier.com"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://docs.zapier.com/mcp/overview/how-connections-work",
-  "notes": [
-    "Can run every action you enable on the Zapier MCP server; usage counts against your Zapier task limit."
-  ],
+  "notes": ["Can run every action you enable on the Zapier MCP server; usage counts against your Zapier task limit."],
   "guide": "docs/servers/catalog.md#zapier",
   "lastVerified": "2026-09-25",
   "status": "stable"

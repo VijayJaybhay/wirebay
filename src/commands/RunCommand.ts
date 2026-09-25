@@ -14,7 +14,11 @@ import { Command } from "./Command.ts";
  */
 export class RunCommand extends Command {
   readonly name = "run";
-  readonly help = { usage: "wirebay run <server>", summary: "Start a server with its secrets (this is what tool configs call).", examples: ["wirebay run github"] };
+  readonly help = {
+    usage: "wirebay run <server>",
+    summary: "Start a server with its secrets (this is what tool configs call).",
+    examples: ["wirebay run github"],
+  };
 
   async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
     const name = input.rest[0];

@@ -21,27 +21,27 @@ $ wirebay push github to codex and cursor
    - no servers → every server you added
    - no tools → the tools each server is enabled for
    - `add X` with no tools → the tools detected at `wirebay init`
-6. **Typos** get a suggestion: `wirebay snyc` → *Did you mean "sync"?*
+6. **Typos** get a suggestion: `wirebay snyc` → _Did you mean "sync"?_
 7. **Options can go anywhere**, and `--to`, `--from`, `--for` and `--server` accept comma-separated lists.
 
 ## Verbs and aliases
 
-| Verb | Also accepted |
-|---|---|
-| `add` | `install`, `new` |
-| `sync` | `push`, `apply`, `deploy` |
-| `export` | `generate` |
-| `enable` | `on` |
-| `disable` | `off` |
-| `remove` | `rm`, `delete`, `uninstall` |
-| `unsync` | `detach` |
-| `list` | `ls`, `status` |
-| `tools` | `clients` |
-| `secrets` | `secret`, `keys` |
-| `doctor` | `check` |
-| `init` | `setup` |
+| Verb      | Also accepted               |
+| --------- | --------------------------- |
+| `add`     | `install`, `new`            |
+| `sync`    | `push`, `apply`, `deploy`   |
+| `export`  | `generate`                  |
+| `enable`  | `on`                        |
+| `disable` | `off`                       |
+| `remove`  | `rm`, `delete`, `uninstall` |
+| `unsync`  | `detach`                    |
+| `list`    | `ls`, `status`              |
+| `tools`   | `clients`                   |
+| `secrets` | `secret`, `keys`            |
+| `doctor`  | `check`                     |
+| `init`    | `setup`                     |
 
-`update` is deliberately *not* an alias, so it can't be confused with upgrading wirebay.
+`update` is deliberately _not_ an alias, so it can't be confused with upgrading wirebay.
 
 ## Tool names
 
@@ -51,18 +51,18 @@ The full list is in the [tools directory](../tools/INDEX.md) and in `wirebay too
 
 ## Equivalent phrasings
 
-| Intent | Any of these |
-|---|---|
-| Sync everything everywhere | `sync` · `sync all` · `sync --all` · `sync everything` · `push all` |
-| All servers → Codex | `sync codex` · `sync to codex` · `sync all to codex` · `sync --to codex` |
-| One server → one tool | `sync github codex` · `sync github to codex` · `sync github --to codex` |
-| One server → all tools | `sync github to all` · `sync github --all` |
-| Many × many | `sync github netlify to codex cursor` · `sync github,netlify --to codex,cursor` |
-| Add and sync | `add github to codex` · `install github on claude` · `add github --to codex` |
-| Remove from one tool | `remove github from cursor` · `disable github from cursor` · `off github cursor` |
-| Remove everywhere | `remove github` · `rm github from all` |
-| Show status | `list` · `ls` · `status` · `ls codex` |
-| Preview | add `--dry-run` or `-n` to any command that changes files |
+| Intent                     | Any of these                                                                     |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| Sync everything everywhere | `sync` · `sync all` · `sync --all` · `sync everything` · `push all`              |
+| All servers → Codex        | `sync codex` · `sync to codex` · `sync all to codex` · `sync --to codex`         |
+| One server → one tool      | `sync github codex` · `sync github to codex` · `sync github --to codex`          |
+| One server → all tools     | `sync github to all` · `sync github --all`                                       |
+| Many × many                | `sync github netlify to codex cursor` · `sync github,netlify --to codex,cursor`  |
+| Add and sync               | `add github to codex` · `install github on claude` · `add github --to codex`     |
+| Remove from one tool       | `remove github from cursor` · `disable github from cursor` · `off github cursor` |
+| Remove everywhere          | `remove github` · `rm github from all`                                           |
+| Show status                | `list` · `ls` · `status` · `ls codex`                                            |
+| Preview                    | add `--dry-run` or `-n` to any command that changes files                        |
 
 These rows are tested in `test/unit/parse.test.ts`. If you add a phrasing, add it there.
 

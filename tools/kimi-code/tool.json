@@ -3,20 +3,14 @@
   "version": 1,
   "id": "kimi-code",
   "name": "Kimi Code CLI (Moonshot)",
-  "aliases": [
-    "kimi"
-  ],
+  "aliases": ["kimi"],
   "homepage": "https://www.kimi.com/code",
   "docs": {
     "mcp": "https://www.kimi.com/code/docs/en/kimi-code-cli/customization/mcp.html"
   },
   "detect": {
-    "commands": [
-      "kimi"
-    ],
-    "paths": [
-      "${KIMI_CODE_HOME:-~/.kimi-code}"
-    ]
+    "commands": ["kimi"],
+    "paths": ["${KIMI_CODE_HOME:-~/.kimi-code}"]
   },
   "configs": {
     "user": {

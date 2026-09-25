@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
+import type { AppContext } from "../../src/app/AppContext.ts";
 import type { Target } from "../../src/core/adapters/ToolAdapter.ts";
 import { Tool } from "../../src/core/tools/Tool.ts";
 import type { WirebayState } from "../../src/core/types.ts";
@@ -17,9 +18,21 @@ const tool = new Tool({
   rootKey: "mcpServers",
   entry: { stdio: { command: "{command}", args: "{args}" } },
 });
-const entry = (x: string) => ({ command: "node", args: [x] });
+const entry = (x: string): { command: string; args: string[] } => ({ command: "node", args: [x] });
 
-function setup(sb: Sandbox) {
+interface Setup {
+  ctx: AppContext;
+  file: string;
+  state: WirebayState;
+  target: Target;
+}
+
+/** Parse a tool file written by the test. */
+function readTool(file: string): { mcpServers: Record<string, { command: string; args: string[] }> } {
+  return JSON.parse(readFileSync(file, "utf8")) as { mcpServers: Record<string, { command: string; args: string[] }> };
+}
+
+function setup(sb: Sandbox): Setup {
   const file = path.join(sb.home, "t.json");
   writeFileSync(file, JSON.stringify({ mcpServers: { foreign: { command: "keep" } } }, null, 2));
   const state: WirebayState = { version: 1, files: {} };
@@ -27,7 +40,7 @@ function setup(sb: Sandbox) {
   return { ctx: sb.context(), file, state, target };
 }
 
-test("adds, then reports unchanged, then prunes", () =>
+await test("adds, then reports unchanged, then prunes", () =>
   withSandbox((sb) => {
     const { ctx, file, state, target } = setup(sb);
     const r = ctx.reconciler;
@@ -39,26 +52,28 @@ test("adds, then reports unchanged, then prunes", () =>
     plan = r.plan(target, state, { desired: {} });
     assert.deepEqual(plan.changes.remove, ["a"]);
     r.apply(plan, state);
-    assert.deepEqual(Object.keys(JSON.parse(readFileSync(file, "utf8")).mcpServers), ["foreign"]);
+    assert.deepEqual(Object.keys(readTool(file).mcpServers), ["foreign"]);
     assert.deepEqual(state.files, {});
   }));
 
-test("a same-named entry not created by wirebay is a conflict unless --force", () =>
+await test("a same-named entry not created by wirebay is a conflict unless --force", () =>
   withSandbox((sb) => {
     const { ctx, state, target } = setup(sb);
     const plan = ctx.reconciler.plan(target, state, { desired: { foreign: entry("x") } });
     assert.equal(plan.issues[0]?.kind, "conflict");
     assert.equal(Object.keys(plan.changes.set).length, 0);
-    assert.deepEqual(Object.keys(ctx.reconciler.plan(target, state, { desired: { foreign: entry("x") }, force: true }).changes.set), ["foreign"]);
+    assert.deepEqual(Object.keys(ctx.reconciler.plan(target, state, { desired: { foreign: entry("x") }, force: true }).changes.set), [
+      "foreign",
+    ]);
   }));
 
-test("hand-edited managed entries are drift, not overwritten or removed", () =>
+await test("hand-edited managed entries are drift, not overwritten or removed", () =>
   withSandbox((sb) => {
     const { ctx, file, state, target } = setup(sb);
     const r = ctx.reconciler;
     r.apply(r.plan(target, state, { desired: { a: entry("a") } }), state);
-    const json = JSON.parse(readFileSync(file, "utf8"));
-    json.mcpServers.a.args.push("--my-flag");
+    const json = readTool(file);
+    json.mcpServers.a?.args.push("--my-flag");
     writeFileSync(file, JSON.stringify(json, null, 2));
     assert.equal(r.plan(target, state, { desired: { a: entry("a2") } }).issues[0]?.kind, "drift");
     const removal = r.plan(target, state, { desired: {} });
@@ -67,7 +82,7 @@ test("hand-edited managed entries are drift, not overwritten or removed", () =>
     assert.deepEqual(r.plan(target, state, { desired: {}, force: true }).changes.remove, ["a"]);
   }));
 
-test("scopeNames limits which managed entries are considered", () =>
+await test("scopeNames limits which managed entries are considered", () =>
   withSandbox((sb) => {
     const { ctx, state, target } = setup(sb);
     const r = ctx.reconciler;
@@ -75,7 +90,7 @@ test("scopeNames limits which managed entries are considered", () =>
     assert.deepEqual(r.plan(target, state, { desired: {}, scopeNames: new Set(["a"]) }).changes.remove, ["a"]);
   }));
 
-test("stray files in tools folders are ignored (ENOTDIR on Linux/macOS)", () =>
+await test("stray files in tools folders are ignored (ENOTDIR on Linux/macOS)", () =>
   withSandbox((sb) => {
     const toolsDir = path.join(sb.wirebayHome, "tools");
     mkdirSync(toolsDir, { recursive: true });
@@ -85,7 +100,7 @@ test("stray files in tools folders are ignored (ENOTDIR on Linux/macOS)", () =>
     assert.equal(ctx.writer.read(path.join(toolsDir, "NOTES.md", "tool.json")), undefined);
   }));
 
-test("writes are backed up and restorable", () =>
+await test("writes are backed up and restorable", () =>
   withSandbox((sb) => {
     const { ctx, file, state, target } = setup(sb);
     const before = readFileSync(file, "utf8");

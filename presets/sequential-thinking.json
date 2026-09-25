@@ -7,15 +7,10 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@modelcontextprotocol/server-sequential-thinking@2026.8.31"
-    ]
+    "args": ["-y", "@modelcontextprotocol/server-sequential-thinking@2026.8.31"]
   },
   "secrets": [],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking",
   "guide": "docs/servers/catalog.md#sequential-thinking",
   "lastVerified": "2026-09-25",

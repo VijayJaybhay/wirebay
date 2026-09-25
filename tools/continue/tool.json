@@ -3,18 +3,14 @@
   "version": 1,
   "id": "continue",
   "name": "Continue",
-  "aliases": [
-    "continue-dev"
-  ],
+  "aliases": ["continue-dev"],
   "homepage": "https://continue.dev",
   "docs": {
     "mcp": "https://docs.continue.dev/customize/deep-dives/mcp",
     "changelog": "https://github.com/continuedev/continue/releases"
   },
   "detect": {
-    "paths": [
-      "~/.continue"
-    ]
+    "paths": ["~/.continue"]
   },
   "configs": {
     "project": {

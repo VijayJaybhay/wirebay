@@ -7,12 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@brave/brave-search-mcp-server@2.1.4",
-      "--transport",
-      "stdio"
-    ]
+    "args": ["-y", "@brave/brave-search-mcp-server@2.1.4", "--transport", "stdio"]
   },
   "secrets": [
     {
@@ -22,13 +17,9 @@
       "help": "https://api-dashboard.search.brave.com/app/keys"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/brave/brave-search-mcp-server",
-  "notes": [
-    "Read-only."
-  ],
+  "notes": ["Read-only."],
   "guide": "docs/servers/catalog.md#brave-search",
   "lastVerified": "2026-09-25",
   "status": "stable"

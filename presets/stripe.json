@@ -33,9 +33,7 @@
   "notes": [
     "High risk: can create refunds, subscriptions and payment links. Prefer a sandbox. From 2026-10-31 only Agent API keys or browser sign-in work."
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#stripe",
   "lastVerified": "2026-09-25"
 }

@@ -25,9 +25,7 @@
   "notes": [
     "Can create services, trigger deploys and edit environment variables. SQL queries are read-only. Choose the workspace in your first prompt."
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#render",
   "lastVerified": "2026-09-25",
   "status": "stable"

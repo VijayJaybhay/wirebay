@@ -14,12 +14,8 @@
   },
   "secrets": [],
   "docs": "https://vercel.com/docs/agent-resources/vercel-mcp",
-  "notes": [
-    "Beta; Vercel only allows approved clients. Can deploy code and make purchases."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Beta; Vercel only allows approved clients. Can deploy code and make purchases."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#vercel",
   "lastVerified": "2026-09-25"
 }

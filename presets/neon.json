@@ -28,9 +28,7 @@
       "help": "https://console.neon.tech/app/settings?modal=create_api_key"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://neon.com/docs/ai/neon-mcp-server",
   "notes": [
     "Read-only by default. Signs in through the browser; `--variant token` uses NEON_API_KEY. Intended for development, not production."

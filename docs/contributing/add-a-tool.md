@@ -30,27 +30,28 @@ Your editor autocompletes and validates it through `"$schema"`. The important fi
 
 ```jsonc
 {
-  "id": "windsurf",                        // lowercase, also the folder name
+  "id": "windsurf", // lowercase, also the folder name
   "name": "Windsurf",
-  "aliases": ["codeium"],                  // extra names accepted in commands
-  "docs": { "mcp": "https://…" },          // official MCP docs (required for maintenance)
+  "aliases": ["codeium"], // extra names accepted in commands
+  "docs": { "mcp": "https://…" }, // official MCP docs (required for maintenance)
   "detect": { "commands": ["windsurf"], "paths": ["~/.codeium/windsurf"] },
   "configs": {
-    "user": { "path": "~/.codeium/windsurf/mcp_config.json", "createIfMissing": true }
+    "user": { "path": "~/.codeium/windsurf/mcp_config.json", "createIfMissing": true },
     // "project": { "path": "{cwd}/.windsurf/mcp.json" }
   },
-  "format": "json",                        // json | jsonc | toml | yaml
-  "rootKey": "mcpServers",                 // dots for nesting: "mcp.servers"
-  "mergeStrategy": "edit",                 // "managed-block" for TOML
+  "format": "json", // json | jsonc | toml | yaml
+  "rootKey": "mcpServers", // dots for nesting: "mcp.servers"
+  "mergeStrategy": "edit", // "managed-block" for TOML
   "entry": { "stdio": { "command": "{command}", "args": "{args}", "env": "{env}" } },
   "supports": { "stdio": true, "http": true, "envExpansion": false, "cmdShims": false },
   "restartRequired": false,
-  "status": "beta",                        // beta until verified by a second person
-  "lastVerified": "2026-09-25"
+  "status": "beta", // beta until verified by a second person
+  "lastVerified": "2026-09-25",
 }
 ```
 
 **Path placeholders:**
+
 - `~`: home
 - `{appdata}`: `%APPDATA%` / `~/Library/Application Support` / `~/.config`
 - `{config}`: `~/.config`, or `%APPDATA%` on Windows
@@ -60,6 +61,7 @@ Your editor autocompletes and validates it through `"$schema"`. The important fi
 For per-OS paths, use `{ "win32": "…", "darwin": "…", "linux": "…" }`.
 
 **Entry template:** wirebay fills in these placeholders:
+
 - `{command}` and `{args}`
 - `{env}`, omitted when empty
 - `{commandLine}`, which is `[command, ...args]` for tools like opencode
@@ -69,8 +71,8 @@ Root keys use dots for nesting. Write `\\.` for a literal dot, as in `"amp\\.mcp
 
 ## 4. Write `GUIDE.md`
 
-Keep the sections from the template: *Where the config lives*, *How wirebay syncs it*, *Doing it by
-hand*, *Verify*, *Quirks*, *Changelog*.
+Keep the sections from the template: _Where the config lives_, _How wirebay syncs it_, _Doing it by
+hand_, _Verify_, _Quirks_, _Changelog_.
 
 ## 5. Generate, validate, test
 

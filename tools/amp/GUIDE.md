@@ -4,10 +4,10 @@ Official MCP docs: https://ampcode.com/docs/customize/mcp
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | macOS/Linux `~/.config/amp/settings.json`, Windows `%APPDATA%\amp\settings.json` |
-| project | `<project>/.amp/settings.json` |
+| Scope   | File                                                                             |
+| ------- | -------------------------------------------------------------------------------- |
+| user    | macOS/Linux `~/.config/amp/settings.json`, Windows `%APPDATA%\amp\settings.json` |
+| project | `<project>/.amp/settings.json`                                                   |
 
 Servers live under the **flat** key `"amp.mcpServers"` (the dot is part of the key name).
 
@@ -22,7 +22,7 @@ wirebay add github to amp        # also accepted: ampcode
 ```json
 {
   "amp.mcpServers": {
-    "github": {"command":"wirebay","args":["run","github"]}
+    "github": { "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

@@ -2,12 +2,12 @@
 
 ## Requirements
 
-| Needed for | What |
-|---|---|
-| wirebay itself | Node.js **24 or newer** |
-| npm-based servers (GitHub remote, Netlify, Firebase, most others) | `npx` (comes with Node.js) |
-| Python-based servers (AWS) | [uv](https://docs.astral.sh/uv/getting-started/installation/), which provides `uvx` |
-| Docker-based servers (GitHub docker variant, …) | Docker Desktop / Docker Engine |
+| Needed for                                                        | What                                                                                |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| wirebay itself                                                    | Node.js **24 or newer**                                                             |
+| npm-based servers (GitHub remote, Netlify, Firebase, most others) | `npx` (comes with Node.js)                                                          |
+| Python-based servers (AWS)                                        | [uv](https://docs.astral.sh/uv/getting-started/installation/), which provides `uvx` |
+| Docker-based servers (GitHub docker variant, …)                   | Docker Desktop / Docker Engine                                                      |
 
 ## Global install (recommended)
 

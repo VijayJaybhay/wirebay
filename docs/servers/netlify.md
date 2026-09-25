@@ -49,15 +49,15 @@ preset, create `~/.wirebay/servers/netlify.json`:
 wirebay doctor netlify
 ```
 
-Expect `netlify-mcp 1.x · N tools`. Then ask: *"List my Netlify sites and their last deploy status."*
+Expect `netlify-mcp 1.x · N tools`. Then ask: _"List my Netlify sites and their last deploy status."_
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| Tool calls fail with 401 | The token is wrong, expired or revoked. Run `wirebay secrets set NETLIFY_PERSONAL_ACCESS_TOKEN`. |
+| Symptom                                  | Fix                                                                                                   |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Tool calls fail with 401                 | The token is wrong, expired or revoked. Run `wirebay secrets set NETLIFY_PERSONAL_ACCESS_TOKEN`.      |
 | Server times out on first start in Codex | The first `npx` download can take a minute. Run `wirebay doctor netlify` once, then restart the tool. |
-| `Cannot find "npx"` | Install Node.js, then run `wirebay init` again. |
+| `Cannot find "npx"`                      | Install Node.js, then run `wirebay init` again.                                                       |
 
 **Rotating the token:** create a new token, run `wirebay secrets set NETLIFY_PERSONAL_ACCESS_TOKEN`,
 restart your AI tool, then delete the old token in Netlify.

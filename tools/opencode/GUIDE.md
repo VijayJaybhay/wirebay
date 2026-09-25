@@ -6,12 +6,13 @@ The open-source terminal coding agent. Official docs: https://opencode.ai/docs/m
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.config/opencode/opencode.json` |
-| project | `<project>/opencode.json` |
+| Scope   | File                               |
+| ------- | ---------------------------------- |
+| user    | `~/.config/opencode/opencode.json` |
+| project | `<project>/opencode.json`          |
 
 Servers live under **`mcp`**. opencode differs from most tools:
+
 - `command` is **one array** that includes the arguments.
 - Environment variables go in **`environment`**.
 - `type: "local"` is required.

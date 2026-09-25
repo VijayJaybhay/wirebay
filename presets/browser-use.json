@@ -7,12 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "uvx",
-    "args": [
-      "--from",
-      "browser-use[cli]==0.13.10",
-      "browser-use",
-      "--mcp"
-    ]
+    "args": ["--from", "browser-use[cli]==0.13.10", "browser-use", "--mcp"]
   },
   "variants": {
     "cloud": {
@@ -46,13 +41,9 @@
       "help": "https://cloud.browser-use.com/settings?tab=api-keys"
     }
   ],
-  "prereqs": [
-    "uvx"
-  ],
+  "prereqs": ["uvx"],
   "docs": "https://docs.browser-use.com/open-source/customize/integrations/mcp-server",
-  "notes": [
-    "Browses autonomously and can act in logged-in sessions. The cloud variant bills per session."
-  ],
+  "notes": ["Browses autonomously and can act in logged-in sessions. The cloud variant bills per session."],
   "guide": "docs/servers/catalog.md#browser-use",
   "lastVerified": "2026-09-25",
   "status": "stable"

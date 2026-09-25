@@ -12,7 +12,7 @@
 
 ## Checklist
 
-- [ ] `npm run lint && npm test && npm run validate` pass
+- [ ] `npm run check` passes: zero lint errors and warnings, no suppression comments added
 - [ ] `npm run gen:docs` run, and generated files committed (examples, INDEX, README tables, CLI reference)
 - [ ] Docs/guides updated (`GUIDE.md`, `docs/servers/<name>.md`, …)
 - [ ] `lastVerified` bumped for tools/presets I verified

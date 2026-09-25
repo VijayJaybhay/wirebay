@@ -5,9 +5,9 @@ Official MCP docs: https://developers.openai.com/codex/mcp
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.codex/config.toml` (or `$CODEX_HOME/config.toml`) |
+| Scope | File                                                  |
+| ----- | ----------------------------------------------------- |
+| user  | `~/.codex/config.toml` (or `$CODEX_HOME/config.toml`) |
 
 Servers are TOML tables named `[mcp_servers.<name>]` with `command`, `args`, `env`, and optional
 `startup_timeout_sec` / `tool_timeout_sec`.

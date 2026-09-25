@@ -27,6 +27,7 @@ export class ToolDirectory {
   private static readonly extensions: Record<ToolManifest["format"], string> = { json: "json", jsonc: "json", toml: "toml", yaml: "yaml" };
 
   private readonly adapters: AdapterFactory;
+  private readonly validator = new SchemaValidator();
 
   constructor(adapters: AdapterFactory) {
     this.adapters = adapters;
@@ -39,7 +40,12 @@ export class ToolDirectory {
 
   /** The example config text: placeholders (`{{NODE}}`, `{{WIREBAY_CLI}}`) keep it identical on every machine. */
   renderExample(tool: Tool, scope: ScopeName): string {
-    const renderer = new EntryRenderer({ mode: scope === "project" ? "portable" : "absolute", nodePath: "{{NODE}}", cliPath: "{{WIREBAY_CLI}}", os: "linux" });
+    const renderer = new EntryRenderer({
+      mode: scope === "project" ? "portable" : "absolute",
+      nodePath: "{{NODE}}",
+      cliPath: "{{WIREBAY_CLI}}",
+      os: "linux",
+    });
     const set = Object.fromEntries(ToolDirectory.exampleServers.map((s) => [s, renderer.render(s, tool)]));
     const target = { tool, scope, file: `example.${ToolDirectory.extensions[tool.format]}` };
     const empty = { text: "", exists: false, entries: {}, locked: new Set<string>() };
@@ -49,8 +55,9 @@ export class ToolDirectory {
   /** Check a tool's manifest against the schema and its examples against the renderer. */
   verify(tool: Tool): VerifyResult {
     const checks: VerifyResult["checks"] = [];
-    const { source: _ignored, ...raw } = tool.manifest;
-    const errors = SchemaValidator.validate("tool", raw);
+    const raw: ToolManifest = { ...tool.manifest };
+    delete raw.source;
+    const errors = this.validator.validate("tool", raw);
     checks.push({ name: "manifest matches schema", ok: !errors.length, detail: errors.join("; ") || undefined });
     for (const scope of tool.scopes) {
       const name = ToolDirectory.exampleFileName(tool, scope);
@@ -60,7 +67,11 @@ export class ToolDirectory {
         continue;
       }
       const same = readFileSync(file, "utf8").replace(/\r\n/g, "\n") === this.renderExample(tool, scope);
-      checks.push({ name: `renders like examples/${name}`, ok: same, detail: same ? undefined : "output changed; review and run `npm run gen:docs`" });
+      checks.push({
+        name: `renders like examples/${name}`,
+        ok: same,
+        detail: same ? undefined : "output changed; review and run `npm run gen:docs`",
+      });
     }
     const verified = tool.manifest.lastVerified;
     const age = verified ? Math.floor((Date.now() - Date.parse(verified)) / 86_400_000) : Infinity;

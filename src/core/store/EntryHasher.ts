@@ -7,27 +7,32 @@ import { createHash } from "node:crypto";
 
 /** Stable serialisation and hashing of JSON-like values. */
 export class EntryHasher {
+  private readonly length: number;
+
+  /** @param length - Number of hex characters kept from the SHA-256 digest. */
+  constructor(length = 16) {
+    this.length = length;
+  }
+
   /** JSON with object keys sorted, so `{a,b}` and `{b,a}` serialise the same. `undefined` fields are dropped. */
-  static stableStringify(value: unknown): string {
-    if (Array.isArray(value)) return `[${value.map((v) => EntryHasher.stableStringify(v)).join(",")}]`;
-    if (value && typeof value === "object") {
-      const obj = value as Record<string, unknown>;
-      return `{${Object.keys(obj)
-        .filter((k) => obj[k] !== undefined)
-        .sort()
-        .map((k) => `${JSON.stringify(k)}:${EntryHasher.stableStringify(obj[k])}`)
-        .join(",")}}`;
+  stableStringify(value: unknown): string {
+    if (Array.isArray(value)) return `[${value.map((v) => this.stableStringify(v)).join(",")}]`;
+    if (value !== null && typeof value === "object") {
+      const entries = Object.entries(value as Record<string, unknown>)
+        .filter(([, v]) => v !== undefined)
+        .sort(([a], [b]) => a.localeCompare(b));
+      return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${this.stableStringify(v)}`).join(",")}}`;
     }
     return JSON.stringify(value);
   }
 
-  /** A short (16 hex chars) SHA-256 of the stable serialisation. */
-  static hash(value: unknown): string {
-    return createHash("sha256").update(EntryHasher.stableStringify(value)).digest("hex").slice(0, 16);
+  /** A short SHA-256 of the stable serialisation. */
+  hash(value: unknown): string {
+    return createHash("sha256").update(this.stableStringify(value)).digest("hex").slice(0, this.length);
   }
 
   /** Deep equality that ignores key order. */
-  static same(a: unknown, b: unknown): boolean {
-    return EntryHasher.stableStringify(a) === EntryHasher.stableStringify(b);
+  same(a: unknown, b: unknown): boolean {
+    return this.stableStringify(a) === this.stableStringify(b);
   }
 }

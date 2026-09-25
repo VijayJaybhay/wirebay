@@ -9,17 +9,17 @@ import { JsonConfigFormat } from "./JsonConfigFormat.ts";
 import { TomlConfigFormat } from "./TomlConfigFormat.ts";
 import { YamlConfigFormat } from "./YamlConfigFormat.ts";
 
-/** Factory for config format strategies. Formats are stateless, so instances are shared. */
+/** Factory for config format strategies. Formats are stateless, so each is created once per factory. */
 export class ConfigFormatFactory {
-  private static readonly formats: Record<ToolManifest["format"], ConfigFormat> = {
-    json: new JsonConfigFormat(),
-    jsonc: new JsonConfigFormat(),
-    toml: new TomlConfigFormat(),
-    yaml: new YamlConfigFormat(),
-  };
+  private readonly formats: Record<ToolManifest["format"], ConfigFormat>;
+
+  constructor() {
+    const json = new JsonConfigFormat();
+    this.formats = { json, jsonc: json, toml: new TomlConfigFormat(), yaml: new YamlConfigFormat() };
+  }
 
   /** The strategy for a manifest format. */
-  static for(format: ToolManifest["format"]): ConfigFormat {
-    return ConfigFormatFactory.formats[format];
+  for(format: ToolManifest["format"]): ConfigFormat {
+    return this.formats[format];
   }
 }

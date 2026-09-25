@@ -20,15 +20,15 @@ find where to change something from the class names alone.
 
 ## Design patterns in use
 
-| Pattern | Where | Why |
-|---|---|---|
-| **Composition root / DI container** | `app/AppContext.ts` | One place creates and wires services, lazily. Tests pass a sandboxed `env`. |
-| **Command** | `commands/Command.ts` + one class per verb | Each command owns its name, aliases, help and `run()`. `CommandRegistry` collects them, and the parser's verb table and the CLI reference are derived from it. |
-| **Strategy** | `core/formats/ConfigFormat.ts` → `JsonConfigFormat`, `TomlConfigFormat`, `YamlConfigFormat` | One interface for reading and editing a config format. `ConfigFormatFactory` picks one from `tool.json → format`. |
-| **Template Method** | `core/adapters/ToolAdapter.ts` → `FileToolAdapter`, `ClaudeCodeAdapter` | The read/render/commit steps are shared; subclasses override only what differs (Claude Code commits through its CLI). |
-| **Factory** | `core/adapters/AdapterFactory.ts`, `ConfigFormatFactory` | Chooses and caches the right implementation for a tool. |
-| **Registry** | `ServerRegistry`, `ToolRegistry`, `CommandRegistry` | Load, validate and cache the known servers, tools and commands. |
-| **Interface for extension** | `core/secrets/SecretsBackend.ts` | A new secrets backend (keychain, 1Password) implements one interface. |
+| Pattern                             | Where                                                                                       | Why                                                                                                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Composition root / DI container** | `app/AppContext.ts`                                                                         | One place creates and wires services, lazily. Tests pass a sandboxed `env`.                                                                                    |
+| **Command**                         | `commands/Command.ts` + one class per verb                                                  | Each command owns its name, aliases, help and `run()`. `CommandRegistry` collects them, and the parser's verb table and the CLI reference are derived from it. |
+| **Strategy**                        | `core/formats/ConfigFormat.ts` → `JsonConfigFormat`, `TomlConfigFormat`, `YamlConfigFormat` | One interface for reading and editing a config format. `ConfigFormatFactory` picks one from `tool.json → format`.                                              |
+| **Template Method**                 | `core/adapters/ToolAdapter.ts` → `FileToolAdapter`, `ClaudeCodeAdapter`                     | The read/render/commit steps are shared; subclasses override only what differs (Claude Code commits through its CLI).                                          |
+| **Factory**                         | `core/adapters/AdapterFactory.ts`, `ConfigFormatFactory`                                    | Chooses and caches the right implementation for a tool.                                                                                                        |
+| **Registry**                        | `ServerRegistry`, `ToolRegistry`, `CommandRegistry`                                         | Load, validate and cache the known servers, tools and commands.                                                                                                |
+| **Interface for extension**         | `core/secrets/SecretsBackend.ts`                                                            | A new secrets backend (keychain, 1Password) implements one interface.                                                                                          |
 
 ## Where things live
 
@@ -66,10 +66,11 @@ classes may share a file (e.g. `EnableCommands.ts`).
 - Node 24 runs `.ts` directly by stripping types, so only **erasable** syntax is allowed:
   - no `enum` (use `as const` objects, like `ExitCode`)
   - no `namespace`
-  - no constructor *parameter properties*: declare fields and assign them in the constructor
+  - no constructor _parameter properties_: declare fields and assign them in the constructor
   - `abstract`, `readonly`, `private`, `protected` and `override` are fine
 
   `tsconfig.json` enforces this with `erasableSyntaxOnly`.
+
 - Import local files with the `.ts` extension; the build rewrites them to `.js`.
 - Use `import type` for type-only imports (`verbatimModuleSyntax`).
 - `strict` is on. Prefer precise types over `any`; `unknown` plus narrowing when needed.
@@ -110,7 +111,21 @@ classes may share a file (e.g. `EnableCommands.ts`).
   through `ctx.terminal.note()` (stderr), and `--json` through `ctx.terminal.json()`.
 - **`wirebay run` never writes to stdout** (it carries the MCP protocol).
 
+## Lint and format policy
+
+- ESLint uses `typescript-eslint` **strict** and **stylistic** type-checked presets, plus explicit
+  return types, `import type`, `eqeqeq` and no `console` in library code. Prettier owns formatting
+  (140 columns, double quotes, trailing commas).
+- **Zero errors and zero warnings**, enforced with `--max-warnings 0` locally, in git hooks and in CI.
+- **No suppressions.** `noInlineConfig` turns off inline lint directives, `ban-ts-comment` rejects
+  TypeScript suppression comments, and `no-warning-comments` reports formatter and coverage escape
+  comments. Ignore lists hold only generated or build output.
+- Typical fixes: use `defined(value, what)` (from `core/util/values.ts`) instead of a non-null
+  assertion; narrow `unknown` values with a type or guard; convert numbers with `String()` in
+  template literals; use `Map`/filtering instead of `delete obj[key]`; treat empty env values with
+  `nonEmpty()` and `??`.
+
 ## Style
 
-Two-space indent, double quotes, semicolons, trailing commas, lines up to about 140 characters.
-`npm run lint` type-checks everything.
+Prettier decides layout; `npm run format` applies it. `npm run lint` checks types, lint and
+formatting together.

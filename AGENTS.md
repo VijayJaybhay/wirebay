@@ -11,19 +11,19 @@ each AI tool's MCP config. It never writes secrets into tool configs.
 
 ## Repo map
 
-| Path | What lives there |
-|---|---|
-| `src/app/` | `WirebayApp` (registers commands, runs them, reports errors) and `AppContext` (creates and wires every service) |
-| `src/cli/` | `CommandParser` (any phrasing → canonical command), `Grammar` (flags and words), `Suggester`, `Terminal` |
-| `src/commands/` | `Command` base class, `CommandRegistry`, one `*Command` class per verb |
-| `src/core/` | Domain and services, one class per file: registries, secrets, config formats, adapters, sync, launch, doctor |
-| `src/core/launch/LaunchPlanner.ts` | Security core: which secrets a server receives |
-| `src/core/sync/Reconciler.ts` | Sync rules: conflicts, drift, pruning |
-| `presets/` | Built-in server definitions (JSON, schema `schemas/server.schema.json`) |
-| `tools/<id>/` | Tools directory: `tool.json`, `GUIDE.md`, `examples/` (generated) |
-| `docs/` | User and contributor documentation; `docs/servers/catalog.md` is generated |
-| `scripts/` | `DocsGenerator` (gen-docs), `RepoValidator` (validate), scaffolders |
-| `test/` | `node:test` suites: `unit/`, `snapshot/`, `e2e/`, `fixtures/`; `helpers.ts` has `Sandbox` |
+| Path                               | What lives there                                                                                                |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `src/app/`                         | `WirebayApp` (registers commands, runs them, reports errors) and `AppContext` (creates and wires every service) |
+| `src/cli/`                         | `CommandParser` (any phrasing → canonical command), `Grammar` (flags and words), `Suggester`, `Terminal`        |
+| `src/commands/`                    | `Command` base class, `CommandRegistry`, one `*Command` class per verb                                          |
+| `src/core/`                        | Domain and services, one class per file: registries, secrets, config formats, adapters, sync, launch, doctor    |
+| `src/core/launch/LaunchPlanner.ts` | Security core: which secrets a server receives                                                                  |
+| `src/core/sync/Reconciler.ts`      | Sync rules: conflicts, drift, pruning                                                                           |
+| `presets/`                         | Built-in server definitions (JSON, schema `schemas/server.schema.json`)                                         |
+| `tools/<id>/`                      | Tools directory: `tool.json`, `GUIDE.md`, `examples/` (generated)                                               |
+| `docs/`                            | User and contributor documentation; `docs/servers/catalog.md` is generated                                      |
+| `scripts/`                         | `DocsGenerator` (gen-docs), `RepoValidator` (validate), scaffolders                                             |
+| `test/`                            | `node:test` suites: `unit/`, `snapshot/`, `e2e/`, `fixtures/`; `helpers.ts` has `Sandbox`                       |
 
 See [docs/architecture.md](docs/architecture.md) for the data flow and key classes.
 
@@ -32,7 +32,9 @@ See [docs/architecture.md](docs/architecture.md) for the data flow and key class
 ```bash
 npm install
 npm test                  # all tests (node --test)
-npm run lint              # type check
+npm run check             # every gate CI runs: lint, tests, validate, API docs
+npm run lint              # type check + ESLint + Prettier (zero errors, zero warnings)
+npm run format            # apply Prettier
 npm run validate          # schemas, naming rules, generated files up to date
 npm run gen:docs          # regenerate examples, tools/INDEX.md, README tables, CLI reference
 node src/cli.ts <args>    # run the CLI from source (no build step)
@@ -46,7 +48,7 @@ When you try the CLI by hand, use a throwaway home so you never touch real confi
 ## Hard rules
 
 1. **Never put secret values** in presets, docs, examples, tests, logs, error messages or generated
-   output. Use key *names* only. Tests use obviously fake values.
+   output. Use key _names_ only. Tests use obviously fake values.
 2. **Never read or print the user's real `~/.wirebay/secrets.env`** or real tool configs. Tests and
    manual runs use `WIREBAY_HOME` and `WIREBAY_USER_HOME` pointing to a temp folder.
 3. **The launcher (`wirebay run`) must never write to stdout.** stdout carries the MCP protocol.
@@ -54,7 +56,11 @@ When you try the CLI by hand, use a throwaway home so you never touch real confi
 4. **Tool files are only written through `ToolAdapter.commit`** (`BackupManager` + `SafeFileWriter`): backup first, atomic write, mtime check.
 5. **Only touch entries wirebay manages** (recorded in `state.json`). Foreign entries are conflicts;
    hand-edited managed entries are drift. Both need `--force`.
-6. After changing `presets/`, `tools/`, `src/cli/Grammar.ts` or a command's `help`, run
+6. **Zero lint findings, no suppressions.** `npm run lint` and `npm run lint:docs` must report no
+   errors and no warnings. Fix the code: never add lint-disable or TypeScript suppression comments,
+   formatter escapes, ignore-list entries for source files, or weaker rule settings. If a rule
+   seems wrong, stop and ask.
+7. After changing `presets/`, `tools/`, `src/cli/Grammar.ts` or a command's `help`, run
    `npm run gen:docs` and commit the regenerated files.
 
 ## Code conventions
@@ -87,5 +93,5 @@ Each workflow is written in one place. Follow the guide exactly:
 
 ## Definition of done
 
-`npm run lint && npm test && npm run validate` pass, docs are updated, and a changeset is added
+`npm run check` passes (zero lint errors and warnings), docs are updated, and a changeset is added
 (`npx changeset`) for user-visible changes.

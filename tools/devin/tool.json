@@ -3,24 +3,14 @@
   "version": 1,
   "id": "devin",
   "name": "Devin (Devin CLI and Devin Desktop / Windsurf Cascade)",
-  "aliases": [
-    "windsurf",
-    "devin-cli",
-    "devin-desktop",
-    "cascade",
-    "codeium"
-  ],
+  "aliases": ["windsurf", "devin-cli", "devin-desktop", "cascade", "codeium"],
   "homepage": "https://devin.ai/desktop",
   "docs": {
     "mcp": "https://docs.devin.ai/cli/extensibility/mcp/configuration",
     "changelog": "https://docs.devin.ai/desktop/devin-desktop-faq"
   },
   "detect": {
-    "commands": [
-      "devin",
-      "devin-desktop",
-      "windsurf"
-    ],
+    "commands": ["devin", "devin-desktop", "windsurf"],
     "paths": [
       "~/.codeium",
       {

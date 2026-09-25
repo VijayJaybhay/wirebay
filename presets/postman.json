@@ -23,10 +23,7 @@
     "local": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@postman/postman-mcp-server@2.13.0"
-      ]
+      "args": ["-y", "@postman/postman-mcp-server@2.13.0"]
     }
   },
   "secrets": [
@@ -40,9 +37,7 @@
   "notes": [
     "Minimal toolset by default; `--variant full` can edit and delete collections. EU accounts need the local variant with POSTMAN_API_KEY and `--region eu`."
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#postman",
   "lastVerified": "2026-09-25"
 }

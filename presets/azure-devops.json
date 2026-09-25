@@ -7,11 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@azure-devops/mcp@2.10.0",
-      "${AZURE_DEVOPS_ORG}"
-    ]
+    "args": ["-y", "@azure-devops/mcp@2.10.0", "${AZURE_DEVOPS_ORG}"]
   },
   "secrets": [
     {
@@ -20,13 +16,9 @@
       "description": "Your organization name (the part after dev.azure.com/)"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/microsoft/azure-devops-mcp",
-  "notes": [
-    "Signs in through the browser (Microsoft Entra) on first use. Can create and update work items, repos and wikis."
-  ],
+  "notes": ["Signs in through the browser (Microsoft Entra) on first use. Can create and update work items, repos and wikis."],
   "guide": "docs/servers/catalog.md#azure-devops",
   "lastVerified": "2026-09-25",
   "status": "stable"

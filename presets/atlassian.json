@@ -13,12 +13,8 @@
   },
   "secrets": [],
   "docs": "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/",
-  "notes": [
-    "Signs in through the browser and acts with your full Jira/Confluence permissions."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Signs in through the browser and acts with your full Jira/Confluence permissions."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#atlassian",
   "lastVerified": "2026-09-25",
   "status": "stable"

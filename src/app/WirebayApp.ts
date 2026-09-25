@@ -21,6 +21,7 @@ import { SyncCommand } from "../commands/SyncCommand.ts";
 import { ToolsCommand } from "../commands/ToolsCommand.ts";
 import { UnsyncCommand } from "../commands/UnsyncCommand.ts";
 import { ExitCode, WirebayError } from "../core/errors.ts";
+import { defined } from "../core/util/values.ts";
 import { AppContext } from "./AppContext.ts";
 
 /**
@@ -82,16 +83,17 @@ export class WirebayApp {
   async run(argv: string[]): Promise<number> {
     try {
       // `run` is on the hot path of every tool and must never write to stdout: skip the parser.
-      if (argv[0] === "run") {
-        if (!argv[1]) {
+      const [verb, server] = argv;
+      if (verb === "run") {
+        if (server === undefined) {
           process.stderr.write("[wirebay] usage: wirebay run <server>\n");
           return ExitCode.Usage;
         }
-        return await RunCommand.start(argv[1], this.ctx);
+        return await RunCommand.start(server, this.ctx);
       }
       const parser = new CommandParser(this.registry, this.vocabulary());
       const input = parser.parse(argv);
-      const command = this.registry.find(input.verb)!;
+      const command = defined(this.registry.find(input.verb), `a registered command for "${input.verb}"`);
       if (!command.hidden && !input.flags.json) this.ctx.terminal.note(this.ctx.terminal.dim(parser.describe(input)));
       return await command.run(input, this.ctx);
     } catch (err) {
@@ -107,7 +109,7 @@ export class WirebayApp {
       if (err.hint) t.note(`${t.cyan("hint:")} ${err.hint.replace(/\n/g, "\n      ")}`);
       return err.exitCode;
     }
-    t.note(`${t.err("unexpected error:")} ${(err as Error)?.stack ?? String(err)}`);
+    t.note(`${t.err("unexpected error:")} ${err instanceof Error ? (err.stack ?? err.message) : String(err)}`);
     t.note("Please report it: https://github.com/VijayJaybhay/wirebay/issues");
     return ExitCode.Error;
   }

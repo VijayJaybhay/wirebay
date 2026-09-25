@@ -5,9 +5,9 @@ Official MCP docs: https://github.com/google-gemini/gemini-cli/blob/main/docs/to
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.gemini/settings.json` |
+| Scope   | File                              |
+| ------- | --------------------------------- |
+| user    | `~/.gemini/settings.json`         |
 | project | `<project>/.gemini/settings.json` |
 
 Servers live under `mcpServers` inside the general settings file. wirebay edits only that key and
