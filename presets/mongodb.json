@@ -7,10 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "mongodb-mcp-server@3.0.4"
-    ]
+    "args": ["-y", "mongodb-mcp-server@3.0.4"]
   },
   "secrets": [
     {
@@ -34,13 +31,9 @@
   "env": {
     "MDB_MCP_READ_ONLY": "true"
   },
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/mongodb-js/mongodb-mcp-server",
-  "notes": [
-    "Read-only by default (MDB_MCP_READ_ONLY=true). Set either MDB_MCP_CONNECTION_STRING or the Atlas service-account pair."
-  ],
+  "notes": ["Read-only by default (MDB_MCP_READ_ONLY=true). Set either MDB_MCP_CONNECTION_STRING or the Atlas service-account pair."],
   "guide": "docs/servers/catalog.md#mongodb",
   "lastVerified": "2026-09-25",
   "status": "stable"

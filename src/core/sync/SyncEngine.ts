@@ -77,19 +77,26 @@ export class SyncEngine {
       const tool = this.ctx.tools.get(toolId);
       const target = this.targetFor(tool, scope);
       if (!target) {
-        const other = tool.scopes.filter((s) => s !== scope);
-        outcome.skipped.push({ tool: tool.id, reason: `${tool.name} has no ${scope}-scope config${other.length ? ` (try --scope ${other[0]})` : ""}` });
+        const [other] = tool.scopes.filter((s) => s !== scope);
+        outcome.skipped.push({
+          tool: tool.id,
+          reason: `${tool.name} has no ${scope}-scope config${other ? ` (try --scope ${other})` : ""}`,
+        });
         continue;
       }
       const exists = existsSync(target.file);
       if (!exists && request.removeOnly) continue;
       if (!exists && !request.includeMissing && !tool.isInstalled(this.ctx.resolver, this.ctx.paths)) {
-        outcome.skipped.push({ tool: tool.id, reason: `${tool.name} does not look installed (use --include-missing to write its config anyway)` });
+        outcome.skipped.push({
+          tool: tool.id,
+          reason: `${tool.name} does not look installed (use --include-missing to write its config anyway)`,
+        });
         continue;
       }
 
       const enabled = ConfigStore.serversForTool(config, tool.id);
-      const wanted = request.removeOnly ? [] : request.servers ? enabled.filter((s) => request.servers!.includes(s)) : enabled;
+      const only = request.servers;
+      const wanted = request.removeOnly ? [] : only ? enabled.filter((s) => only.includes(s)) : enabled;
       const plan = this.ctx.reconciler.plan(target, state, {
         desired: this.desiredEntries(config, tool, scope, wanted),
         scopeNames: request.servers ? new Set(request.servers) : undefined,

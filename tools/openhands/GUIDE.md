@@ -4,9 +4,9 @@ Official MCP docs: https://docs.openhands.dev/openhands/usage/cli/mcp-servers
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.openhands/mcp.json` |
+| Scope | File                    |
+| ----- | ----------------------- |
+| user  | `~/.openhands/mcp.json` |
 
 OpenHands 1.0+ uses this JSON file (older versions used TOML). There's no project file.
 
@@ -21,7 +21,7 @@ wirebay add github to openhands        # also accepted: open-hands
 ```json
 {
   "mcpServers": {
-    "github": {"command":"wirebay","args":["run","github"]}
+    "github": { "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

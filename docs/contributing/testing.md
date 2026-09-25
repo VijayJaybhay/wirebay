@@ -10,11 +10,11 @@ Tests use Node's built-in runner (`node:test`); there's no framework to learn.
 
 ## Suites
 
-| Folder | What | Notes |
-|---|---|---|
-| `test/unit/` | Grammar, templates, secrets store, config formats, launch planning, reconcile rules | Fast; mostly in-process through a sandboxed `AppContext` |
-| `test/snapshot/` | Every `tools/*/tool.json` renders exactly like its `examples/`; every preset loads | **Automatic for new tools and presets** |
-| `test/e2e/` | The real CLI in a sandbox: init → add → sync → doctor → remove → unsync | Uses `test/fixtures/fake-mcp-server.ts` |
+| Folder           | What                                                                                | Notes                                                    |
+| ---------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `test/unit/`     | Grammar, templates, secrets store, config formats, launch planning, reconcile rules | Fast; mostly in-process through a sandboxed `AppContext` |
+| `test/snapshot/` | Every `tools/*/tool.json` renders exactly like its `examples/`; every preset loads  | **Automatic for new tools and presets**                  |
+| `test/e2e/`      | The real CLI in a sandbox: init → add → sync → doctor → remove → unsync             | Uses `test/fixtures/fake-mcp-server.ts`                  |
 
 ## Sandboxing (required)
 
@@ -26,7 +26,7 @@ import { withSandbox } from "../helpers.ts";
 
 test("adds an entry", () =>
   withSandbox((sb) => {
-    const ctx = sb.context();                              // services that only see the sandbox
+    const ctx = sb.context(); // services that only see the sandbox
     const r = sb.run(["add", "x", "--command", "node", "to", "cursor"]); // the real CLI
     assert.equal(r.code, 0);
   }));
@@ -40,6 +40,7 @@ reset between tests.
 `test/fixtures/fake-mcp-server.ts` answers `initialize` and `tools/list`, and reports every `TEST_*`
 environment variable it received as a tool named `env:<KEY>`. That is how the e2e test proves only
 declared secrets reach a server.
+
 - `FAKE_MCP_NOISE=1` makes it print junk on stdout.
 - `FAKE_MCP_EXIT_CODE=n` makes it exit immediately with code `n`.
 

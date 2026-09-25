@@ -21,12 +21,14 @@ type AdapterBuilder = (tool: Tool, factory: AdapterFactory) => ToolAdapter;
 export class AdapterFactory {
   /** Code overrides, keyed by the manifest's `adapter` value. */
   private static readonly overrides: Record<string, AdapterBuilder> = {
-    "claude-code": (tool, f) => new ClaudeCodeAdapter(ConfigFormatFactory.for(tool.format), f.deps, f.resolver, f.paths),
+    "claude-code": (tool, f) => new ClaudeCodeAdapter(f.formats.for(tool.format), f.deps, f.resolver, f.paths),
   };
 
   readonly deps: AdapterDeps;
   readonly resolver: ExecutableResolver;
   readonly paths: WirebayPaths;
+  /** Config format strategies. */
+  readonly formats = new ConfigFormatFactory();
   private readonly cache = new Map<string, ToolAdapter>();
 
   constructor(deps: AdapterDeps, resolver: ExecutableResolver, paths: WirebayPaths) {
@@ -40,7 +42,7 @@ export class AdapterFactory {
     let adapter = this.cache.get(tool.id);
     if (!adapter) {
       const override = tool.manifest.adapter ? AdapterFactory.overrides[tool.manifest.adapter] : undefined;
-      adapter = override ? override(tool, this) : new FileToolAdapter(ConfigFormatFactory.for(tool.format), this.deps);
+      adapter = override ? override(tool, this) : new FileToolAdapter(this.formats.for(tool.format), this.deps);
       this.cache.set(tool.id, adapter);
     }
     return adapter;

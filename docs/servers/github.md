@@ -22,16 +22,16 @@ They are grouped into **toolsets** that you can switch on and off.
 
 1. Open https://github.com/settings/personal-access-tokens/new (**fine-grained** token).
 2. **Resource owner:** you or your organisation. **Expiration:** 90 days is a good default.
-3. **Repository access:** *Only select repositories* (recommended) or *All repositories*.
+3. **Repository access:** _Only select repositories_ (recommended) or _All repositories_.
 4. **Permissions**, a sensible starting point:
 
-   | Permission | Access | Needed for |
-   |---|---|---|
-   | Contents | Read and write (Read-only for browsing only) | files, branches, commits |
-   | Issues | Read and write | issues |
-   | Pull requests | Read and write | PRs and reviews |
-   | Actions | Read-only | workflow runs and logs |
-   | Metadata | Read-only (automatic) | required |
+   | Permission    | Access                                       | Needed for               |
+   | ------------- | -------------------------------------------- | ------------------------ |
+   | Contents      | Read and write (Read-only for browsing only) | files, branches, commits |
+   | Issues        | Read and write                               | issues                   |
+   | Pull requests | Read and write                               | PRs and reviews          |
+   | Actions       | Read-only                                    | workflow runs and logs   |
+   | Metadata      | Read-only (automatic)                        | required                 |
 
 5. **Generate token** and copy it. It starts with `github_pat_`.
 
@@ -46,11 +46,11 @@ wirebay secrets set GITHUB_PERSONAL_ACCESS_TOKEN   # paste the token when asked
 
 Optional keys in `~/.wirebay/secrets.env`:
 
-| Key | Meaning |
-|---|---|
+| Key               | Meaning                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------- |
 | `GITHUB_TOOLSETS` | Comma-separated toolsets, e.g. `repos,issues,pull_requests,actions`. Leave empty for GitHub's defaults. |
-| `GITHUB_MCP_URL` | GitHub Enterprise Cloud with data residency: `https://copilot-api.<your-subdomain>.ghe.com/mcp` |
-| `GITHUB_HOST` | Docker variant only: GitHub Enterprise Server URL, e.g. `https://github.example.com` |
+| `GITHUB_MCP_URL`  | GitHub Enterprise Cloud with data residency: `https://copilot-api.<your-subdomain>.ghe.com/mcp`         |
+| `GITHUB_HOST`     | Docker variant only: GitHub Enterprise Server URL, e.g. `https://github.example.com`                    |
 
 ## Config guide
 
@@ -82,16 +82,16 @@ wirebay doctor github
 ```
 
 Expect `MCP handshake … github-mcp-server … N tools`. Then ask your AI tool:
-*"List my open pull requests in <owner>/<repo>."*
+_"List my open pull requests in <owner>/<repo>."_
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
-| `the server rejected the credentials (HTTP 401)` | The token is wrong, expired or not yet approved by the org. Create a new one and run `wirebay secrets set GITHUB_PERSONAL_ACCESS_TOKEN`. |
-| `Incompatible auth server: does not support dynamic client registration` | Same as above: mcp-remote tried OAuth because the token was rejected. |
-| Tools missing | Check `GITHUB_TOOLSETS`, and the token permissions for that area. |
-| Docker variant: `Cannot find "docker"` | Start Docker Desktop, then run `wirebay init` again from a terminal where `docker` works. |
+| Symptom                                                                  | Fix                                                                                                                                      |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `the server rejected the credentials (HTTP 401)`                         | The token is wrong, expired or not yet approved by the org. Create a new one and run `wirebay secrets set GITHUB_PERSONAL_ACCESS_TOKEN`. |
+| `Incompatible auth server: does not support dynamic client registration` | Same as above: mcp-remote tried OAuth because the token was rejected.                                                                    |
+| Tools missing                                                            | Check `GITHUB_TOOLSETS`, and the token permissions for that area.                                                                        |
+| Docker variant: `Cannot find "docker"`                                   | Start Docker Desktop, then run `wirebay init` again from a terminal where `docker` works.                                                |
 
 **Rotating the token:** create the new token, run `wirebay secrets set GITHUB_PERSONAL_ACCESS_TOKEN`,
 restart the AI tool (or toggle the server), then delete the old token on GitHub.

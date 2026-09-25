@@ -7,12 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@toolbox-sdk/server@1.13.0",
-      "--prebuilt=postgres",
-      "--stdio"
-    ]
+    "args": ["-y", "@toolbox-sdk/server@1.13.0", "--prebuilt=postgres", "--stdio"]
   },
   "secrets": [
     {
@@ -39,9 +34,7 @@
       "description": "Database password"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/googleapis/mcp-toolbox",
   "notes": [
     "`execute_sql` can run any statement: connect with a read-only database role. Other databases (MySQL, BigQuery, AlloyDB, Spanner…) work with a custom server: `wirebay add toolbox-mysql --npx @toolbox-sdk/server@1.13.0 --arg --prebuilt=mysql --arg --stdio`."

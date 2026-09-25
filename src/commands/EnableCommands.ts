@@ -20,14 +20,19 @@ abstract class MappingCommand extends Command {
   /** Servers named on the command line (`all` = every added server). */
   protected servers(input: ParsedCommand, ctx: AppContext, verb: string): string[] {
     if (input.servers === "all") return Object.keys(ctx.config.load().servers);
-    if (!input.servers?.length) throw new UsageError(`Which server should I ${verb}?`, `Example: wirebay ${verb} github ${verb === "enable" ? "for" : "from"} cursor`);
+    if (!input.servers?.length)
+      throw new UsageError(
+        `Which server should I ${verb}?`,
+        `Example: wirebay ${verb} github ${verb === "enable" ? "for" : "from"} cursor`,
+      );
     return input.servers;
   }
 
   /** Tools named on the command line (`all` = every installed tool). */
   protected tools(input: ParsedCommand, ctx: AppContext, verb: string): string[] {
     if (input.tools === "all") return new TargetSelector(ctx, input).allTools();
-    if (!input.tools?.length) throw new UsageError("Which tool(s)?", `Example: wirebay ${verb} github ${verb === "enable" ? "for" : "from"} cursor vscode`);
+    if (!input.tools?.length)
+      throw new UsageError("Which tool(s)?", `Example: wirebay ${verb} github ${verb === "enable" ? "for" : "from"} cursor vscode`);
     return input.tools;
   }
 
@@ -53,13 +58,18 @@ abstract class MappingCommand extends Command {
 export class EnableCommand extends MappingCommand {
   readonly name = "enable";
   override readonly aliases = ["on"];
-  readonly help = { usage: "wirebay enable <servers> for <tools>", summary: "Turn servers on for more tools, then sync.", examples: ["wirebay enable netlify for cursor vscode"] };
+  readonly help = {
+    usage: "wirebay enable <servers> for <tools>",
+    summary: "Turn servers on for more tools, then sync.",
+    examples: ["wirebay enable netlify for cursor vscode"],
+  };
 
-  async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
+  run(input: ParsedCommand, ctx: AppContext): number {
     const servers = this.servers(input, ctx, "enable");
     const tools = this.tools(input, ctx, "enable");
     const config = ctx.config.load();
-    for (const s of servers) if (!config.servers[s]) throw new UsageError(`"${s}" hasn't been added yet.`, `Run: wirebay add ${s} to ${tools.join(" ")}`);
+    for (const s of servers)
+      if (!config.servers[s]) throw new UsageError(`"${s}" hasn't been added yet.`, `Run: wirebay add ${s} to ${tools.join(" ")}`);
     ConfigStore.enable(config, servers, tools);
     if (!input.flags["dry-run"]) ctx.config.save(config);
     ctx.terminal.out(`${ctx.terminal.ok("✓")} enabled ${servers.join(", ")} for ${tools.join(", ")}`);
@@ -71,9 +81,13 @@ export class EnableCommand extends MappingCommand {
 export class DisableCommand extends MappingCommand {
   readonly name = "disable";
   override readonly aliases = ["off"];
-  readonly help = { usage: "wirebay disable <servers> from <tools>", summary: "Turn servers off for some tools, then sync.", examples: ["wirebay disable aws-api from desktop"] };
+  readonly help = {
+    usage: "wirebay disable <servers> from <tools>",
+    summary: "Turn servers off for some tools, then sync.",
+    examples: ["wirebay disable aws-api from desktop"],
+  };
 
-  async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
+  run(input: ParsedCommand, ctx: AppContext): number {
     const servers = this.servers(input, ctx, "disable");
     const tools = this.tools(input, ctx, "disable");
     const config = ctx.config.load();
@@ -104,18 +118,27 @@ export class RemoveCommand extends MappingCommand {
     const config = ctx.config.load();
     const state = ctx.state.load();
     const servers = this.servers(input, ctx, "remove");
-    const tools = [...new Set(servers.flatMap((s) => [...(config.servers[s]?.tools ?? []), ...StateStore.toolsWithEntries(state, s)]))].sort();
-    if (!input.flags["dry-run"] && !(await t.confirm(`Remove ${servers.join(", ")} from wirebay${tools.length ? ` and from ${tools.join(", ")}` : ""}?`, input.flags))) {
+    const tools = [
+      ...new Set(servers.flatMap((s) => [...(config.servers[s]?.tools ?? []), ...StateStore.toolsWithEntries(state, s)])),
+    ].sort();
+    if (
+      !input.flags["dry-run"] &&
+      !(await t.confirm(`Remove ${servers.join(", ")} from wirebay${tools.length ? ` and from ${tools.join(", ")}` : ""}?`, input.flags))
+    ) {
       t.out(t.dim("Cancelled. Pass --yes to skip this question."));
       return ExitCode.Error;
     }
-    for (const s of servers) delete config.servers[s];
+    ConfigStore.removeServers(config, servers);
     if (!input.flags["dry-run"]) ctx.config.save(config);
-    const code = tools.length ? this.syncAfter({ ...input, flags: { ...input.flags, "no-sync": false } }, ctx, tools, servers) : ExitCode.Ok;
+    const code = tools.length
+      ? this.syncAfter({ ...input, flags: { ...input.flags, "no-sync": false } }, ctx, tools, servers)
+      : ExitCode.Ok;
     const presets = ctx.servers.presets();
     for (const s of servers) {
-      if (input.flags.purge && !input.flags["dry-run"] && ctx.servers.deleteUserDefinition(s)) t.out(`${t.ok("✓")} deleted your definition of ${s}`);
-      else if (!presets.has(s)) t.out(t.dim(`  Your definition of ${s} is kept in ~/.wirebay/servers/${s}.json (delete with --purge). Secrets are kept too.`));
+      if (input.flags.purge && !input.flags["dry-run"] && ctx.servers.deleteUserDefinition(s))
+        t.out(`${t.ok("✓")} deleted your definition of ${s}`);
+      else if (!presets.has(s))
+        t.out(t.dim(`  Your definition of ${s} is kept in ~/.wirebay/servers/${s}.json (delete with --purge). Secrets are kept too.`));
     }
     t.out(`${t.ok("✓")} removed ${servers.join(", ")}`);
     return code;

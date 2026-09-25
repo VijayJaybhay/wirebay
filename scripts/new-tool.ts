@@ -77,10 +77,18 @@ const { positionals, values } = parseArgs({
 });
 const id = positionals[0];
 if (!id || !/^[a-z0-9][a-z0-9-]*$/.test(id)) {
-  console.error('Usage: npm run new:tool -- <id> [--name "Display Name"] [--path "~/.tool/mcp.json"] [--format json|jsonc|toml|yaml] [--root-key mcpServers]');
+  console.error(
+    'Usage: npm run new:tool -- <id> [--name "Display Name"] [--path "~/.tool/mcp.json"] [--format json|jsonc|toml|yaml] [--root-key mcpServers]',
+  );
   process.exit(2);
 }
-const scaffolder = new ToolScaffolder({ id, name: values.name, path: values.path, format: values.format as ToolManifest["format"], rootKey: values["root-key"] });
+const scaffolder = new ToolScaffolder({
+  id,
+  name: values.name,
+  path: values.path,
+  format: values.format as ToolManifest["format"],
+  rootKey: values["root-key"],
+});
 if (!scaffolder.create()) {
   console.error(`tools/${id} already exists.`);
   process.exit(1);

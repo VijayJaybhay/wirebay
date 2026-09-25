@@ -3,21 +3,14 @@
   "version": 1,
   "id": "auggie",
   "name": "Augment Code CLI (auggie)",
-  "aliases": [
-    "augment",
-    "augment-code"
-  ],
+  "aliases": ["augment", "augment-code"],
   "homepage": "https://www.augmentcode.com",
   "docs": {
     "mcp": "https://docs.augmentcode.com/cli/integrations"
   },
   "detect": {
-    "commands": [
-      "auggie"
-    ],
-    "paths": [
-      "~/.augment"
-    ]
+    "commands": ["auggie"],
+    "paths": ["~/.augment"]
   },
   "configs": {
     "user": {

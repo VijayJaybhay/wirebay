@@ -9,9 +9,7 @@
     "mcp": "https://docs.tabnine.com/main/getting-started/tabnine-agent/mcp-intro-and-setup/mcp-server-config"
   },
   "detect": {
-    "paths": [
-      "~/.tabnine"
-    ]
+    "paths": ["~/.tabnine"]
   },
   "configs": {
     "user": {

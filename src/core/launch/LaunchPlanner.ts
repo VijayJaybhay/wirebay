@@ -30,10 +30,16 @@ export class LaunchPlanner {
   static readonly authEnv = "WIREBAY_AUTH_HEADER";
 
   private readonly resolver: ExecutableResolver;
+  private readonly processes: ProcessCommand;
+  private readonly templates = new TemplateExpander();
 
-  /** @param resolver - Finds `npx`, `uvx`, `docker`, … */
-  constructor(resolver: ExecutableResolver) {
+  /**
+   * @param resolver - Finds `npx`, `uvx`, `docker`, …
+   * @param processes - Builds spawnable commands (handles Windows `.cmd` shims).
+   */
+  constructor(resolver: ExecutableResolver, processes: ProcessCommand = new ProcessCommand()) {
     this.resolver = resolver;
+    this.processes = processes;
   }
 
   /**
@@ -44,55 +50,70 @@ export class LaunchPlanner {
    * @throws {@link core/errors!WirebayError} when a required secret or the executable is missing.
    */
   plan(server: ServerDefinition, secretValues: Record<string, string>, baseEnv: NodeJS.ProcessEnv): LaunchPlan {
-    const env: Record<string, string> = {};
-    for (const [k, v] of Object.entries(baseEnv)) if (v !== undefined) env[k] = v;
+    const provided = this.declaredSecrets(server, secretValues);
+    const env = this.environment(server, provided, baseEnv);
 
-    // 1. Declared secrets only.
-    const provided: Record<string, string> = {};
-    for (const key of server.declaredKeys()) if (secretValues[key]) provided[key] = secretValues[key];
-    Object.assign(env, provided);
-
-    // 2. Default env values, unless the secrets store overrides them.
-    for (const [k, raw] of Object.entries(server.env)) {
-      if (provided[k] !== undefined) continue;
-      const value = TemplateExpander.expand(raw, env);
-      if (value !== "") env[k] = value;
-      else delete env[k];
-    }
-
-    // 3. Required keys must be present.
-    const missing = server.requiredKeys().filter((k) => !env[k]);
+    const missing = server.requiredKeys().filter((k) => !env.has(k));
     if (missing.length) {
       throw new WirebayError(`Server "${server.name}" is missing required secret(s): ${missing.join(", ")}.`, {
         hint: missing.map((k) => `wirebay secrets set ${k}`).join("\n"),
       });
     }
 
-    const redact = Object.values(provided).filter((v) => v.length >= 4);
+    const redact = [...provided.values()].filter((v) => v.length >= 4);
+    const vars = Object.fromEntries(env);
     const launch = server.launch;
     if (launch.type === "stdio") {
       const exe = this.require(launch.command, server.name);
-      return { server: server.name, ...ProcessCommand.forExecutable(exe, TemplateExpander.expandArgs(launch.args, env)), env, redact };
+      return { server: server.name, ...this.processes.forExecutable(exe, this.templates.expandArgs(launch.args, vars)), env: vars, redact };
     }
 
     // Remote: bridge through mcp-remote; the token travels in the environment, not argv.
-    const args = ["-y", LaunchPlanner.mcpRemotePackage, TemplateExpander.expand(launch.url, env)];
+    const args = ["-y", LaunchPlanner.mcpRemotePackage, this.templates.expand(launch.url, vars)];
     for (const [name, raw] of Object.entries(launch.headers ?? {})) {
-      const value = TemplateExpander.expand(raw, env);
+      const value = this.templates.expand(raw, vars);
       if (value) args.push("--header", `${name}:${value}`);
     }
     const auth = launch.auth;
     if (auth && (auth.type === "bearer" || auth.type === "header")) {
-      const token = env[auth.secret];
-      if (!token) throw new WirebayError(`Server "${server.name}" needs ${auth.secret}.`, { hint: `wirebay secrets set ${auth.secret}` });
+      const token = env.get(auth.secret);
+      if (token === undefined)
+        throw new WirebayError(`Server "${server.name}" needs ${auth.secret}.`, { hint: `wirebay secrets set ${auth.secret}` });
       const header = auth.type === "bearer" ? "Authorization" : auth.header;
-      const prefix = auth.type === "bearer" ? "Bearer " : (auth.prefix ?? "");
-      env[LaunchPlanner.authEnv] = `${prefix}${token}`;
-      redact.push(env[LaunchPlanner.authEnv]);
+      const value = `${auth.type === "bearer" ? "Bearer " : (auth.prefix ?? "")}${token}`;
+      vars[LaunchPlanner.authEnv] = value;
+      redact.push(value);
       args.push("--header", `${header}:\${${LaunchPlanner.authEnv}}`);
     }
     const npx = this.require("npx", server.name);
-    return { server: server.name, ...ProcessCommand.forExecutable(npx, args), env, redact };
+    return { server: server.name, ...this.processes.forExecutable(npx, args), env: vars, redact };
+  }
+
+  /** Values from the secrets store for the keys this server declares (and nothing else). */
+  private declaredSecrets(server: ServerDefinition, secretValues: Record<string, string>): Map<string, string> {
+    const provided = new Map<string, string>();
+    for (const key of server.declaredKeys()) {
+      const value = secretValues[key];
+      if (value) provided.set(key, value);
+    }
+    return provided;
+  }
+
+  /**
+   * The child environment: the parent environment, plus declared secrets, plus the server's
+   * default env values (which the secrets store may override). Empty values are left out.
+   */
+  private environment(server: ServerDefinition, provided: Map<string, string>, baseEnv: NodeJS.ProcessEnv): Map<string, string> {
+    const env = new Map<string, string>();
+    for (const [k, v] of Object.entries(baseEnv)) if (v !== undefined) env.set(k, v);
+    for (const [k, v] of provided) env.set(k, v);
+    for (const [k, raw] of Object.entries(server.env)) {
+      if (provided.has(k)) continue;
+      const value = this.templates.expand(raw, Object.fromEntries(env));
+      if (value === "") env.delete(k);
+      else env.set(k, value);
+    }
+    return env;
   }
 
   private require(command: string, server: string): string {

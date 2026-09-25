@@ -5,10 +5,10 @@ Official MCP docs: https://docs.claude.com/en/docs/claude-code/mcp
 
 ## Where the config lives
 
-| Scope | File | Notes |
-|---|---|---|
-| user | `~/.claude.json` (top-level `mcpServers`) | Available in every project. wirebay writes it through `claude mcp add-json -s user`, never by editing the file directly |
-| project | `<project>/.mcp.json` | Meant to be committed; Claude Code asks each person to approve these servers |
+| Scope   | File                                      | Notes                                                                                                                   |
+| ------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| user    | `~/.claude.json` (top-level `mcpServers`) | Available in every project. wirebay writes it through `claude mcp add-json -s user`, never by editing the file directly |
+| project | `<project>/.mcp.json`                     | Meant to be committed; Claude Code asks each person to approve these servers                                            |
 
 ## How wirebay syncs it
 
@@ -39,7 +39,7 @@ claude mcp add-json -s user github '{"type":"stdio","command":"wirebay","args":[
 
 - On Windows, Claude Code cannot start `.cmd` shims such as `npx.cmd` directly. wirebay's absolute
   mode uses `node.exe` + the wirebay script, which avoids this. Portable mode uses `cmd /c`.
-- There is also a *local* scope (per-project, private, stored in `~/.claude.json`). wirebay does not
+- There is also a _local_ scope (per-project, private, stored in `~/.claude.json`). wirebay does not
   manage it.
 - `~/.claude.json` also holds Claude Code's own state. Don't restore an old backup of it unless you
   really need to.

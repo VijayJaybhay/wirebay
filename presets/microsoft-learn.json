@@ -12,13 +12,9 @@
     }
   },
   "secrets": [],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/MicrosoftDocs/mcp",
-  "notes": [
-    "Public and read-only; no login needed."
-  ],
+  "notes": ["Public and read-only; no login needed."],
   "guide": "docs/servers/catalog.md#microsoft-learn",
   "lastVerified": "2026-09-25",
   "status": "stable"

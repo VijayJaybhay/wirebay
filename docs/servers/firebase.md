@@ -31,10 +31,10 @@ Leave `GOOGLE_APPLICATION_CREDENTIALS` empty. The server uses the Firebase CLI's
 
 **Option B: a service account (for automation or least privilege)**
 
-1. Google Cloud Console → **IAM & Admin → Service Accounts** → *Create service account* in your
+1. Google Cloud Console → **IAM & Admin → Service Accounts** → _Create service account_ in your
    Firebase project.
-2. Give it only the roles you need, for example *Firebase Viewer* (`roles/firebase.viewer`) for
-   read-only work, or *Firebase Admin* only if you really need full access.
+2. Give it only the roles you need, for example _Firebase Viewer_ (`roles/firebase.viewer`) for
+   read-only work, or _Firebase Admin_ only if you really need full access.
 3. **Keys → Add key → JSON**, and save the file into `~/.wirebay/credentials/` (created by
    `wirebay init` and readable only by you), e.g. `~/.wirebay/credentials/firebase-sa.json`.
 
@@ -74,15 +74,15 @@ To limit the tool groups, override the arguments in `~/.wirebay/servers/firebase
 wirebay doctor firebase
 ```
 
-Then ask: *"Which Firebase project am I using, and what apps does it have?"*
+Then ask: _"Which Firebase project am I using, and what apps does it have?"_
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
+| Symptom                             | Fix                                                                                                                                                |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "not logged in" / permission errors | Run `npx firebase-tools login`, or check that the service account has the right roles and the path in `GOOGLE_APPLICATION_CREDENTIALS` is correct. |
-| Wrong project | Set `FIREBASE_PROJECT_DIR` to the folder containing your `firebase.json`, or run `npx firebase-tools use <project>` there. |
-| Slow first start | `firebase-tools` is large. Warm the cache with `wirebay doctor firebase`. |
+| Wrong project                       | Set `FIREBASE_PROJECT_DIR` to the folder containing your `firebase.json`, or run `npx firebase-tools use <project>` there.                         |
+| Slow first start                    | `firebase-tools` is large. Warm the cache with `wirebay doctor firebase`.                                                                          |
 
 **Rotating keys:** create a new JSON key, replace the file, restart your AI tool, then delete the
 old key in the Cloud Console.

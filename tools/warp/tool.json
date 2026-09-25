@@ -3,20 +3,14 @@
   "version": 1,
   "id": "warp",
   "name": "Warp",
-  "aliases": [
-    "warp-terminal"
-  ],
+  "aliases": ["warp-terminal"],
   "homepage": "https://www.warp.dev",
   "docs": {
     "mcp": "https://docs.warp.dev/knowledge-and-collaboration/mcp"
   },
   "detect": {
-    "commands": [
-      "warp"
-    ],
-    "paths": [
-      "~/.warp"
-    ]
+    "commands": ["warp"],
+    "paths": ["~/.warp"]
   },
   "configs": {
     "user": {

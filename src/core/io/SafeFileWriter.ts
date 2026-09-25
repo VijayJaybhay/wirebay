@@ -41,14 +41,14 @@ export class SafeFileWriter {
 
   /**
    * Read and parse a JSON file.
-   * @returns The parsed value, or `undefined` when the file does not exist.
+   * @returns The parsed value (callers narrow it to the expected shape), or `undefined` when the file does not exist.
    * @throws {@link core/errors!ConfigParseError} when the file is not valid JSON.
    */
-  readJson<T>(file: string): T | undefined {
+  readJson(file: string): unknown {
     const text = this.read(file);
     if (text === undefined) return undefined;
     try {
-      return JSON.parse(text) as T;
+      return JSON.parse(text) as unknown;
     } catch (err) {
       throw new ConfigParseError(file, (err as Error).message);
     }
@@ -77,7 +77,7 @@ export class SafeFileWriter {
         });
       }
     }
-    const tmp = `${file}.wirebay-${process.pid}-${Date.now()}.tmp`;
+    const tmp = `${file}.wirebay-${String(process.pid)}-${String(Date.now())}.tmp`;
     writeFileSync(tmp, content, { encoding: "utf8", mode: options.mode });
     try {
       renameSync(tmp, file);

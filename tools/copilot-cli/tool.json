@@ -5,7 +5,10 @@
   "name": "GitHub Copilot CLI",
   "aliases": ["copilot", "gh-copilot"],
   "homepage": "https://github.com/features/copilot/cli",
-  "docs": { "mcp": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers", "changelog": "https://github.com/github/copilot-cli/releases" },
+  "docs": {
+    "mcp": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers",
+    "changelog": "https://github.com/github/copilot-cli/releases"
+  },
   "detect": { "commands": ["copilot"], "paths": ["${COPILOT_HOME:-~/.copilot}"] },
   "configs": {
     "user": { "path": "${COPILOT_HOME:-~/.copilot}/mcp-config.json", "createIfMissing": true },

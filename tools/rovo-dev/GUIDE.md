@@ -4,9 +4,9 @@ Official MCP docs: https://support.atlassian.com/rovo/docs/connect-to-an-mcp-ser
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.rovodev/mcp.json` |
+| Scope | File                  |
+| ----- | --------------------- |
+| user  | `~/.rovodev/mcp.json` |
 
 Servers live under `mcpServers` with `"transport": "stdio"`.
 
@@ -21,7 +21,7 @@ wirebay add github to rovo-dev        # also accepted: rovodev, rovo
 ```json
 {
   "mcpServers": {
-    "github": {"command":"wirebay","args":["run","github"],"transport":"stdio"}
+    "github": { "command": "wirebay", "args": ["run", "github"], "transport": "stdio" }
   }
 }
 ```

@@ -19,7 +19,7 @@ const stdio = new ServerDefinition({
   env: { LOG_LEVEL: "error", PROFILE: "${REGION}-profile" },
 });
 
-test("only declared secrets reach the server", () => {
+await test("only declared secrets reach the server", () => {
   const plan = planner.plan(stdio, secrets, base);
   assert.equal(plan.env.MY_TOKEN, "tok_secret_value_123");
   assert.equal(plan.env.REGION, "eu-west-1");
@@ -30,23 +30,28 @@ test("only declared secrets reach the server", () => {
   assert.ok(plan.redact.includes("tok_secret_value_123"));
 });
 
-test("declared keys in the secrets store override env defaults", () => {
+await test("declared keys in the secrets store override env defaults", () => {
   assert.equal(planner.plan(stdio, { ...secrets, LOG_LEVEL: "debug" }, base).env.LOG_LEVEL, "error", "undeclared LOG_LEVEL is ignored");
   const declared = new ServerDefinition({ ...stdio.data, secrets: [...stdio.secrets, { key: "LOG_LEVEL" }] });
   assert.equal(planner.plan(declared, { ...secrets, LOG_LEVEL: "debug" }, base).env.LOG_LEVEL, "debug");
 });
 
-test("a missing required secret gives a fix-it hint", () => {
+await test("a missing required secret gives a fix-it hint", () => {
   assert.throws(
     () => planner.plan(stdio, {}, base),
-    (e: unknown) => e instanceof WirebayError && /MY_TOKEN/.test(e.message) && /wirebay secrets set MY_TOKEN/.test(e.hint ?? ""),
+    (e: unknown) => e instanceof WirebayError && e.message.includes("MY_TOKEN") && (e.hint ?? "").includes("wirebay secrets set MY_TOKEN"),
   );
 });
 
-test("remote servers get the token through env, never argv", () => {
+await test("remote servers get the token through env, never argv", () => {
   const remote = new ServerDefinition({
     name: "r",
-    launch: { type: "remote", url: "https://example.com/mcp", auth: { type: "bearer", secret: "MY_TOKEN" }, headers: { "X-Sets": "${REGION}" } },
+    launch: {
+      type: "remote",
+      url: "https://example.com/mcp",
+      auth: { type: "bearer", secret: "MY_TOKEN" },
+      headers: { "X-Sets": "${REGION}" },
+    },
     secrets: [{ key: "MY_TOKEN", required: true }, { key: "REGION" }],
   });
   const plan = planner.plan(remote, secrets, base);
@@ -56,7 +61,7 @@ test("remote servers get the token through env, never argv", () => {
   assert.ok(plan.args.includes("X-Sets:eu-west-1"));
 });
 
-test("server definitions report auth and required keys", () => {
+await test("server definitions report auth and required keys", () => {
   assert.equal(stdio.authLabel(), "token");
   assert.deepEqual(stdio.requiredKeys(), ["MY_TOKEN"]);
   const oauth = new ServerDefinition({ name: "o", launch: { type: "remote", url: "https://x", auth: { type: "oauth" } } });

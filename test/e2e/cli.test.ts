@@ -9,7 +9,7 @@ import { fakeServer, Sandbox } from "../helpers.ts";
 
 const SENTINEL = "sentinel_secret_value_4f9a2c";
 
-function setupTools(sb: Sandbox) {
+function setupTools(sb: Sandbox): { cursor: string; codex: string } {
   const cursor = path.join(sb.home, ".cursor", "mcp.json");
   const codex = path.join(sb.home, ".codex", "config.toml");
   mkdirSync(path.dirname(cursor), { recursive: true });
@@ -25,14 +25,28 @@ function allFiles(dir: string): string[] {
     .map((d) => path.join(d.parentPath, d.name));
 }
 
-test("init → add → list → doctor → remove → unsync", () => {
+await test("init → add → list → doctor → remove → unsync", () => {
   const sb = new Sandbox();
   try {
     const { cursor, codex } = setupTools(sb);
     let r = sb.run(["init"]);
     assert.equal(r.code, 0, r.stderr);
 
-    r = sb.run(["add", "fake", "--command", process.execPath, "--arg", "--no-warnings", "--arg", fakeServer, "--secret", "TEST_TOKEN", "to", "cursor", "codex"]);
+    r = sb.run([
+      "add",
+      "fake",
+      "--command",
+      process.execPath,
+      "--arg",
+      "--no-warnings",
+      "--arg",
+      fakeServer,
+      "--secret",
+      "TEST_TOKEN",
+      "to",
+      "cursor",
+      "codex",
+    ]);
     assert.equal(r.code, 0, r.stderr + r.stdout);
     assert.match(r.stderr, /needs TEST_TOKEN/);
 
@@ -47,15 +61,16 @@ test("init → add → list → doctor → remove → unsync", () => {
     assert.match(readFileSync(codex, "utf8"), /^# my config\nmodel = "x"\n\n# >>> wirebay managed/);
 
     r = sb.run(["list", "--json"]);
-    const listed = JSON.parse(r.stdout);
-    assert.deepEqual(listed.servers[0].tools, { codex: "synced", cursor: "synced" });
+    const listed = JSON.parse(r.stdout) as { servers: { tools: Record<string, string> }[] };
+    assert.deepEqual(listed.servers[0]?.tools, { codex: "synced", cursor: "synced" });
 
     r = sb.run(["doctor", "fake", "--json"]);
-    const report = JSON.parse(r.stdout);
-    const hs = report.checks.find((c: { name: string }) => c.name === "MCP handshake");
+    const report = JSON.parse(r.stdout) as { checks: { name: string; status: string; detail?: string }[] };
+    const hs = report.checks.find((c) => c.name === "MCP handshake");
+    assert.ok(hs, "doctor reported a handshake check");
     assert.equal(hs.status, "ok", JSON.stringify(report.checks));
     // The fake server lists env:<KEY> for every TEST_* variable it received.
-    assert.match(hs.detail, /2 tools/, "exactly echo + env:TEST_TOKEN (TEST_UNDECLARED must not be passed)");
+    assert.match(hs.detail ?? "", /2 tools/, "exactly echo + env:TEST_TOKEN (TEST_UNDECLARED must not be passed)");
 
     r = sb.run(["sync", "--dry-run"]);
     assert.equal(r.code, 0);
@@ -80,7 +95,7 @@ test("init → add → list → doctor → remove → unsync", () => {
   }
 });
 
-test("conflicts and drift exit with code 4", () => {
+await test("conflicts and drift exit with code 4", () => {
   const sb = new Sandbox();
   try {
     const { cursor } = setupTools(sb);
@@ -101,7 +116,7 @@ test("conflicts and drift exit with code 4", () => {
   }
 });
 
-test("export writes files without touching real configs", () => {
+await test("export writes files without touching real configs", () => {
   const sb = new Sandbox();
   try {
     const { cursor } = setupTools(sb);
@@ -111,14 +126,16 @@ test("export writes files without touching real configs", () => {
     const r = sb.run(["export", "cursor"]);
     assert.equal(r.code, 0, r.stderr);
     assert.equal(readFileSync(cursor, "utf8"), before);
-    const exported = JSON.parse(readFileSync(path.join(sb.root, "wirebay-export", "cursor", "mcp.json"), "utf8"));
+    const exported = JSON.parse(readFileSync(path.join(sb.root, "wirebay-export", "cursor", "mcp.json"), "utf8")) as {
+      mcpServers: Record<string, unknown>;
+    };
     assert.deepEqual(Object.keys(exported.mcpServers), ["x"]);
   } finally {
     sb.cleanup();
   }
 });
 
-test("helpful errors", () => {
+await test("helpful errors", () => {
   const sb = new Sandbox();
   try {
     let r = sb.run(["snyc"]);

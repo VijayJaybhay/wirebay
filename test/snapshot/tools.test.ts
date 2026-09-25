@@ -15,18 +15,18 @@ const directory = new ToolDirectory(ctx.adapters);
 for (const tool of ctx.tools.all()) {
   for (const scope of tool.scopes) {
     const name = ToolDirectory.exampleFileName(tool, scope);
-    test(`${tool.id} (${scope}) renders like examples/${name}`, () => {
+    await test(`${tool.id} (${scope}) renders like examples/${name}`, () => {
       const file = path.join(repoRoot, "tools", tool.id, "examples", name);
       assert.ok(existsSync(file), `missing ${file}; run npm run gen:docs`);
       assert.equal(directory.renderExample(tool, scope), readFileSync(file, "utf8").replace(/\r\n/g, "\n"));
     });
   }
-  test(`${tool.id} has a GUIDE.md`, () => {
+  await test(`${tool.id} has a GUIDE.md`, () => {
     assert.ok(existsSync(path.join(repoRoot, "tools", tool.id, "GUIDE.md")));
   });
 }
 
-test("every preset loads and validates", () => {
+await test("every preset loads and validates", () => {
   const presets = ctx.servers.presets();
   assert.ok(presets.size >= 50);
   for (const def of presets.values()) assert.ok(def.description, `${def.name} has a description`);

@@ -6,10 +6,10 @@ Official MCP docs: https://learn.microsoft.com/en-us/visualstudio/ide/mcp-server
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `%USERPROFILE%\.mcp.json` (Windows only) |
-| project | `<solution>/.vs/mcp.json` |
+| Scope   | File                                     |
+| ------- | ---------------------------------------- |
+| user    | `%USERPROFILE%\.mcp.json` (Windows only) |
+| project | `<solution>/.vs/mcp.json`                |
 
 Servers live under **`servers`** (VS Code style). Visual Studio 17.14+ also reads `<solution>/.mcp.json`, `.vscode/mcp.json` and `.cursor/mcp.json`, so servers synced to VS Code or Cursor project scope may appear too.
 
@@ -24,7 +24,7 @@ wirebay add github to visual-studio        # also accepted: vs, visualstudio
 ```json
 {
   "servers": {
-    "github": {"type":"stdio","command":"wirebay","args":["run","github"]}
+    "github": { "type": "stdio", "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

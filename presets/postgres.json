@@ -7,10 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "uvx",
-    "args": [
-      "postgres-mcp@0.3.0",
-      "--access-mode=${POSTGRES_ACCESS_MODE:-restricted}"
-    ]
+    "args": ["postgres-mcp@0.3.0", "--access-mode=${POSTGRES_ACCESS_MODE:-restricted}"]
   },
   "variants": {
     "docker": {
@@ -39,9 +36,7 @@
       "description": "restricted (default, read-only) or unrestricted"
     }
   ],
-  "prereqs": [
-    "uvx"
-  ],
+  "prereqs": ["uvx"],
   "docs": "https://github.com/crystaldba/postgres-mcp",
   "notes": [
     "Restricted (read-only) by default. Set POSTGRES_ACCESS_MODE=unrestricted to allow writes. Requires uv (or `--variant docker`)."

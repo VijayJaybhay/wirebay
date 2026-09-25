@@ -4,9 +4,9 @@ Official MCP docs: https://qwenlm.github.io/qwen-code-docs/en/users/features/mcp
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.qwen/settings.json` |
+| Scope   | File                            |
+| ------- | ------------------------------- |
+| user    | `~/.qwen/settings.json`         |
 | project | `<project>/.qwen/settings.json` |
 
 Same format as Gemini CLI: servers live under `mcpServers` inside the settings file; other settings are kept.
@@ -22,7 +22,7 @@ wirebay add github to qwen-code        # also accepted: qwen
 ```json
 {
   "mcpServers": {
-    "github": {"command":"wirebay","args":["run","github"]}
+    "github": { "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

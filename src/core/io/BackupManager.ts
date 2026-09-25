@@ -66,7 +66,7 @@ export class BackupManager {
     return this.names(dir)
       .reverse()
       .map((name) => {
-        const meta = this.writer.readJson<{ originalPath?: string }>(path.join(dir, name + BackupManager.metaSuffix));
+        const meta = this.writer.readJson(path.join(dir, name + BackupManager.metaSuffix)) as { originalPath?: string } | undefined;
         return {
           id: name,
           tool: toolId,

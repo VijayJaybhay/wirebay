@@ -3,20 +3,14 @@
   "version": 1,
   "id": "qwen-code",
   "name": "Qwen Code",
-  "aliases": [
-    "qwen"
-  ],
+  "aliases": ["qwen"],
   "homepage": "https://github.com/QwenLM/qwen-code",
   "docs": {
     "mcp": "https://qwenlm.github.io/qwen-code-docs/en/users/features/mcp/"
   },
   "detect": {
-    "commands": [
-      "qwen"
-    ],
-    "paths": [
-      "~/.qwen"
-    ]
+    "commands": ["qwen"],
+    "paths": ["~/.qwen"]
   },
   "configs": {
     "user": {

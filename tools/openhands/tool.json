@@ -3,20 +3,14 @@
   "version": 1,
   "id": "openhands",
   "name": "OpenHands CLI",
-  "aliases": [
-    "open-hands"
-  ],
+  "aliases": ["open-hands"],
   "homepage": "https://openhands.dev",
   "docs": {
     "mcp": "https://docs.openhands.dev/openhands/usage/cli/mcp-servers"
   },
   "detect": {
-    "commands": [
-      "openhands"
-    ],
-    "paths": [
-      "~/.openhands"
-    ]
+    "commands": ["openhands"],
+    "paths": ["~/.openhands"]
   },
   "configs": {
     "user": {

@@ -10,10 +10,7 @@
     "args": [
       "mcp-server-git@2026.8.18",
       {
-        "optional": [
-          "--repository",
-          "${GIT_REPOSITORY}"
-        ]
+        "optional": ["--repository", "${GIT_REPOSITORY}"]
       }
     ]
   },
@@ -23,13 +20,9 @@
       "description": "Optional: default repository path"
     }
   ],
-  "prereqs": [
-    "uvx"
-  ],
+  "prereqs": ["uvx"],
   "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/git",
-  "notes": [
-    "Can commit, reset and check out branches. Requires uv."
-  ],
+  "notes": ["Can commit, reset and check out branches. Requires uv."],
   "guide": "docs/servers/catalog.md#git",
   "lastVerified": "2026-09-25",
   "status": "stable"

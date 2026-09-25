@@ -16,10 +16,7 @@
     "local": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@perplexity-ai/mcp-server@1.2.1"
-      ]
+      "args": ["-y", "@perplexity-ai/mcp-server@1.2.1"]
     }
   },
   "secrets": [
@@ -32,12 +29,8 @@
     }
   ],
   "docs": "https://docs.perplexity.ai/guides/mcp-server",
-  "notes": [
-    "Read-only; billed per use."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Read-only; billed per use."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#perplexity",
   "lastVerified": "2026-09-25",
   "status": "stable"

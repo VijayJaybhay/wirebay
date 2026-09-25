@@ -9,6 +9,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PerOs } from "../types.ts";
+import { nonEmpty } from "../util/values.ts";
 
 /** Operating systems wirebay distinguishes between. */
 export type OsName = "win32" | "darwin" | "linux";
@@ -46,10 +47,12 @@ export class WirebayPaths {
   constructor(env: NodeJS.ProcessEnv = process.env) {
     this.env = env;
     this.os = WirebayPaths.detectOs();
-    this.sandboxed = !!env.WIREBAY_USER_HOME;
-    this.userHome = env.WIREBAY_USER_HOME || os.homedir();
-    this.homeOverridden = !!env.WIREBAY_HOME;
-    this.home = env.WIREBAY_HOME || path.join(this.userHome, ".wirebay");
+    const userHome = nonEmpty(env.WIREBAY_USER_HOME);
+    const home = nonEmpty(env.WIREBAY_HOME);
+    this.sandboxed = userHome !== undefined;
+    this.userHome = userHome ?? os.homedir();
+    this.homeOverridden = home !== undefined;
+    this.home = home ?? path.join(this.userHome, ".wirebay");
   }
 
   /** `~/.wirebay/config.json`: the desired state. */

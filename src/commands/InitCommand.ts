@@ -8,7 +8,6 @@ import type { AppContext } from "../app/AppContext.ts";
 import type { ParsedCommand } from "../cli/CommandParser.ts";
 import { ExitCode } from "../core/errors.ts";
 import { ExecutableResolver } from "../core/platform/ExecutableResolver.ts";
-import { FilePermissions } from "../core/platform/FilePermissions.ts";
 import { Command } from "./Command.ts";
 
 /** Creates `~/.wirebay`, the secrets file, remembers executable paths, and detects installed tools. */
@@ -18,14 +17,19 @@ export class InitCommand extends Command {
 
   readonly name = "init";
   override readonly aliases = ["setup"];
-  readonly help = { usage: "wirebay init", summary: "Create ~/.wirebay, the secrets file, and detect installed tools.", examples: ["wirebay init"] };
+  readonly help = {
+    usage: "wirebay init",
+    summary: "Create ~/.wirebay, the secrets file, and detect installed tools.",
+    examples: ["wirebay init"],
+  };
 
-  async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
+  run(input: ParsedCommand, ctx: AppContext): number {
     const { paths, terminal: t } = ctx;
     mkdirSync(paths.home, { recursive: true });
-    FilePermissions.restrict(paths.home);
-    for (const dir of [paths.serversDir, paths.toolsDir, paths.backupsDir, paths.logsDir, paths.credentialsDir]) mkdirSync(dir, { recursive: true });
-    FilePermissions.restrict(paths.credentialsDir);
+    ctx.permissions.restrict(paths.home);
+    for (const dir of [paths.serversDir, paths.toolsDir, paths.backupsDir, paths.logsDir, paths.credentialsDir])
+      mkdirSync(dir, { recursive: true });
+    ctx.permissions.restrict(paths.credentialsDir);
     const createdSecrets = ctx.secrets.ensureExists();
 
     const config = ctx.config.load();
@@ -43,7 +47,9 @@ export class InitCommand extends Command {
       return ExitCode.Ok;
     }
     t.out(`${t.ok("✓")} wirebay home: ${paths.home}`);
-    t.out(`${t.ok("✓")} secrets file: ${paths.secretsFile} ${createdSecrets ? t.dim("(created, readable only by you)") : t.dim("(already there, untouched)")}`);
+    t.out(
+      `${t.ok("✓")} secrets file: ${paths.secretsFile} ${createdSecrets ? t.dim("(created, readable only by you)") : t.dim("(already there, untouched)")}`,
+    );
     t.out(`${t.ok("✓")} detected tools: ${detected.length ? detected.join(", ") : t.warn("none")}`);
     const missing = ["npx", "uvx", "docker"].filter((e) => !config.paths[e]);
     if (missing.length) t.out(t.dim(`  not found (only needed by some servers): ${missing.join(", ")}`));

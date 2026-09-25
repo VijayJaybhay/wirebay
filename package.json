@@ -21,16 +21,23 @@
   "scripts": {
     "dev": "node src/cli.ts",
     "build": "node scripts/clean.ts && tsc -p tsconfig.build.json",
-    "lint": "tsc -p tsconfig.json --noEmit",
+    "lint": "npm run lint:types && npm run lint:eslint && npm run format:check",
     "test": "node --test --test-reporter=spec \"test/**/*.test.ts\"",
     "validate": "node scripts/validate.ts",
     "new:tool": "node scripts/new-tool.ts",
     "new:server": "node scripts/new-server.ts",
     "gen:docs": "node scripts/gen-docs.ts",
-    "prepublishOnly": "npm run lint && npm run build && npm test && npm run validate",
+    "prepublishOnly": "npm run check && npm run build",
     "release": "npm run build && changeset publish",
     "changeset": "changeset",
-    "docs:api": "typedoc"
+    "docs:api": "typedoc",
+    "lint:types": "tsc -p tsconfig.json --noEmit",
+    "lint:eslint": "eslint . --max-warnings=0",
+    "lint:docs": "typedoc --treatWarningsAsErrors --emit none",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run lint && npm test && npm run validate && npm run lint:docs",
+    "prepare": "simple-git-hooks"
   },
   "keywords": [
     "mcp",
@@ -65,8 +72,27 @@
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.13.6",
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.12.0",
+    "lint-staged": "^17.5.1",
+    "prettier": "^3.9.9",
+    "simple-git-hooks": "^2.14.0",
     "typedoc": "^0.28.20",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged",
+    "pre-push": "npm run check"
+  },
+  "lint-staged": {
+    "*.{ts,mjs}": [
+      "prettier --write",
+      "eslint --max-warnings=0"
+    ],
+    "*.{json,md,yml,yaml}": "prettier --write"
   }
 }

@@ -5,10 +5,10 @@ Official docs: https://code.visualstudio.com/docs/copilot/customization/mcp-serv
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | Windows `%APPDATA%\Code\User\mcp.json`, macOS `~/Library/Application Support/Code/User/mcp.json`, Linux `~/.config/Code/User/mcp.json` |
-| project | `<workspace>/.vscode/mcp.json` |
+| Scope   | File                                                                                                                                   |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| user    | Windows `%APPDATA%\Code\User\mcp.json`, macOS `~/Library/Application Support/Code/User/mcp.json`, Linux `~/.config/Code/User/mcp.json` |
+| project | `<workspace>/.vscode/mcp.json`                                                                                                         |
 
 The top-level key is **`servers`** (not `mcpServers`), and each entry has `"type": "stdio"`. The file
 is JSONC, so comments are allowed and wirebay keeps them.
@@ -25,15 +25,15 @@ wirebay sync to code --scope project
 ```jsonc
 {
   "servers": {
-    "github": { "type": "stdio", "command": "wirebay", "args": ["run", "github"] }
-  }
+    "github": { "type": "stdio", "command": "wirebay", "args": ["run", "github"] },
+  },
 }
 ```
 
 ## Verify
 
 Command Palette → **MCP: List Servers**. From there you can start, stop or restart a server and
-see its output. In Copilot Chat, switch to *Agent* mode and open the tools picker.
+see its output. In Copilot Chat, switch to _Agent_ mode and open the tools picker.
 
 ## Quirks
 

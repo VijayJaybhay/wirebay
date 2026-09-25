@@ -3,21 +3,14 @@
   "version": 1,
   "id": "antigravity",
   "name": "Google Antigravity",
-  "aliases": [
-    "google-antigravity"
-  ],
+  "aliases": ["google-antigravity"],
   "homepage": "https://antigravity.google",
   "docs": {
     "mcp": "https://antigravity.google/docs/mcp/"
   },
   "detect": {
-    "commands": [
-      "antigravity"
-    ],
-    "paths": [
-      "~/.gemini/config",
-      "~/.gemini/antigravity"
-    ]
+    "commands": ["antigravity"],
+    "paths": ["~/.gemini/config", "~/.gemini/antigravity"]
   },
   "configs": {
     "user": {

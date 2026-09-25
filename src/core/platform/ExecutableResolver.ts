@@ -8,6 +8,7 @@
 
 import { statSync } from "node:fs";
 import path from "node:path";
+import { nonEmpty } from "../util/values.ts";
 import type { WirebayPaths } from "./WirebayPaths.ts";
 
 /** Looks up executables in remembered paths, `PATH`, and well-known install folders. */
@@ -38,8 +39,11 @@ export class ExecutableResolver {
     if (remembered && ExecutableResolver.isFile(remembered)) return remembered;
 
     const windows = this.paths.os === "win32";
-    const extensions = windows && !path.extname(command) ? (this.env.PATHEXT || ".EXE;.CMD;.BAT;.COM").split(";").map((e) => e.toLowerCase()) : [""];
-    const pathVar = this.env.PATH || this.env.Path || "";
+    const extensions =
+      windows && !path.extname(command)
+        ? (nonEmpty(this.env.PATHEXT) ?? ".EXE;.CMD;.BAT;.COM").split(";").map((e) => e.toLowerCase())
+        : [""];
+    const pathVar = nonEmpty(this.env.PATH) ?? nonEmpty(this.env.Path) ?? "";
     const dirs = [...pathVar.split(path.delimiter).filter(Boolean), ...this.wellKnownDirs()];
     for (const dir of dirs) {
       for (const ext of extensions) {
@@ -54,10 +58,10 @@ export class ExecutableResolver {
   private wellKnownDirs(): string[] {
     const home = this.paths.userHome;
     if (this.paths.os === "win32") {
-      const programFiles = this.env.ProgramFiles || "C:\\Program Files";
+      const programFiles = nonEmpty(this.env.ProgramFiles) ?? "C:\\Program Files";
       return [
         path.join(programFiles, "nodejs"),
-        path.join(this.env.APPDATA || path.join(home, "AppData", "Roaming"), "npm"),
+        path.join(nonEmpty(this.env.APPDATA) ?? path.join(home, "AppData", "Roaming"), "npm"),
         path.join(home, ".local", "bin"),
         path.join(home, ".cargo", "bin"),
         path.join(programFiles, "Docker", "Docker", "resources", "bin"),

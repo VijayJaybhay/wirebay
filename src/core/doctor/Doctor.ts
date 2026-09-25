@@ -6,7 +6,6 @@
 import { existsSync } from "node:fs";
 import type { AppContext } from "../../app/AppContext.ts";
 import { McpHandshakeClient } from "../mcp/McpHandshakeClient.ts";
-import { FilePermissions } from "../platform/FilePermissions.ts";
 import type { ServerDefinition } from "../servers/ServerDefinition.ts";
 
 /** One check's outcome. */
@@ -70,12 +69,29 @@ export class Doctor {
   private checkEnvironment(): void {
     const paths = this.ctx.paths;
     const major = Number(process.versions.node.split(".")[0]);
-    this.add({ area: "wirebay", name: `Node.js ${process.versions.node}`, status: major >= 24 ? "ok" : "fail", fix: "Install Node.js 24 or newer." });
+    this.add({
+      area: "wirebay",
+      name: `Node.js ${process.versions.node}`,
+      status: major >= 24 ? "ok" : "fail",
+      fix: "Install Node.js 24 or newer.",
+    });
     const initialised = existsSync(paths.configFile);
-    this.add({ area: "wirebay", name: `home ${paths.home}`, status: initialised ? "ok" : "warn", detail: initialised ? undefined : "not initialised", fix: "wirebay init" });
-    const perm = FilePermissions.check(paths.secretsFile);
+    this.add({
+      area: "wirebay",
+      name: `home ${paths.home}`,
+      status: initialised ? "ok" : "warn",
+      detail: initialised ? undefined : "not initialised",
+      fix: "wirebay init",
+    });
+    const perm = this.ctx.permissions.check(paths.secretsFile);
     const hasSecrets = existsSync(paths.secretsFile);
-    this.add({ area: "wirebay", name: "secrets file is private", status: hasSecrets ? (perm ? "fail" : "ok") : "warn", detail: perm, fix: perm ?? "wirebay init" });
+    this.add({
+      area: "wirebay",
+      name: "secrets file is private",
+      status: hasSecrets ? (perm ? "fail" : "ok") : "warn",
+      detail: perm,
+      fix: perm ?? "wirebay init",
+    });
   }
 
   private async checkServer(name: string): Promise<void> {
@@ -88,7 +104,13 @@ export class Doctor {
     const launch = def.launch;
     const exe = launch.type === "stdio" ? launch.command : "npx";
     const found = this.ctx.resolver.resolve(exe);
-    this.add({ area: name, name: `${exe} available`, status: found ? "ok" : "fail", detail: found, fix: `Install ${exe}, then run \`wirebay init\` from a terminal where it works.` });
+    this.add({
+      area: name,
+      name: `${exe} available`,
+      status: found ? "ok" : "fail",
+      detail: found,
+      fix: `Install ${exe}, then run \`wirebay init\` from a terminal where it works.`,
+    });
 
     const missing = def.requiredKeys().filter((k) => !secretValues[k] && !this.ctx.env[k]);
     this.add({
@@ -101,7 +123,13 @@ export class Doctor {
     for (const spec of def.secrets) {
       const v = secretValues[spec.key];
       if (v && spec.pattern && !new RegExp(spec.pattern).test(v)) {
-        this.add({ area: name, name: `${spec.key} format`, status: "warn", detail: `does not match ${spec.pattern}`, fix: `wirebay secrets set ${spec.key}` });
+        this.add({
+          area: name,
+          name: `${spec.key} format`,
+          status: "warn",
+          detail: `does not match ${spec.pattern}`,
+          fix: `wirebay secrets set ${spec.key}`,
+        });
       }
     }
     if (this.options.offline || missing.length || !found) return;
@@ -120,7 +148,12 @@ export class Doctor {
           name: "MCP handshake",
           status: "fail",
           detail: "the server rejected the credentials (HTTP 401)",
-          fix: `Check or replace the token: ${def.requiredKeys().map((k) => `wirebay secrets set ${k}`).join(" · ") || "see the guide"}\nGuide: ${guide}`,
+          fix: `Check or replace the token: ${
+            def
+              .requiredKeys()
+              .map((k) => `wirebay secrets set ${k}`)
+              .join(" · ") || "see the guide"
+          }\nGuide: ${guide}`,
         });
         return;
       }
@@ -129,7 +162,7 @@ export class Doctor {
         name: "MCP handshake",
         status: r.ok ? (r.stdoutNoise.length ? "warn" : "ok") : "fail",
         detail: r.ok
-          ? `${r.serverInfo?.name ?? "server"} ${r.serverInfo?.version ?? ""} · ${r.toolCount ?? "?"} tools · ${(r.ms / 1000).toFixed(1)}s${r.stdoutNoise.length ? ` · prints non-MCP output: ${r.stdoutNoise[0]}` : ""}`
+          ? `${r.serverInfo?.name ?? "server"} ${r.serverInfo?.version ?? ""} · ${r.toolCount === undefined ? "?" : String(r.toolCount)} tools · ${(r.ms / 1000).toFixed(1)}s${r.stdoutNoise[0] ? ` · prints non-MCP output: ${r.stdoutNoise[0]}` : ""}`
           : r.error,
         fix: r.ok ? undefined : `${r.stderrTail ? `server said:\n${r.stderrTail}\n` : ""}Check the token and the guide: ${guide}`,
       });
@@ -149,7 +182,13 @@ export class Doctor {
       try {
         entries = this.ctx.adapters.for(tool).read({ tool, scope: f.scope, file: f.path }).entries;
       } catch (err) {
-        this.add({ area: tool.id, name: `read ${f.path}`, status: "fail", detail: (err as Error).message, fix: `wirebay restore ${tool.id}` });
+        this.add({
+          area: tool.id,
+          name: `read ${f.path}`,
+          status: "fail",
+          detail: (err as Error).message,
+          fix: `wirebay restore ${tool.id}`,
+        });
         continue;
       }
       const broken = Object.keys(f.entries).filter((name) => {
@@ -167,7 +206,7 @@ export class Doctor {
           ? `launcher path no longer exists for ${broken.join(", ")} (Node or wirebay moved)`
           : removed.length
             ? `removed outside wirebay: ${removed.join(", ")}`
-            : `${Object.keys(f.entries).length} managed server(s)`,
+            : `${String(Object.keys(f.entries).length)} managed server(s)`,
         fix: `wirebay sync to ${tool.id} --force`,
       });
     }

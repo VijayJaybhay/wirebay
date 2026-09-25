@@ -3,18 +3,14 @@
   "version": 1,
   "id": "goose",
   "name": "Goose",
-  "aliases": [
-    "block-goose"
-  ],
+  "aliases": ["block-goose"],
   "homepage": "https://goose-docs.ai",
   "docs": {
     "mcp": "https://goose-docs.ai/docs/guides/config-files/",
     "changelog": "https://github.com/block/goose/releases"
   },
   "detect": {
-    "commands": [
-      "goose"
-    ],
+    "commands": ["goose"],
     "paths": [
       {
         "win32": "{appdata}/Block/goose",

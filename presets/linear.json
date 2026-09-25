@@ -37,12 +37,8 @@
     }
   ],
   "docs": "https://linear.app/docs/mcp",
-  "notes": [
-    "Signs in through the browser. `--variant readonly` exposes only read tools; `--variant token` uses LINEAR_API_KEY."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Signs in through the browser. `--variant readonly` exposes only read tools; `--variant token` uses LINEAR_API_KEY."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#linear",
   "lastVerified": "2026-09-25",
   "status": "stable"

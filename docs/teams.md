@@ -11,12 +11,12 @@ wirebay add github to claude cursor vscode --scope project
 
 This writes **portable** entries into the repo:
 
-| Tool | File |
-|---|---|
-| Claude Code | `.mcp.json` |
-| Cursor | `.cursor/mcp.json` |
-| VS Code | `.vscode/mcp.json` |
-| Gemini CLI | `.gemini/settings.json` |
+| Tool        | File                    |
+| ----------- | ----------------------- |
+| Claude Code | `.mcp.json`             |
+| Cursor      | `.cursor/mcp.json`      |
+| VS Code     | `.vscode/mcp.json`      |
+| Gemini CLI  | `.gemini/settings.json` |
 
 ```json
 {
@@ -43,7 +43,7 @@ a server that isn't a built-in preset, they need the same definition: share the
 ## Windows teammates
 
 Most tools can't start the `wirebay.cmd` shim directly on Windows, so portable entries written
-*on Windows* use `cmd /c wirebay run …`, which doesn't work on macOS or Linux. If your team is mixed:
+_on Windows_ use `cmd /c wirebay run …`, which doesn't work on macOS or Linux. If your team is mixed:
 
 - generate project files on macOS/Linux (plain `wirebay run …` works on Windows in VS Code, which
   can start `.cmd` shims), or

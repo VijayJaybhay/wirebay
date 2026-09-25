@@ -12,6 +12,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import * as prettier from "prettier";
 import { AppContext } from "../src/app/AppContext.ts";
 import { WirebayApp } from "../src/app/WirebayApp.ts";
 import { FLAGS } from "../src/cli/Grammar.ts";
@@ -39,18 +40,29 @@ export class DocsGenerator {
   }
 
   /** Generate everything. */
-  run(): void {
+  async run(): Promise<void> {
     const tools = this.ctx.tools.all().filter((t) => t.manifest.source === "package");
-    const presets = [...this.ctx.servers.presets().values()].sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+    const presets = [...this.ctx.servers.presets().values()].sort(
+      (a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name),
+    );
     this.examples(tools);
-    this.write("tools/INDEX.md", ToolDirectory.indexMarkdown(tools));
-    this.write("docs/servers/catalog.md", DocsGenerator.catalog(presets));
-    this.readme(tools, presets);
-    this.write("docs/cli-reference.md", DocsGenerator.cliReference());
+    await this.write("tools/INDEX.md", ToolDirectory.indexMarkdown(tools));
+    await this.write("docs/servers/catalog.md", DocsGenerator.catalog(presets));
+    await this.readme(tools, presets);
+    await this.write("docs/cli-reference.md", DocsGenerator.cliReference());
   }
 
-  private write(file: string, content: string): void {
+  /**
+   * Write a generated file. Markdown goes through Prettier with the repo's config, so generated
+   * docs are formatted exactly like hand-written ones. Examples are written byte for byte.
+   */
+  private async write(file: string, raw: string): Promise<void> {
     const abs = WirebayPaths.packagePath(file);
+    const content = file.endsWith(".md") ? await prettier.format(raw, { ...(await prettier.resolveConfig(abs)), filepath: abs }) : raw;
+    this.compareAndWrite(file, abs, content);
+  }
+
+  private compareAndWrite(file: string, abs: string, content: string): void {
     const current = existsSync(abs) ? readFileSync(abs, "utf8").replace(/\r\n/g, "\n") : undefined;
     if (current === content) return;
     if (this.check) {
@@ -65,21 +77,38 @@ export class DocsGenerator {
   private examples(tools: Tool[]): void {
     const directory = new ToolDirectory(this.ctx.adapters);
     for (const tool of tools) {
-      for (const scope of tool.scopes) this.write(`tools/${tool.id}/examples/${ToolDirectory.exampleFileName(tool, scope)}`, directory.renderExample(tool, scope));
+      for (const scope of tool.scopes)
+        this.writeExample(`tools/${tool.id}/examples/${ToolDirectory.exampleFileName(tool, scope)}`, directory.renderExample(tool, scope));
     }
   }
 
-  private readme(tools: Tool[], presets: ServerDefinition[]): void {
+  private writeExample(file: string, content: string): void {
+    this.compareAndWrite(file, WirebayPaths.packagePath(file), content);
+  }
+
+  private async readme(tools: Tool[], presets: ServerDefinition[]): Promise<void> {
     const file = WirebayPaths.packagePath("README.md");
     if (!existsSync(file)) return;
     let readme = readFileSync(file, "utf8").replace(/\r\n/g, "\n");
-    const serverRows = presets.map((p) => `| ${p.category} | **${p.name}** | ${p.description} | ${p.authLabel()} | [guide](${REPO_URL}/blob/main/${p.guide ?? "docs/servers/README.md"}) |`);
-    readme = DocsGenerator.replaceBetween(readme, "servers", ["| Category | Server | What it does | Auth | Guide |", "|---|---|---|---|---|", ...serverRows].join("\n"));
-    const toolRows = tools.map(
-      (t) => `| **${t.name}** | ${t.names.map((n) => `\`${n}\``).join(" ")} | ${t.scopes.join(", ")} | ${t.manifest.lastVerified ?? ""} | [guide](${REPO_URL}/blob/main/tools/${t.id}/GUIDE.md) |`,
+    const serverRows = presets.map(
+      (p) =>
+        `| ${p.category} | **${p.name}** | ${p.description} | ${p.authLabel()} | [guide](${REPO_URL}/blob/main/${p.guide ?? "docs/servers/README.md"}) |`,
     );
-    readme = DocsGenerator.replaceBetween(readme, "tools", ["| Tool | Name in commands | Scopes | Last verified | Guide |", "|---|---|---|---|---|", ...toolRows].join("\n"));
-    this.write("README.md", readme);
+    readme = DocsGenerator.replaceBetween(
+      readme,
+      "servers",
+      ["| Category | Server | What it does | Auth | Guide |", "|---|---|---|---|---|", ...serverRows].join("\n"),
+    );
+    const toolRows = tools.map(
+      (t) =>
+        `| **${t.name}** | ${t.names.map((n) => `\`${n}\``).join(" ")} | ${t.scopes.join(", ")} | ${t.manifest.lastVerified ?? ""} | [guide](${REPO_URL}/blob/main/tools/${t.id}/GUIDE.md) |`,
+    );
+    readme = DocsGenerator.replaceBetween(
+      readme,
+      "tools",
+      ["| Tool | Name in commands | Scopes | Last verified | Guide |", "|---|---|---|---|---|", ...toolRows].join("\n"),
+    );
+    await this.write("README.md", readme);
   }
 
   private static replaceBetween(text: string, marker: string, content: string): string {
@@ -93,7 +122,12 @@ export class DocsGenerator {
 
   private static launchSummary(launch: Launch): string {
     if (launch.type === "remote") {
-      const auth = launch.auth?.type === "oauth" ? "browser sign-in" : launch.auth && "secret" in launch.auth ? `\`${launch.auth.secret}\`` : "no auth";
+      const auth =
+        launch.auth?.type === "oauth"
+          ? "browser sign-in"
+          : launch.auth && "secret" in launch.auth
+            ? `\`${launch.auth.secret}\``
+            : "no auth";
       return `hosted server \`${launch.url}\` (${auth}), bridged with mcp-remote`;
     }
     const args = (launch.args ?? []).map((a) => (typeof a === "string" ? a : `[${a.optional.join(" ")}]`));
@@ -122,7 +156,10 @@ export class DocsGenerator {
     for (const p of presets) {
       const d = p.data;
       out.push(`## ${p.name}`, "", p.description, "");
-      out.push(`**Category:** ${p.category} · **Status:** ${p.status} · **Auth:** ${p.authLabel()} · **Verified:** ${d.lastVerified ?? "never"}${d.docs ? ` · [Official docs](${d.docs})` : ""}`, "");
+      out.push(
+        `**Category:** ${p.category} · **Status:** ${p.status} · **Auth:** ${p.authLabel()} · **Verified:** ${d.lastVerified ?? "never"}${d.docs ? ` · [Official docs](${d.docs})` : ""}`,
+        "",
+      );
       out.push("```bash", `wirebay add ${p.name} to all`, "```", "");
       out.push(`- **Runs:** ${DocsGenerator.launchSummary(d.launch)}`);
       for (const [name, v] of Object.entries(d.variants ?? {})) out.push(`- **\`--variant ${name}\`:** ${DocsGenerator.launchSummary(v)}`);
@@ -130,7 +167,8 @@ export class DocsGenerator {
       out.push("");
       if (p.secrets.length) {
         out.push("| Key | Required | What it is | Where to get it |", "|---|---|---|---|");
-        for (const s of p.secrets) out.push(`| \`${s.key}\` | ${s.required ? "yes" : "no"} | ${s.description ?? ""} | ${s.help ? `[link](${s.help})` : ""} |`);
+        for (const s of p.secrets)
+          out.push(`| \`${s.key}\` | ${s.required ? "yes" : "no"} | ${s.description ?? ""} | ${s.help ? `[link](${s.help})` : ""} |`);
         out.push("", "Set with `wirebay secrets set <KEY>`.", "");
       }
       for (const n of d.notes ?? []) out.push(`> ${n}`, ">");
@@ -150,13 +188,16 @@ export class DocsGenerator {
       "Every command also accepts natural phrasing; see [command grammar](command-grammar.md).",
       "",
     ];
-    for (const c of WirebayApp.createRegistry().all().filter((x) => !x.hidden)) {
+    for (const c of WirebayApp.createRegistry()
+      .all()
+      .filter((x) => !x.hidden)) {
       lines.push(`## \`${c.name}\``, "", c.help.summary, "", "```", c.help.usage, "```", "");
       if (c.aliases.length) lines.push(`Aliases: ${c.aliases.map((a) => `\`${a}\``).join(", ")}`, "");
       lines.push("Examples:", "", "```bash", ...c.help.examples, "```", "");
     }
     lines.push("## Options", "", "| Option | Description |", "|---|---|");
-    for (const f of FLAGS) lines.push(`| \`--${f.name}${f.value ? " <value>" : ""}\`${f.short ? ` / \`-${f.short}\`` : ""} | ${f.description} |`);
+    for (const f of FLAGS)
+      lines.push(`| \`--${f.name}${f.value ? " <value>" : ""}\`${f.short ? ` / \`-${f.short}\`` : ""} | ${f.description} |`);
     lines.push(
       "",
       "## Exit codes",
@@ -175,7 +216,7 @@ export class DocsGenerator {
 }
 
 const generator = new DocsGenerator(process.argv.includes("--check"));
-generator.run();
+await generator.run();
 if (generator.stale.length) {
   console.error(`Generated files are out of date:\n  ${generator.stale.join("\n  ")}\nRun: npm run gen:docs`);
   process.exit(1);

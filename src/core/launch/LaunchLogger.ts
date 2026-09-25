@@ -16,6 +16,7 @@ export class LaunchLogger {
   static readonly keep = 3;
 
   private readonly paths: WirebayPaths;
+  private readonly masker = new SecretMasker();
 
   constructor(paths: WirebayPaths) {
     this.paths = paths;
@@ -32,14 +33,15 @@ export class LaunchLogger {
       mkdirSync(this.paths.logsDir, { recursive: true });
       const file = path.join(this.paths.logsDir, `${server}.log`);
       if (existsSync(file) && statSync(file).size > LaunchLogger.maxBytes) this.rotate(file);
-      appendFileSync(file, `${new Date().toISOString()} ${SecretMasker.redact(message, redact)}\n`);
+      appendFileSync(file, `${new Date().toISOString()} ${this.masker.redact(message, redact)}\n`);
     } catch {
       // Never let logging break a server.
     }
   }
 
   private rotate(file: string): void {
-    for (let i = LaunchLogger.keep - 1; i >= 1; i--) if (existsSync(`${file}.${i}`)) renameSync(`${file}.${i}`, `${file}.${i + 1}`);
-    renameSync(file, `${file}.1`);
+    const rotated = (n: number): string => `${file}.${String(n)}`;
+    for (let i = LaunchLogger.keep - 1; i >= 1; i--) if (existsSync(rotated(i))) renameSync(rotated(i), rotated(i + 1));
+    renameSync(file, rotated(1));
   }
 }

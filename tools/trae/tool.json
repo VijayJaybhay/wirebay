@@ -3,18 +3,13 @@
   "version": 1,
   "id": "trae",
   "name": "Trae",
-  "aliases": [
-    "trae-ide",
-    "traecode"
-  ],
+  "aliases": ["trae-ide", "traecode"],
   "homepage": "https://www.trae.ai",
   "docs": {
     "mcp": "https://docs.trae.ai/ide/add-mcp-servers"
   },
   "detect": {
-    "commands": [
-      "trae"
-    ]
+    "commands": ["trae"]
   },
   "configs": {
     "project": {

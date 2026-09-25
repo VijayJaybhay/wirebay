@@ -7,10 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@netlify/mcp@1.15.1"
-    ]
+    "args": ["-y", "@netlify/mcp@1.15.1"]
   },
   "secrets": [
     {
@@ -21,9 +18,7 @@
       "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/netlify.md#1-create-a-token"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://docs.netlify.com/build/build-with-ai/netlify-mcp-server/",
   "guide": "docs/servers/netlify.md",
   "lastVerified": "2026-09-25",

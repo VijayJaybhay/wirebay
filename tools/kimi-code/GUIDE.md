@@ -6,10 +6,10 @@ Official MCP docs: https://www.kimi.com/code/docs/en/kimi-code-cli/customization
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.kimi-code/mcp.json` (`$KIMI_CODE_HOME/mcp.json` if set) |
-| project | `<project>/.kimi-code/mcp.json` |
+| Scope   | File                                                        |
+| ------- | ----------------------------------------------------------- |
+| user    | `~/.kimi-code/mcp.json` (`$KIMI_CODE_HOME/mcp.json` if set) |
+| project | `<project>/.kimi-code/mcp.json`                             |
 
 The legacy Python `kimi-cli` used `~/.kimi/mcp.json`.
 
@@ -24,7 +24,7 @@ wirebay add github to kimi-code        # also accepted: kimi
 ```json
 {
   "mcpServers": {
-    "github": {"command":"wirebay","args":["run","github"]}
+    "github": { "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

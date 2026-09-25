@@ -7,19 +7,12 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@shopify/dev-mcp@1.15.4"
-    ]
+    "args": ["-y", "@shopify/dev-mcp@1.15.4"]
   },
   "secrets": [],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://shopify.dev/docs/apps/build/devmcp",
-  "notes": [
-    "Docs and schema tools only; no access to store data. No credentials needed."
-  ],
+  "notes": ["Docs and schema tools only; no access to store data. No credentials needed."],
   "guide": "docs/servers/catalog.md#shopify-dev",
   "lastVerified": "2026-09-25",
   "status": "stable"

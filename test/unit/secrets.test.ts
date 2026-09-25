@@ -10,7 +10,7 @@ function prepare(dir: string, content: string): void {
   writeFileSync(path.join(dir, "secrets.env"), content);
 }
 
-test("set, get, unset keep comments and other keys", () =>
+await test("set, get, unset keep comments and other keys", () =>
   withSandbox((sb) => {
     prepare(sb.wirebayHome, "# comment\nA=1\n\n# ── b ──\nB=\n");
     const s = sb.context().secrets;
@@ -26,7 +26,7 @@ test("set, get, unset keep comments and other keys", () =>
     assert.ok(s.keys().includes("A"), "unset keeps the placeholder line");
   }));
 
-test("empty values count as unset and ~ is expanded", () =>
+await test("empty values count as unset and ~ is expanded", () =>
   withSandbox((sb) => {
     prepare(sb.wirebayHome, "EMPTY=\nCREDS=~/.wirebay/credentials/sa.json\n");
     const s = sb.context().secrets;
@@ -34,7 +34,7 @@ test("empty values count as unset and ~ is expanded", () =>
     assert.equal(s.get("CREDS"), path.join(sb.home, ".wirebay/credentials/sa.json"));
   }));
 
-test("addPlaceholders appends only missing keys under a header", () =>
+await test("addPlaceholders appends only missing keys under a header", () =>
   withSandbox((sb) => {
     prepare(sb.wirebayHome, "EXISTING=x\n");
     const s = sb.context().secrets;
@@ -43,7 +43,7 @@ test("addPlaceholders appends only missing keys under a header", () =>
     assert.deepEqual(s.addPlaceholders("svc", [{ key: "NEW_KEY" }]), []);
   }));
 
-test("ensureExists creates the file from the template", () =>
+await test("ensureExists creates the file from the template", () =>
   withSandbox((sb) => {
     const s = sb.context().secrets;
     assert.equal(s.ensureExists(), true);
@@ -51,10 +51,11 @@ test("ensureExists creates the file from the template", () =>
     assert.ok(s.keys().includes("GITHUB_PERSONAL_ACCESS_TOKEN"));
   }));
 
-test("mask never reveals short secrets and shows only the ends of long ones", () => {
-  assert.equal(SecretMasker.mask(undefined), "(empty)");
-  assert.equal(SecretMasker.mask("abc"), "•••");
-  assert.equal(SecretMasker.mask("us-east-1a"), "us••••••");
-  assert.equal(SecretMasker.mask("ghp_1234567890abcdefXYZ"), "ghp_…fXYZ");
-  assert.equal(SecretMasker.redact("token=abc12345 end", ["abc12345"]), "token=‹redacted› end");
+await test("mask never reveals short secrets and shows only the ends of long ones", () => {
+  const masker = new SecretMasker();
+  assert.equal(masker.mask(undefined), "(empty)");
+  assert.equal(masker.mask("abc"), "•••");
+  assert.equal(masker.mask("us-east-1a"), "us••••••");
+  assert.equal(masker.mask("ghp_1234567890abcdefXYZ"), "ghp_…fXYZ");
+  assert.equal(masker.redact("token=abc12345 end", ["abc12345"]), "token=‹redacted› end");
 });

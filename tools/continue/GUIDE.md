@@ -6,8 +6,8 @@ The Continue extension for VS Code and JetBrains. Official docs: https://docs.co
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
+| Scope   | File                                            |
+| ------- | ----------------------------------------------- |
 | project | `<workspace>/.continue/mcpServers/wirebay.json` |
 
 Continue's main `~/.continue/config.yaml` stores servers as a **list**, which wirebay doesn't edit.

@@ -5,11 +5,11 @@ Official docs: https://modelcontextprotocol.io/docs/develop/connect-local-server
 
 ## Where the config lives
 
-| OS | File |
-|---|---|
-| Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
-| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
-| Linux | `~/.config/Claude/claude_desktop_config.json` (no official Linux app; community builds use this path) |
+| OS      | File                                                                                                  |
+| ------- | ----------------------------------------------------------------------------------------------------- |
+| Windows | `%APPDATA%\Claude\claude_desktop_config.json`                                                         |
+| macOS   | `~/Library/Application Support/Claude/claude_desktop_config.json`                                     |
+| Linux   | `~/.config/Claude/claude_desktop_config.json` (no official Linux app; community builds use this path) |
 
 User scope only. The file is also where the app keeps other settings; wirebay only touches keys
 inside `mcpServers`.
@@ -40,6 +40,7 @@ On Windows use `"command": "cmd", "args": ["/c", "wirebay", "run", "netlify"]`.
 ## Verify
 
 Settings → Developer shows each server's status. Logs:
+
 - Windows: `%APPDATA%\Claude\logs\mcp-server-<name>.log`
 - macOS: `~/Library/Logs/Claude/mcp-server-<name>.log`
 

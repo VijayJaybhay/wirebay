@@ -5,9 +5,9 @@ Official docs: https://docs.cline.bot/mcp/configuring-mcp-servers
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.cline/data/settings/cline_mcp_settings.json` (`%USERPROFILE%\.cline\…` on Windows), or `$CLINE_MCP_SETTINGS_PATH` if set |
+| Scope | File                                                                                                                         |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------- |
+| user  | `~/.cline/data/settings/cline_mcp_settings.json` (`%USERPROFILE%\.cline\…` on Windows), or `$CLINE_MCP_SETTINGS_PATH` if set |
 
 Cline 4.x keeps its data in `~/.cline/data` for both the extension and the CLI. Older versions
 kept the file in VS Code's `globalStorage/saoudrizwan.claude-dev/settings/`. There is no project

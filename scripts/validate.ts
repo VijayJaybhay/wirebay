@@ -22,12 +22,14 @@ import type { ServerDef, ToolManifest } from "../src/core/types.ts";
 /** Collects problems across the repository's data files. */
 export class RepoValidator {
   /** Values that look like real credentials; they must never be committed. */
-  static readonly secretLike = /\b(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|nfp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}|xox[bap]-[A-Za-z0-9-]{10,})\b/;
+  static readonly secretLike =
+    /\b(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|nfp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}|xox[bap]-[A-Za-z0-9-]{10,})\b/;
 
   readonly errors: string[] = [];
   private readonly toolNames = new Map<string, string>();
   private toolCount = 0;
   private presetCount = 0;
+  private readonly validator = new SchemaValidator();
 
   /** Run every check. */
   run(): void {
@@ -39,7 +41,7 @@ export class RepoValidator {
 
   /** One-line summary for success. */
   summary(): string {
-    return `✓ ${this.toolCount} tools and ${this.presetCount} presets are valid; generated files are up to date.`;
+    return `✓ ${String(this.toolCount)} tools and ${String(this.presetCount)} presets are valid; generated files are up to date.`;
   }
 
   private fail(file: string, message: string): void {
@@ -50,9 +52,9 @@ export class RepoValidator {
     return path.relative(WirebayPaths.packageRoot, p).replace(/\\/g, "/");
   }
 
-  private readJson<T>(file: string): T | undefined {
+  private readJson(file: string): unknown {
     try {
-      return JSON.parse(readFileSync(file, "utf8")) as T;
+      return JSON.parse(readFileSync(file, "utf8")) as unknown;
     } catch (err) {
       this.fail(this.rel(file), `not valid JSON (${(err as Error).message})`);
       return undefined;
@@ -68,13 +70,14 @@ export class RepoValidator {
         this.fail(this.rel(path.join(dir, entry.name)), "missing tool.json");
         continue;
       }
-      const manifest = this.readJson<ToolManifest>(file);
+      const manifest = this.readJson(file) as ToolManifest | undefined;
       if (!manifest) continue;
-      for (const e of SchemaValidator.validate("tool", manifest)) this.fail(this.rel(file), e);
+      for (const e of this.validator.validate("tool", manifest)) this.fail(this.rel(file), e);
       if (manifest.id !== entry.name) this.fail(this.rel(file), `id "${manifest.id}" must match its folder name "${entry.name}"`);
       const tool = new Tool(manifest);
       for (const name of tool.names) {
-        if (this.toolNames.has(name)) this.fail(this.rel(file), `name/alias "${name}" is already used by ${this.toolNames.get(name)}`);
+        if (this.toolNames.has(name))
+          this.fail(this.rel(file), `name/alias "${name}" is already used by ${this.toolNames.get(name) ?? "?"}`);
         if (RESERVED_WORDS.has(name)) this.fail(this.rel(file), `"${name}" is a reserved word`);
         this.toolNames.set(name, tool.id);
       }
@@ -92,20 +95,25 @@ export class RepoValidator {
     for (const f of readdirSync(dir).filter((x) => x.endsWith(".json") && !x.startsWith("_"))) {
       const file = path.join(dir, f);
       const where = this.rel(file);
-      if (RepoValidator.secretLike.test(readFileSync(file, "utf8"))) this.fail(where, "contains something that looks like a real token. Presets hold key NAMES only");
-      const data = this.readJson<ServerDef>(file);
+      if (RepoValidator.secretLike.test(readFileSync(file, "utf8")))
+        this.fail(where, "contains something that looks like a real token. Presets hold key NAMES only");
+      const data = this.readJson(file) as ServerDef | undefined;
       if (!data) continue;
-      for (const e of SchemaValidator.validate("server", data)) this.fail(where, e);
+      for (const e of this.validator.validate("server", data)) this.fail(where, e);
       const def = new ServerDefinition(data);
       if (`${def.name}.json` !== f) this.fail(where, `name "${def.name}" must match the file name`);
-      if (this.toolNames.has(def.name)) this.fail(where, `server name "${def.name}" clashes with tool ${this.toolNames.get(def.name)}`);
+      if (this.toolNames.has(def.name))
+        this.fail(where, `server name "${def.name}" clashes with tool ${this.toolNames.get(def.name) ?? "?"}`);
       if (RESERVED_WORDS.has(def.name)) this.fail(where, `"${def.name}" is a reserved word`);
       if (!data.category) this.fail(where, 'missing "category"');
       if (!data.lastVerified) this.fail(where, 'missing "lastVerified"');
       if (!data.guide) this.fail(where, 'missing "guide" (path to docs/servers/<name>.md or the catalog)');
-      else if (!existsSync(WirebayPaths.packagePath(data.guide.split("#")[0]!))) this.fail(where, `guide ${data.guide} does not exist`);
-      if (/@latest\b/.test(JSON.stringify(data.launch) + JSON.stringify(data.variants ?? {}))) this.fail(where, "pin package versions instead of @latest");
-      for (const key of def.requiredKeys()) if (!def.secretSpec(key)?.description) this.fail(where, `required key ${key} needs a "description"`);
+      else if (!existsSync(WirebayPaths.packagePath(data.guide.split("#")[0] ?? data.guide)))
+        this.fail(where, `guide ${data.guide} does not exist`);
+      if (/@latest\b/.test(JSON.stringify(data.launch) + JSON.stringify(data.variants ?? {})))
+        this.fail(where, "pin package versions instead of @latest");
+      for (const key of def.requiredKeys())
+        if (!def.secretSpec(key)?.description) this.fail(where, `required key ${key} needs a "description"`);
       this.presetCount++;
     }
   }
@@ -124,7 +132,7 @@ export class RepoValidator {
 const validator = new RepoValidator();
 validator.run();
 if (validator.errors.length) {
-  console.error(`✗ ${validator.errors.length} problem(s):\n  ${validator.errors.join("\n  ")}`);
+  console.error(`✗ ${String(validator.errors.length)} problem(s):\n  ${validator.errors.join("\n  ")}`);
   process.exit(1);
 }
 console.log(validator.summary());

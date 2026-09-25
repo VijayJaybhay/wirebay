@@ -3,10 +3,7 @@
   "version": 1,
   "id": "visual-studio",
   "name": "Visual Studio 2022/2026 (Windows)",
-  "aliases": [
-    "vs",
-    "visualstudio"
-  ],
+  "aliases": ["vs", "visualstudio"],
   "homepage": "https://visualstudio.microsoft.com",
   "docs": {
     "mcp": "https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers"

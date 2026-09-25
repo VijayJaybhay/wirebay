@@ -23,12 +23,8 @@
   },
   "secrets": [],
   "docs": "https://developer.paypal.com/ai-tools/mcp-server",
-  "notes": [
-    "Uses the PayPal **sandbox** by default. `--variant production` targets live payments (high risk)."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Uses the PayPal **sandbox** by default. `--variant production` targets live payments (high risk)."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#paypal",
   "lastVerified": "2026-09-25"
 }

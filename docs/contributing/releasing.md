@@ -11,10 +11,10 @@ Every user-visible PR includes a changeset:
 npx changeset
 ```
 
-| Change | Bump |
-|---|---|
-| Tool or preset data update, bug fix, docs | patch |
-| New command, option, preset or tool | minor |
+| Change                                                                  | Bump  |
+| ----------------------------------------------------------------------- | ----- |
+| Tool or preset data update, bug fix, docs                               | patch |
+| New command, option, preset or tool                                     | minor |
 | Breaking grammar, config or behaviour change (with automatic migration) | major |
 
 ## For maintainers
@@ -26,10 +26,10 @@ npx changeset
 
 ### One-time setup
 
-- Prefer **trusted publishing**: on npmjs.com, package settings → *Trusted publishers* → add
+- Prefer **trusted publishing**: on npmjs.com, package settings → _Trusted publishers_ → add
   GitHub Actions for `VijayJaybhay/wirebay`, workflow `release.yml`. No token is needed.
 - Otherwise, create an npm **automation** token and add it as the `NPM_TOKEN` repository secret.
-- Repository settings → Actions → *Allow GitHub Actions to create and approve pull requests*.
+- Repository settings → Actions → _Allow GitHub Actions to create and approve pull requests_.
 
 ### Manual release (emergency only)
 

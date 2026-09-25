@@ -44,8 +44,8 @@ A sample prompt to try in your AI tool.
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---|---|
+| Symptom            | Fix                                                       |
+| ------------------ | --------------------------------------------------------- |
 | 401 / unauthorized | Check or replace the token: `wirebay secrets set {{KEY}}` |
 
 **Rotating the token:** create a new one, `wirebay secrets set {{KEY}}`, restart the AI tool, revoke the old one.

@@ -7,10 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "@modelcontextprotocol/server-memory@2026.8.31"
-    ]
+    "args": ["-y", "@modelcontextprotocol/server-memory@2026.8.31"]
   },
   "secrets": [
     {
@@ -18,13 +15,9 @@
       "description": "Optional: where to store the memory file"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/memory",
-  "notes": [
-    "Stores its knowledge graph in a local file (MEMORY_FILE_PATH)."
-  ],
+  "notes": ["Stores its knowledge graph in a local file (MEMORY_FILE_PATH)."],
   "guide": "docs/servers/catalog.md#memory",
   "lastVerified": "2026-09-25",
   "status": "stable"

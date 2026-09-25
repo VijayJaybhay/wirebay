@@ -16,10 +16,7 @@
     "local": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "firecrawl-mcp@3.25.5"
-      ]
+      "args": ["-y", "firecrawl-mcp@3.25.5"]
     }
   },
   "secrets": [
@@ -32,12 +29,8 @@
     }
   ],
   "docs": "https://docs.firecrawl.dev/mcp-server",
-  "notes": [
-    "Read-only; uses credits. `--variant local` runs the npm package instead of the hosted server."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Read-only; uses credits. `--variant local` runs the npm package instead of the hosted server."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#firecrawl",
   "lastVerified": "2026-09-25",
   "status": "stable"

@@ -27,7 +27,7 @@ A monthly GitHub Action (`.github/workflows/stale-directory.yml`) posts the same
    appear (`node src/cli.ts tools verify <id>`).
 4. Update:
    - `tool.json`: bump `lastVerified`, and set `verifiedVersion` to the tool version you checked
-   - `GUIDE.md`: add a line to *Changelog* if anything changed
+   - `GUIDE.md`: add a line to _Changelog_ if anything changed
 5. `npm run gen:docs && npm run validate && npm test`
 6. Add a patch changeset, e.g. `tools: re-verify cursor (no changes)`.
 
@@ -43,8 +43,8 @@ Nothing changed? Still bump `lastVerified`; that's valuable information.
 
 ## Status values
 
-| Status | Meaning |
-|---|---|
-| `beta` | New or verified by one person only |
-| `stable` | Verified by at least two people or over several releases |
+| Status       | Meaning                                                               |
+| ------------ | --------------------------------------------------------------------- |
+| `beta`       | New or verified by one person only                                    |
+| `stable`     | Verified by at least two people or over several releases              |
 | `deprecated` | The tool or server is discontinued; kept so users see a clear message |

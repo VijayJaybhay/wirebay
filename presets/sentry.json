@@ -15,10 +15,7 @@
     "local": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@sentry/mcp-server@0.41.0"
-      ]
+      "args": ["-y", "@sentry/mcp-server@0.41.0"]
     }
   },
   "secrets": [
@@ -33,12 +30,8 @@
     }
   ],
   "docs": "https://mcp.sentry.dev",
-  "notes": [
-    "Signs in through the browser. For self-hosted Sentry use `--variant local` with SENTRY_ACCESS_TOKEN and SENTRY_HOST."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Signs in through the browser. For self-hosted Sentry use `--variant local` with SENTRY_ACCESS_TOKEN and SENTRY_HOST."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#sentry",
   "lastVerified": "2026-09-25",
   "status": "stable"

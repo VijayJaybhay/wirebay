@@ -31,9 +31,7 @@
       "description": "Personal or service access token (token variant only)"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://docs.datadoghq.com/mcp_server/setup/",
   "notes": [
     "Signs in through the browser; your org admin may need to allow-list the localhost redirect. Without the `mcp_write` permission the server is read-only. GOV sites are not supported."

@@ -6,9 +6,9 @@ Official MCP docs: https://docs.tabnine.com/main/getting-started/tabnine-agent/m
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.tabnine/agent/settings.json` |
+| Scope   | File                                     |
+| ------- | ---------------------------------------- |
+| user    | `~/.tabnine/agent/settings.json`         |
 | project | `<project>/.tabnine/agent/settings.json` |
 
 Servers live under `mcpServers`.
@@ -24,7 +24,7 @@ wirebay add github to tabnine
 ```json
 {
   "mcpServers": {
-    "github": {"command":"wirebay","args":["run","github"]}
+    "github": { "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

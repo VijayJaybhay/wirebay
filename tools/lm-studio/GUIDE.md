@@ -6,9 +6,9 @@ Run local models with MCP tools (0.3.17+). Official docs: https://lmstudio.ai/do
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.lmstudio/mcp.json` (`%USERPROFILE%\.lmstudio\mcp.json` on Windows) |
+| Scope | File                                                                   |
+| ----- | ---------------------------------------------------------------------- |
+| user  | `~/.lmstudio/mcp.json` (`%USERPROFILE%\.lmstudio\mcp.json` on Windows) |
 
 Servers live under `mcpServers` (Cursor format). LM Studio reloads the file when it changes.
 

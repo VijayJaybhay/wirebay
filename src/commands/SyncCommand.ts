@@ -40,14 +40,14 @@ export class SyncCommand extends Command {
       ctx.config.save(config);
     }
     if (servers && input.tools === undefined) {
-      tools = [...new Set(servers.flatMap((s) => [...config.servers[s]!.tools, ...StateStore.toolsWithEntries(state, s)]))].sort();
+      tools = [...new Set(servers.flatMap((s) => [...(config.servers[s]?.tools ?? []), ...StateStore.toolsWithEntries(state, s)]))].sort();
     }
     if (!tools.length) {
       t.out(Object.keys(config.servers).length ? "Nothing to sync." : "No servers added yet. Start with: wirebay add github to all");
       return ExitCode.Ok;
     }
     if (tools.length > 3 && !input.flags["dry-run"] && !input.flags.yes && t.canPrompt(input.flags)) {
-      if (!(await t.confirm(`Update ${tools.length} tools (${tools.join(", ")})?`, input.flags))) return ExitCode.Error;
+      if (!(await t.confirm(`Update ${String(tools.length)} tools (${tools.join(", ")})?`, input.flags))) return ExitCode.Error;
     }
     const outcome = ctx.sync.run({
       tools,

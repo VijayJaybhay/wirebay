@@ -7,18 +7,13 @@
   "launch": {
     "type": "stdio",
     "command": "uvx",
-    "args": [
-      "mcp-grafana@1.6.0",
-      "--disable-write"
-    ]
+    "args": ["mcp-grafana@1.6.0", "--disable-write"]
   },
   "variants": {
     "read-write": {
       "type": "stdio",
       "command": "uvx",
-      "args": [
-        "mcp-grafana@1.6.0"
-      ]
+      "args": ["mcp-grafana@1.6.0"]
     },
     "docker": {
       "type": "stdio",
@@ -55,9 +50,7 @@
       "description": "Optional organization ID"
     }
   ],
-  "prereqs": [
-    "uvx"
-  ],
+  "prereqs": ["uvx"],
   "docs": "https://github.com/grafana/mcp-grafana",
   "notes": [
     "Read-only by default (`--disable-write`); `--variant read-write` allows changes. The service account's role limits what it can see."

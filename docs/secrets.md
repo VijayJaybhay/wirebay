@@ -17,7 +17,7 @@ GITHUB_TOOLSETS=repos,issues,pull_requests,actions
 NETLIFY_PERSONAL_ACCESS_TOKEN=nfp_…
 ```
 
-- Empty values count as *not set*.
+- Empty values count as _not set_.
 - Quote values that contain spaces or `#`: `KEY="a value # not a comment"`.
 - `~` and `${OTHER_KEY}` are expanded, which is handy for file paths:
   `GOOGLE_APPLICATION_CREDENTIALS=~/.wirebay/credentials/sa.json`.
@@ -49,7 +49,7 @@ command line, where other processes could see it.
 
 ## Credential files
 
-Some providers use key *files* (for example Google service accounts). Put them in
+Some providers use key _files_ (for example Google service accounts). Put them in
 `~/.wirebay/credentials/` (created by `init`, readable only by you) and reference the path from
 `secrets.env`.
 

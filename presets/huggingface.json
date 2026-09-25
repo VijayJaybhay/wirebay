@@ -30,12 +30,8 @@
     }
   ],
   "docs": "https://huggingface.co/docs/hub/hf-mcp-server",
-  "notes": [
-    "Anonymous by default; `--variant token` uses HF_TOKEN. Choose tools at huggingface.co/settings/mcp."
-  ],
-  "prereqs": [
-    "npx"
-  ],
+  "notes": ["Anonymous by default; `--variant token` uses HF_TOKEN. Choose tools at huggingface.co/settings/mcp."],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#huggingface",
   "lastVerified": "2026-09-25",
   "status": "stable"

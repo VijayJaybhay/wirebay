@@ -39,19 +39,25 @@ with a complex setup, like GitHub or AWS.
   "description": "Linear: issues, projects, cycles",
   "launch": { "type": "stdio", "command": "npx", "args": ["-y", "@linear/mcp-server@1.2.3"] },
   "secrets": [
-    { "key": "LINEAR_API_KEY", "required": true, "description": "Personal API key",
-      "pattern": "^lin_api_", "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/linear.md#1-create-a-token" }
+    {
+      "key": "LINEAR_API_KEY",
+      "required": true,
+      "description": "Personal API key",
+      "pattern": "^lin_api_",
+      "help": "https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/linear.md#1-create-a-token",
+    },
   ],
-  "env": { "LOG_LEVEL": "error" },          // non-secret defaults; may use ${VARS}
+  "env": { "LOG_LEVEL": "error" }, // non-secret defaults; may use ${VARS}
   "prereqs": ["npx"],
   "docs": "https://…official docs…",
   "guide": "docs/servers/linear.md",
   "lastVerified": "2026-09-25",
-  "status": "beta"
+  "status": "beta",
 }
 ```
 
 Rules, all checked by `npm run validate`:
+
 - Pin versions. `@latest` isn't allowed in presets.
 - The file name matches `name`, and the name can't clash with a tool name or a reserved word.
 - No real tokens anywhere. `pattern` helps users spot mistakes without ever printing the value.

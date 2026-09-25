@@ -20,6 +20,12 @@ export interface Issue {
   message: string;
 }
 
+/** Hashes recorded for a tool file: actual entries, and the entries wirebay asked for. */
+export interface RecordedHashes {
+  entries: Map<string, string>;
+  desired: Map<string, string>;
+}
+
 /** The planned changes for one tool file. */
 export interface TargetPlan {
   target: Target;
@@ -29,8 +35,8 @@ export interface TargetPlan {
   issues: Issue[];
   /** New file content (same as the old one when nothing changes). */
   after: string;
-  /** Hashes to record after applying: actual entries and the entries wirebay asked for. */
-  next: { entries: Record<string, string>; desired: Record<string, string> };
+  /** Hashes to record after applying. */
+  next: RecordedHashes;
 }
 
 /** Inputs for {@link Reconciler.plan}. */
@@ -51,6 +57,7 @@ export interface PlanOptions {
  */
 export class Reconciler {
   private readonly adapters: AdapterFactory;
+  private readonly hasher = new EntryHasher();
 
   constructor(adapters: AdapterFactory) {
     this.adapters = adapters;
@@ -61,54 +68,70 @@ export class Reconciler {
     const adapter = this.adapters.for(target.tool);
     const snapshot = adapter.read(target);
     const record = StateStore.fileRecord(state, target.tool.id, target.scope, target.file);
-    const recorded = { ...(record?.entries ?? {}) };
-    const recordedDesired = { ...(record?.desired ?? record?.entries ?? {}) };
-    const inScope = (name: string) => !options.scopeNames || options.scopeNames.has(name);
+    const recorded = new Map(Object.entries(record?.entries ?? {}));
+    const recordedDesired = new Map(Object.entries(record?.desired ?? record?.entries ?? {}));
+    const inScope = (name: string): boolean => !options.scopeNames || options.scopeNames.has(name);
 
     const changes: Changes = { set: {}, remove: [] };
     const unchanged: string[] = [];
     const issues: Issue[] = [];
-    const next = { entries: { ...recorded }, desired: { ...recordedDesired } };
+    const next: RecordedHashes = { entries: new Map(recorded), desired: new Map(recordedDesired) };
 
     for (const [name, entry] of Object.entries(options.desired)) {
       if (!inScope(name)) continue;
       const current = snapshot.entries[name];
-      const managed = name in recorded;
-      const wantHash = EntryHasher.hash(entry);
+      const recordedHash = recorded.get(name);
+      const wantHash = this.hasher.hash(entry);
       if (snapshot.locked.has(name)) {
-        issues.push({ name, kind: "conflict", message: `"${name}" is already defined in ${target.file} outside the wirebay block. Remove it there (or rename the server) and sync again.` });
+        issues.push({
+          name,
+          kind: "conflict",
+          message: `"${name}" is already defined in ${target.file} outside the wirebay block. Remove it there (or rename the server) and sync again.`,
+        });
         continue;
       }
-      const untouched = current !== undefined && managed && EntryHasher.hash(current) === recorded[name];
-      if (current !== undefined && (EntryHasher.same(current, entry) || (untouched && recordedDesired[name] === wantHash))) {
+      const untouched = current !== undefined && recordedHash !== undefined && this.hasher.hash(current) === recordedHash;
+      if (current !== undefined && (this.hasher.same(current, entry) || (untouched && recordedDesired.get(name) === wantHash))) {
         unchanged.push(name);
-        next.entries[name] = EntryHasher.hash(current);
-        next.desired[name] = wantHash;
+        next.entries.set(name, this.hasher.hash(current));
+        next.desired.set(name, wantHash);
         continue;
       }
-      if (current !== undefined && !managed && !options.force) {
-        issues.push({ name, kind: "conflict", message: `"${name}" already exists in ${target.file} and was not created by wirebay. Use --force to replace it.` });
+      if (current !== undefined && recordedHash === undefined && !options.force) {
+        issues.push({
+          name,
+          kind: "conflict",
+          message: `"${name}" already exists in ${target.file} and was not created by wirebay. Use --force to replace it.`,
+        });
         continue;
       }
-      if (current !== undefined && managed && !untouched && !options.force) {
-        issues.push({ name, kind: "drift", message: `"${name}" in ${target.file} was edited by hand since the last sync. Use --force to overwrite it.` });
+      if (current !== undefined && recordedHash !== undefined && !untouched && !options.force) {
+        issues.push({
+          name,
+          kind: "drift",
+          message: `"${name}" in ${target.file} was edited by hand since the last sync. Use --force to overwrite it.`,
+        });
         continue;
       }
       changes.set[name] = entry;
-      next.entries[name] = wantHash;
-      next.desired[name] = wantHash;
+      next.entries.set(name, wantHash);
+      next.desired.set(name, wantHash);
     }
 
-    for (const name of Object.keys(recorded)) {
+    for (const [name, recordedHash] of recorded) {
       if (!inScope(name) || name in options.desired) continue;
       const current = snapshot.entries[name];
-      delete next.entries[name];
-      delete next.desired[name];
+      next.entries.delete(name);
+      next.desired.delete(name);
       if (current === undefined) continue;
-      if (EntryHasher.hash(current) !== recorded[name] && !options.force) {
-        next.entries[name] = recorded[name]!;
-        next.desired[name] = recordedDesired[name] ?? recorded[name]!;
-        issues.push({ name, kind: "drift", message: `"${name}" in ${target.file} was edited by hand, so wirebay will not remove it. Use --force to remove it anyway.` });
+      if (this.hasher.hash(current) !== recordedHash && !options.force) {
+        next.entries.set(name, recordedHash);
+        next.desired.set(name, recordedDesired.get(name) ?? recordedHash);
+        issues.push({
+          name,
+          kind: "drift",
+          message: `"${name}" in ${target.file} was edited by hand, so wirebay will not remove it. Use --force to remove it anyway.`,
+        });
         continue;
       }
       changes.remove.push(name);
@@ -128,12 +151,26 @@ export class Reconciler {
       if (result.via === "cli") {
         // The tool's CLI may normalise entries; record what it actually wrote.
         const written = adapter.read(plan.target).entries;
-        for (const name of Object.keys(plan.changes.set)) if (written[name] !== undefined) plan.next.entries[name] = EntryHasher.hash(written[name]);
+        for (const name of Object.keys(plan.changes.set)) {
+          const entry = written[name];
+          if (entry !== undefined) plan.next.entries.set(name, this.hasher.hash(entry));
+        }
       }
     }
     const key = StateStore.key(tool.id, scope, file);
-    if (Object.keys(plan.next.entries).length) state.files[key] = { tool: tool.id, scope, path: file, entries: plan.next.entries, desired: plan.next.desired };
-    else delete state.files[key];
+    const remaining = Object.fromEntries(Object.entries(state.files).filter(([k]) => k !== key));
+    state.files = plan.next.entries.size
+      ? {
+          ...remaining,
+          [key]: {
+            tool: tool.id,
+            scope,
+            path: file,
+            entries: Object.fromEntries(plan.next.entries),
+            desired: Object.fromEntries(plan.next.desired),
+          },
+        }
+      : remaining;
     return result;
   }
 

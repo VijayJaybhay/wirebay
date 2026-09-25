@@ -4,7 +4,7 @@
  * @module
  */
 
-import { styleText } from "node:util";
+import { stripVTControlCharacters, styleText } from "node:util";
 
 type Style = Parameters<typeof styleText>[0];
 
@@ -21,7 +21,11 @@ export class Terminal {
   private readonly stderr: NodeJS.WriteStream;
   private readonly env: NodeJS.ProcessEnv;
 
-  constructor(stdout: NodeJS.WriteStream = process.stdout, stderr: NodeJS.WriteStream = process.stderr, env: NodeJS.ProcessEnv = process.env) {
+  constructor(
+    stdout: NodeJS.WriteStream = process.stdout,
+    stderr: NodeJS.WriteStream = process.stderr,
+    env: NodeJS.ProcessEnv = process.env,
+  ) {
     this.stdout = stdout;
     this.stderr = stderr;
     this.env = env;
@@ -69,11 +73,11 @@ export class Terminal {
 
   /** Render a simple aligned table (colour codes are ignored when measuring widths). */
   table(headers: string[], rows: string[][]): string {
-    const width = (s: string) => s.replace(/\x1b\[[0-9;]*m/g, "").length;
+    const width = (s: string): number => stripVTControlCharacters(s).length;
     const widths = headers.map((h, i) => Math.max(width(h), ...rows.map((r) => width(r[i] ?? ""))));
-    const line = (cells: string[]) =>
+    const line = (cells: string[]): string =>
       cells
-        .map((cell, i) => cell + " ".repeat(widths[i]! - width(cell)))
+        .map((cell, i) => cell + " ".repeat(Math.max(0, (widths[i] ?? 0) - width(cell))))
         .join("  ")
         .trimEnd();
     return [this.bold(line(headers)), ...rows.map(line)].join("\n");
@@ -81,7 +85,7 @@ export class Terminal {
 
   /** Prompts are allowed only in an interactive terminal outside CI, and not with `--no-prompt`. */
   canPrompt(flags: PromptFlags = {}): boolean {
-    return !!process.stdin.isTTY && !!this.stdout.isTTY && !this.env.CI && !flags["no-prompt"];
+    return process.stdin.isTTY && this.stdout.isTTY && this.env.CI === undefined && !flags["no-prompt"];
   }
 
   /** Ask a yes/no question. `--yes` answers yes; without a TTY the answer is no. */
@@ -96,18 +100,20 @@ export class Terminal {
   async askSecret(message: string): Promise<string | undefined> {
     const p = await import("@clack/prompts");
     const answer = await p.password({ message, mask: "•" });
-    return p.isCancel(answer) ? undefined : String(answer ?? "");
+    return p.isCancel(answer) ? undefined : answer;
   }
 
   /** Read all of stdin (for `--stdin`), without the trailing newline. */
   async readStdin(): Promise<string> {
     const chunks: Buffer[] = [];
     for await (const chunk of process.stdin) chunks.push(chunk as Buffer);
-    return Buffer.concat(chunks).toString("utf8").replace(/\r?\n$/, "");
+    return Buffer.concat(chunks)
+      .toString("utf8")
+      .replace(/\r?\n$/, "");
   }
 
   private paint(style: Style, text: string): string {
-    const colour = !this.env.NO_COLOR && (this.stdout.isTTY || !!this.env.FORCE_COLOR);
+    const colour = this.env.NO_COLOR === undefined && (this.stdout.isTTY || this.env.FORCE_COLOR !== undefined);
     return colour ? styleText(style, text) : text;
   }
 }

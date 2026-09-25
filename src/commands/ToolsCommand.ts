@@ -21,7 +21,7 @@ export class ToolsCommand extends Command {
     examples: ["wirebay tools", "wirebay tools --stale", "wirebay tools verify codex"],
   };
 
-  async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
+  run(input: ParsedCommand, ctx: AppContext): number {
     const [sub, id] = input.rest;
     if (sub === "verify") return this.verify(id, input, ctx);
     if (sub === "index") return this.writeIndex(ctx);
@@ -64,7 +64,7 @@ export class ToolsCommand extends Command {
         ]),
       ),
     );
-    if (stale !== undefined) t.out(t.dim(`\n${rows.length} tool(s) not verified in the last ${stale} days.`));
+    if (stale !== undefined) t.out(t.dim(`\n${String(rows.length)} tool(s) not verified in the last ${String(stale)} days.`));
     return ExitCode.Ok;
   }
 
@@ -78,13 +78,15 @@ export class ToolsCommand extends Command {
     }
     for (const r of results) {
       t.out(`${r.ok ? t.ok("✓") : t.err("✗")} ${t.bold(r.tool)}`);
-      for (const check of r.checks) t.out(`    ${check.ok ? t.ok("✓") : t.err("✗")} ${check.name}${check.detail ? t.dim(`: ${check.detail}`) : ""}`);
+      for (const check of r.checks)
+        t.out(`    ${check.ok ? t.ok("✓") : t.err("✗")} ${check.name}${check.detail ? t.dim(`: ${check.detail}`) : ""}`);
     }
     return results.some((r) => !r.ok) ? ExitCode.Error : ExitCode.Ok;
   }
 
   private writeIndex(ctx: AppContext): number {
-    if (!existsSync(WirebayPaths.packagePath("scripts"))) throw new UsageError("`tools index` is for contributors working in a clone of the wirebay repo.");
+    if (!existsSync(WirebayPaths.packagePath("scripts")))
+      throw new UsageError("`tools index` is for contributors working in a clone of the wirebay repo.");
     const file = WirebayPaths.packagePath("tools", "INDEX.md");
     writeFileSync(file, ToolDirectory.indexMarkdown(ctx.tools.all().filter((x) => x.manifest.source === "package")));
     ctx.terminal.out(`${ctx.terminal.ok("✓")} wrote ${file}`);

@@ -19,6 +19,7 @@ wirebay init
 ```
 
 This creates `~/.wirebay/`:
+
 - `secrets.env`, readable only by you
 - `config.json`
 - folders for backups and logs
@@ -50,7 +51,7 @@ also downloads packages the first time, so the AI tools start the server faster 
 ## 5. Restart your tools
 
 wirebay tells you which tools need a restart (for example Claude Desktop). Then ask your assistant
-something like *"list my open pull requests"*.
+something like _"list my open pull requests"_.
 
 ## What just happened?
 

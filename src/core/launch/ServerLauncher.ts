@@ -16,6 +16,7 @@ import type { LaunchPlan } from "./LaunchPlanner.ts";
 /** Starts a planned server with stdio passed straight through, and mirrors its exit code. */
 export class ServerLauncher {
   private readonly logger: LaunchLogger;
+  private readonly masker = new SecretMasker();
 
   constructor(logger: LaunchLogger) {
     this.logger = logger;
@@ -40,7 +41,12 @@ export class ServerLauncher {
     }
 
     this.logger.log(name, `start: ${plan.command} ${plan.args.join(" ")}`, plan.redact);
-    const child = spawn(plan.command, plan.args, { stdio: "inherit", env: plan.env, windowsHide: true, windowsVerbatimArguments: plan.verbatim });
+    const child = spawn(plan.command, plan.args, {
+      stdio: "inherit",
+      env: plan.env,
+      windowsHide: true,
+      windowsVerbatimArguments: plan.verbatim,
+    });
 
     const signals: NodeJS.Signals[] = WirebayPaths.detectOs() === "win32" ? ["SIGINT", "SIGTERM"] : ["SIGINT", "SIGTERM", "SIGHUP"];
     for (const signal of signals) {
@@ -51,12 +57,12 @@ export class ServerLauncher {
 
     return new Promise((resolve) => {
       child.on("error", (err) => {
-        process.stderr.write(`[wirebay] could not start ${name}: ${SecretMasker.redact(err.message, plan.redact)}\n`);
+        process.stderr.write(`[wirebay] could not start ${name}: ${this.masker.redact(err.message, plan.redact)}\n`);
         this.logger.log(name, `spawn error: ${err.message}`, plan.redact);
         resolve(1);
       });
       child.on("exit", (code, signal) => {
-        this.logger.log(name, `exit: code=${code} signal=${signal ?? ""}`);
+        this.logger.log(name, `exit: code=${String(code)} signal=${signal ?? ""}`);
         resolve(code ?? (signal ? 1 : 0));
       });
     });

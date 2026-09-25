@@ -9,7 +9,7 @@ if (process.env.FAKE_MCP_EXIT_CODE) process.exit(Number(process.env.FAKE_MCP_EXI
 if (process.env.FAKE_MCP_NOISE) process.stdout.write("hello from a noisy server\n");
 
 const rl = createInterface({ input: process.stdin });
-const send = (msg: unknown) => process.stdout.write(JSON.stringify(msg) + "\n");
+const send = (msg: unknown): boolean => process.stdout.write(JSON.stringify(msg) + "\n");
 
 rl.on("line", (line) => {
   const msg = JSON.parse(line) as { id?: number; method: string };
@@ -24,7 +24,12 @@ rl.on("line", (line) => {
     send({
       jsonrpc: "2.0",
       id: msg.id,
-      result: { tools: [{ name: "echo", inputSchema: { type: "object" } }, ...envKeys.map((k) => ({ name: `env:${k}`, inputSchema: { type: "object" } }))] },
+      result: {
+        tools: [
+          { name: "echo", inputSchema: { type: "object" } },
+          ...envKeys.map((k) => ({ name: `env:${k}`, inputSchema: { type: "object" } })),
+        ],
+      },
     });
   }
 });

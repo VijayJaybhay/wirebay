@@ -32,9 +32,7 @@
   "notes": [
     "Full Cloudflare API (including deletes) through browser sign-in. Variants: `bindings` (Workers, KV, R2, D1) and `observability` (logs and analytics)."
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "guide": "docs/servers/catalog.md#cloudflare",
   "lastVerified": "2026-09-25",
   "status": "stable"

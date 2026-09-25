@@ -3,18 +3,14 @@
   "version": 1,
   "id": "zed",
   "name": "Zed",
-  "aliases": [
-    "zed-editor"
-  ],
+  "aliases": ["zed-editor"],
   "homepage": "https://zed.dev",
   "docs": {
     "mcp": "https://zed.dev/docs/ai/mcp",
     "changelog": "https://zed.dev/releases"
   },
   "detect": {
-    "commands": [
-      "zed"
-    ],
+    "commands": ["zed"],
     "paths": [
       {
         "win32": "{appdata}/Zed",

@@ -11,11 +11,13 @@ import { LaunchLogger } from "../core/launch/LaunchLogger.ts";
 import { LaunchPlanner } from "../core/launch/LaunchPlanner.ts";
 import { ServerLauncher } from "../core/launch/ServerLauncher.ts";
 import { ExecutableResolver } from "../core/platform/ExecutableResolver.ts";
+import { FilePermissions } from "../core/platform/FilePermissions.ts";
 import { WirebayPaths } from "../core/platform/WirebayPaths.ts";
 import { EnvFileSecretsStore } from "../core/secrets/EnvFileSecretsStore.ts";
-import type { SecretsBackend } from "../core/secrets/SecretsBackend.ts";
+import { SecretMasker, type SecretsBackend } from "../core/secrets/SecretsBackend.ts";
 import { ServerRegistry } from "../core/servers/ServerRegistry.ts";
 import { ConfigStore } from "../core/store/ConfigStore.ts";
+import { EntryHasher } from "../core/store/EntryHasher.ts";
 import { StateStore } from "../core/store/StateStore.ts";
 import { Reconciler } from "../core/sync/Reconciler.ts";
 import { SyncEngine } from "../core/sync/SyncEngine.ts";
@@ -45,6 +47,12 @@ export class AppContext {
   readonly paths: WirebayPaths;
   readonly terminal: Terminal;
   readonly writer = new SafeFileWriter();
+  /** Masks secret values for display. */
+  readonly masker = new SecretMasker();
+  /** Owner-only file permissions. */
+  readonly permissions = new FilePermissions();
+  /** Order-independent entry hashing. */
+  readonly hasher = new EntryHasher();
 
   private readonly instances = new Map<string, unknown>();
 

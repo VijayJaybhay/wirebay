@@ -7,9 +7,7 @@
   "launch": {
     "type": "stdio",
     "command": "uvx",
-    "args": [
-      "awslabs.aws-api-mcp-server@1.5.5"
-    ]
+    "args": ["awslabs.aws-api-mcp-server@1.5.5"]
   },
   "secrets": [
     {
@@ -44,9 +42,7 @@
     "READ_OPERATIONS_ONLY": "true",
     "FASTMCP_LOG_LEVEL": "ERROR"
   },
-  "prereqs": [
-    "uvx"
-  ],
+  "prereqs": ["uvx"],
   "docs": "https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server",
   "guide": "docs/servers/aws.md",
   "lastVerified": "2026-09-25",

@@ -11,10 +11,7 @@
       "-y",
       "@playwright/mcp@0.0.82",
       {
-        "optional": [
-          "--browser",
-          "${PLAYWRIGHT_BROWSER}"
-        ]
+        "optional": ["--browser", "${PLAYWRIGHT_BROWSER}"]
       }
     ]
   },
@@ -24,13 +21,9 @@
       "description": "Optional: chrome, firefox, webkit or msedge"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/microsoft/playwright-mcp",
-  "notes": [
-    "Drives a real browser and can submit forms in logged-in sessions. Set PLAYWRIGHT_BROWSER to pick a browser."
-  ],
+  "notes": ["Drives a real browser and can submit forms in logged-in sessions. Set PLAYWRIGHT_BROWSER to pick a browser."],
   "guide": "docs/servers/catalog.md#playwright",
   "lastVerified": "2026-09-25",
   "status": "stable"

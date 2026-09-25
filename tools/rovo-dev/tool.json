@@ -3,21 +3,14 @@
   "version": 1,
   "id": "rovo-dev",
   "name": "Atlassian Rovo Dev CLI",
-  "aliases": [
-    "rovodev",
-    "rovo"
-  ],
+  "aliases": ["rovodev", "rovo"],
   "homepage": "https://www.atlassian.com/software/rovo-dev",
   "docs": {
     "mcp": "https://support.atlassian.com/rovo/docs/connect-to-an-mcp-server-in-rovo-dev-cli/"
   },
   "detect": {
-    "commands": [
-      "acli"
-    ],
-    "paths": [
-      "~/.rovodev"
-    ]
+    "commands": ["acli"],
+    "paths": ["~/.rovodev"]
   },
   "configs": {
     "user": {

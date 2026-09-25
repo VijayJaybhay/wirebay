@@ -7,20 +7,12 @@
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": [
-      "-y",
-      "chrome-devtools-mcp@1.10.1",
-      "--no-usage-statistics"
-    ]
+    "args": ["-y", "chrome-devtools-mcp@1.10.1", "--no-usage-statistics"]
   },
   "secrets": [],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
-  "notes": [
-    "Needs Chrome installed. wirebay starts it with `--no-usage-statistics`. Performance tools send trace URLs to Google CrUX."
-  ],
+  "notes": ["Needs Chrome installed. wirebay starts it with `--no-usage-statistics`. Performance tools send trace URLs to Google CrUX."],
   "guide": "docs/servers/catalog.md#chrome-devtools",
   "lastVerified": "2026-09-25",
   "status": "stable"

@@ -20,7 +20,7 @@ export class PresetsCommand extends Command {
     examples: ["wirebay presets", "wirebay presets database", "wirebay presets --stale"],
   };
 
-  async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
+  run(input: ParsedCommand, ctx: AppContext): number {
     const t = ctx.terminal;
     const config = ctx.config.load();
     const stale = ToolsCommand.staleDays(input);
@@ -48,8 +48,17 @@ export class PresetsCommand extends Command {
       t.out(`No preset matches "${search}". Any server works with: wirebay add <name> --npx <package> (or --uvx, --docker, --url)`);
       return ExitCode.Ok;
     }
-    t.out(t.table(["CATEGORY", "PRESET", "AUTH", "ADDED", "DESCRIPTION"], rows.map((r) => [t.dim(r.category), r.name, r.auth, r.added ? t.ok("yes") : t.dim("no"), r.description])));
-    t.out(t.dim("\nAdd one: wirebay add <preset> to all   ·   search: wirebay presets <word>   ·   anything else: wirebay add <name> --npx <package>"));
+    t.out(
+      t.table(
+        ["CATEGORY", "PRESET", "AUTH", "ADDED", "DESCRIPTION"],
+        rows.map((r) => [t.dim(r.category), r.name, r.auth, r.added ? t.ok("yes") : t.dim("no"), r.description]),
+      ),
+    );
+    t.out(
+      t.dim(
+        "\nAdd one: wirebay add <preset> to all   ·   search: wirebay presets <word>   ·   anything else: wirebay add <name> --npx <package>",
+      ),
+    );
     return ExitCode.Ok;
   }
 }

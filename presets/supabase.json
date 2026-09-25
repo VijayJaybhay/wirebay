@@ -29,9 +29,7 @@
       "help": "https://supabase.com/dashboard/account/tokens"
     }
   ],
-  "prereqs": [
-    "npx"
-  ],
+  "prereqs": ["npx"],
   "docs": "https://supabase.com/docs/guides/getting-started/mcp",
   "notes": [
     "Read-only by default (`read_only=true`). Signs in through the browser; `--variant token` uses SUPABASE_ACCESS_TOKEN. Supabase advises against connecting to production."

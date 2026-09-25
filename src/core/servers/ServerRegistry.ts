@@ -14,7 +14,20 @@ import type { ServerDef } from "../types.ts";
 import { ServerDefinition } from "./ServerDefinition.ts";
 
 /** Words that can't be server names because the command grammar gives them meaning. */
-export const RESERVED_WORDS: ReadonlySet<string> = new Set(["all", "everything", "to", "into", "on", "onto", "for", "from", "in", "and", "with", "none"]);
+export const RESERVED_WORDS: ReadonlySet<string> = new Set([
+  "all",
+  "everything",
+  "to",
+  "into",
+  "on",
+  "onto",
+  "for",
+  "from",
+  "in",
+  "and",
+  "with",
+  "none",
+]);
 
 /**
  * Loads and caches server definitions. A user file named like a preset is deep-merged over it
@@ -24,6 +37,7 @@ export class ServerRegistry {
   private readonly paths: WirebayPaths;
   private readonly writer: SafeFileWriter;
   private cache?: Map<string, ServerDefinition>;
+  private readonly validator = new SchemaValidator();
 
   constructor(paths: WirebayPaths, writer: SafeFileWriter) {
     this.paths = paths;
@@ -34,7 +48,7 @@ export class ServerRegistry {
   presets(): Map<string, ServerDefinition> {
     const map = new Map<string, ServerDefinition>();
     for (const def of this.readDir(WirebayPaths.packagePath("presets"))) {
-      ServerRegistry.assertValid(def, `presets/${def.name}.json`);
+      this.assertValid(def, `presets/${def.name}.json`);
       map.set(def.name, new ServerDefinition({ ...def, source: "preset" }));
     }
     return map;
@@ -48,13 +62,12 @@ export class ServerRegistry {
     if (existsSync(dir)) {
       for (const f of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
         const file = path.join(dir, f);
-        const user = this.writer.readJson<Partial<ServerDef>>(file);
+        const user = this.writer.readJson(file) as Partial<ServerDef> | undefined;
         if (!user) continue;
         const name = user.name ?? path.basename(f, ".json");
         const preset = map.get(name);
         const merged = preset ? ServerRegistry.deepMerge(preset.data, { ...user, name }) : ({ ...user, name } as ServerDef);
-        const { source: _ignored, ...toValidate } = merged;
-        ServerRegistry.assertValid(toValidate, file);
+        this.assertValid(ServerRegistry.withoutSource(merged), file);
         map.set(name, new ServerDefinition({ ...merged, source: preset ? "preset+user" : "user" }));
       }
     }
@@ -74,7 +87,9 @@ export class ServerRegistry {
   get(name: string): ServerDefinition {
     const def = this.all().get(name);
     if (!def) {
-      throw new WirebayError(`Unknown server "${name}".`, { hint: `Add it first: wirebay add ${name} --npx <package> (see \`wirebay presets\`).` });
+      throw new WirebayError(`Unknown server "${name}".`, {
+        hint: `Add it first: wirebay add ${name} --npx <package> (see \`wirebay presets\`).`,
+      });
     }
     return def;
   }
@@ -87,8 +102,12 @@ export class ServerRegistry {
   /** Save a custom server or a preset override to `~/.wirebay/servers/<name>.json`. */
   saveUserDefinition(def: Partial<ServerDef> & { name: string }): string {
     const file = this.userFile(def.name);
-    const { source: _ignored, ...clean } = def as ServerDef;
-    this.writer.writeJson(file, { $schema: "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/server.schema.json", version: 1, ...clean });
+    const clean = ServerRegistry.withoutSource(def);
+    this.writer.writeJson(file, {
+      $schema: "https://raw.githubusercontent.com/VijayJaybhay/wirebay/main/schemas/server.schema.json",
+      version: 1,
+      ...clean,
+    });
     this.cache = undefined;
     return file;
   }
@@ -120,7 +139,7 @@ export class ServerRegistry {
   /** Deep merge where arrays and scalars in `over` replace those in `base`. */
   static deepMerge<T>(base: T, over: Partial<T>): T {
     const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
-    if (!isObject(base) || !isObject(over)) return (over ?? base) as T;
+    if (!isObject(base) || !isObject(over)) return over as T;
     const out: Record<string, unknown> = { ...base };
     for (const [k, v] of Object.entries(over)) out[k] = isObject(v) && isObject(out[k]) ? ServerRegistry.deepMerge(out[k], v) : v;
     return out as T;
@@ -130,14 +149,23 @@ export class ServerRegistry {
     if (!existsSync(dir)) return [];
     return readdirSync(dir)
       .filter((f) => f.endsWith(".json") && !f.startsWith("_"))
-      .map((f) => this.writer.readJson<ServerDef>(path.join(dir, f)))
+      .map((f) => this.writer.readJson(path.join(dir, f)) as ServerDef | undefined)
       .filter((d): d is ServerDef => !!d);
   }
 
-  private static assertValid(def: unknown, file: string): void {
-    const errors = SchemaValidator.validate("server", def);
+  /** A copy of a definition without the load-time `source` field (which isn't part of the schema). */
+  static withoutSource<T extends Partial<ServerDef>>(def: T): Omit<T, "source"> {
+    const copy: T = { ...def };
+    delete copy.source;
+    return copy;
+  }
+
+  private assertValid(def: unknown, file: string): void {
+    const errors = this.validator.validate("server", def);
     if (errors.length) {
-      throw new WirebayError(`Invalid server definition ${file}:\n  ${errors.join("\n  ")}`, { hint: "Fix the file (see schemas/server.schema.json)." });
+      throw new WirebayError(`Invalid server definition ${file}:\n  ${errors.join("\n  ")}`, {
+        hint: "Fix the file (see schemas/server.schema.json).",
+      });
     }
   }
 }

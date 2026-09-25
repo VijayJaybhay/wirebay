@@ -21,6 +21,7 @@ export class EnvFileSecretsStore implements SecretsBackend {
   readonly location: string;
   private readonly writer: SafeFileWriter;
   private readonly paths: WirebayPaths;
+  private readonly permissions = new FilePermissions();
 
   /**
    * @param paths - Locates the file and the user's home for `~` expansion.
@@ -96,7 +97,7 @@ export class EnvFileSecretsStore implements SecretsBackend {
     if (existsSync(this.location)) return false;
     mkdirSync(path.dirname(this.location), { recursive: true });
     copyFileSync(WirebayPaths.packagePath("templates", "secrets.env.example"), this.location);
-    FilePermissions.restrict(this.location);
+    this.permissions.restrict(this.location);
     return true;
   }
 
@@ -111,7 +112,7 @@ export class EnvFileSecretsStore implements SecretsBackend {
   private save(content: string): void {
     // Atomic writes replace the file, so permissions are re-applied every time.
     this.writer.write(this.location, content, { mode: 0o600 });
-    FilePermissions.restrict(this.location);
+    this.permissions.restrict(this.location);
   }
 
   private lineIndexOf(lines: string[], key: string): number {

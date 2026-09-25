@@ -23,6 +23,7 @@ exactly. This skill adds the agent-specific parts.
 
    Record the docs URL in `docs.mcp`. If the sources disagree or something is unknown, say so and
    mark `"status": "beta"`.
+
 2. **Scaffold:** `npm run new:tool -- <id> --name "<Name>" --path "<user config path>" [--format …] [--root-key …]`
 3. **Fill in** `tools/<id>/tool.json` (aliases, both scopes if supported, per-OS paths, `entry`,
    `supports`, `restartRequired`) and `tools/<id>/GUIDE.md` (keep the template's sections).

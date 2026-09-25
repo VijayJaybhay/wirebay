@@ -26,7 +26,8 @@ export class YamlConfigFormat implements ConfigFormat {
   private static document(text: string, file: string): Document {
     // An empty file starts as a block-style document (parsing "{}" would give flow style).
     const doc = text.trim() ? parseDocument(text) : new Document({});
-    if (doc.errors.length) throw new ConfigParseError(file, `invalid YAML (${doc.errors[0]!.message})`);
+    const [firstError] = doc.errors;
+    if (firstError) throw new ConfigParseError(file, `invalid YAML (${firstError.message})`);
     return doc;
   }
 }

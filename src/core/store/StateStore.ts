@@ -22,7 +22,8 @@ export class StateStore {
 
   /** Read the state (empty when wirebay hasn't written anything yet). */
   load(): WirebayState {
-    return this.writer.readJson<WirebayState>(this.paths.stateFile) ?? { version: StateStore.version, files: {} };
+    const found = this.writer.readJson(this.paths.stateFile) as WirebayState | undefined;
+    return found ?? { version: StateStore.version, files: {} };
   }
 
   /** Write the state atomically. */

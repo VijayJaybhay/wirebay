@@ -4,9 +4,9 @@ Official MCP docs: https://antigravity.google/docs/mcp/
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.gemini/config/mcp_config.json` |
+| Scope   | File                                  |
+| ------- | ------------------------------------- |
+| user    | `~/.gemini/config/mcp_config.json`    |
 | project | `<workspace>/.agents/mcp_config.json` |
 
 Servers live under `mcpServers`. Older Antigravity builds used `~/.gemini/antigravity/mcp_config.json`.
@@ -22,7 +22,7 @@ wirebay add github to antigravity        # also accepted: google-antigravity
 ```json
 {
   "mcpServers": {
-    "github": {"command":"wirebay","args":["run","github"]}
+    "github": { "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

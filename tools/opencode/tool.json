@@ -3,22 +3,15 @@
   "version": 1,
   "id": "opencode",
   "name": "opencode",
-  "aliases": [
-    "open-code",
-    "sst-opencode"
-  ],
+  "aliases": ["open-code", "sst-opencode"],
   "homepage": "https://opencode.ai",
   "docs": {
     "mcp": "https://opencode.ai/docs/mcp-servers/",
     "changelog": "https://github.com/sst/opencode/releases"
   },
   "detect": {
-    "commands": [
-      "opencode"
-    ],
-    "paths": [
-      "~/.config/opencode"
-    ]
+    "commands": ["opencode"],
+    "paths": ["~/.config/opencode"]
   },
   "configs": {
     "user": {

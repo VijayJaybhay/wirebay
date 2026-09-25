@@ -4,10 +4,10 @@ Block's open-source agent (CLI and desktop). Official docs: https://goose-docs.a
 
 ## Where the config lives
 
-| OS | File |
-|---|---|
-| macOS / Linux | `~/.config/goose/config.yaml` |
-| Windows | `%APPDATA%\Block\goose\config\config.yaml` |
+| OS            | File                                       |
+| ------------- | ------------------------------------------ |
+| macOS / Linux | `~/.config/goose/config.yaml`              |
+| Windows       | `%APPDATA%\Block\goose\config\config.yaml` |
 
 Servers are **extensions** under `extensions:` (YAML). Each entry repeats its own `name`, uses
 `cmd` rather than `command`, and `envs` for environment values. Comments in the file are kept.

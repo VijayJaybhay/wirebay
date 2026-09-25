@@ -6,9 +6,9 @@ Official MCP docs: https://docs.qoder.com/cli/mcp-servers
 
 ## Where the config lives
 
-| Scope | File |
-|---|---|
-| user | `~/.qoder/settings.json` |
+| Scope | File                     |
+| ----- | ------------------------ |
+| user  | `~/.qoder/settings.json` |
 
 Qoder CLI also reads a project `.mcp.json` (Claude Code layout). wirebay leaves that file to the `claude-code` tool, so sync project scope to `claude` if you want it there. The Qoder IDE manages MCP in its settings UI.
 
@@ -23,7 +23,7 @@ wirebay add github to qoder        # also accepted: qodercli
 ```json
 {
   "mcpServers": {
-    "github": {"command":"wirebay","args":["run","github"]}
+    "github": { "command": "wirebay", "args": ["run", "github"] }
   }
 }
 ```

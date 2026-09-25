@@ -262,53 +262,53 @@ wirebay run github
 
 ## Options
 
-| Option | Description |
-|---|---|
-| `--to <value>` | Tool(s) to act on (comma-separated) |
-| `--from <value>` | Tool(s) to remove from |
-| `--for <value>` | Same as --to |
-| `--server <value>` | Server(s) to act on |
-| `--all` | Every server (or every tool, when servers are named) |
-| `--all-tools` | Every installed tool |
-| `--all-servers` | Every added server |
-| `--scope <value>` | user (default) or project |
-| `--dry-run` / `-n` | Show what would change, change nothing |
-| `--yes` / `-y` | Don't ask for confirmation |
-| `--force` | Overwrite entries that were edited by hand or not created by wirebay |
-| `--json` | Machine-readable output |
-| `--include-missing` | Also write configs for tools that don't look installed |
-| `--no-sync` | Only update wirebay's config; don't touch tool files |
-| `--npx <value>` | add: run an npm package with npx |
-| `--uvx <value>` | add: run a Python package with uvx |
-| `--docker <value>` | add: run a Docker image |
-| `--url <value>` | add: connect to a remote (HTTP) MCP server |
-| `--command <value>` | add: run any executable |
-| `--arg <value>` | add: extra argument for the server (repeatable) |
-| `--secret <value>` | add: secret key the server needs (repeatable) |
-| `--optional-secret <value>` | add: optional secret key (repeatable) |
-| `--env <value>` | add: non-secret KEY=value (repeatable) |
-| `--header <value>` | add: non-secret HTTP header 'Name: value' (repeatable) |
-| `--oauth` | add: remote server uses browser OAuth |
-| `--variant <value>` | add: use a preset variant (e.g. github --variant docker) |
-| `--description <value>` | add: one-line description |
-| `--no-prompt` | Never prompt (also automatic without a TTY or in CI) |
-| `--stdin` | secrets set: read the value from stdin |
-| `--stale` | tools/presets: only entries due for re-verification |
-| `--days <value>` | tools/presets --stale: age threshold (default 90) |
-| `--list` | restore: list backups |
-| `--offline` | doctor: skip starting servers |
-| `--timeout <value>` | doctor: seconds to wait for each server (default 90) |
-| `--purge` | remove: also delete your custom server definition |
-| `--out <value>` | export: output folder (default ./wirebay-export) |
-| `--help` / `-h` | Show help |
-| `--version` / `-v` | Show version |
+| Option                      | Description                                                          |
+| --------------------------- | -------------------------------------------------------------------- |
+| `--to <value>`              | Tool(s) to act on (comma-separated)                                  |
+| `--from <value>`            | Tool(s) to remove from                                               |
+| `--for <value>`             | Same as --to                                                         |
+| `--server <value>`          | Server(s) to act on                                                  |
+| `--all`                     | Every server (or every tool, when servers are named)                 |
+| `--all-tools`               | Every installed tool                                                 |
+| `--all-servers`             | Every added server                                                   |
+| `--scope <value>`           | user (default) or project                                            |
+| `--dry-run` / `-n`          | Show what would change, change nothing                               |
+| `--yes` / `-y`              | Don't ask for confirmation                                           |
+| `--force`                   | Overwrite entries that were edited by hand or not created by wirebay |
+| `--json`                    | Machine-readable output                                              |
+| `--include-missing`         | Also write configs for tools that don't look installed               |
+| `--no-sync`                 | Only update wirebay's config; don't touch tool files                 |
+| `--npx <value>`             | add: run an npm package with npx                                     |
+| `--uvx <value>`             | add: run a Python package with uvx                                   |
+| `--docker <value>`          | add: run a Docker image                                              |
+| `--url <value>`             | add: connect to a remote (HTTP) MCP server                           |
+| `--command <value>`         | add: run any executable                                              |
+| `--arg <value>`             | add: extra argument for the server (repeatable)                      |
+| `--secret <value>`          | add: secret key the server needs (repeatable)                        |
+| `--optional-secret <value>` | add: optional secret key (repeatable)                                |
+| `--env <value>`             | add: non-secret KEY=value (repeatable)                               |
+| `--header <value>`          | add: non-secret HTTP header 'Name: value' (repeatable)               |
+| `--oauth`                   | add: remote server uses browser OAuth                                |
+| `--variant <value>`         | add: use a preset variant (e.g. github --variant docker)             |
+| `--description <value>`     | add: one-line description                                            |
+| `--no-prompt`               | Never prompt (also automatic without a TTY or in CI)                 |
+| `--stdin`                   | secrets set: read the value from stdin                               |
+| `--stale`                   | tools/presets: only entries due for re-verification                  |
+| `--days <value>`            | tools/presets --stale: age threshold (default 90)                    |
+| `--list`                    | restore: list backups                                                |
+| `--offline`                 | doctor: skip starting servers                                        |
+| `--timeout <value>`         | doctor: seconds to wait for each server (default 90)                 |
+| `--purge`                   | remove: also delete your custom server definition                    |
+| `--out <value>`             | export: output folder (default ./wirebay-export)                     |
+| `--help` / `-h`             | Show help                                                            |
+| `--version` / `-v`          | Show version                                                         |
 
 ## Exit codes
 
-| Code | Meaning |
-|---|---|
-| 0 | Success |
-| 1 | Error |
-| 2 | Usage error (unknown command, missing argument) |
-| 3 | `doctor` found problems |
-| 4 | Conflict or hand-edited entry; re-run with `--force` to overwrite |
+| Code | Meaning                                                           |
+| ---- | ----------------------------------------------------------------- |
+| 0    | Success                                                           |
+| 1    | Error                                                             |
+| 2    | Usage error (unknown command, missing argument)                   |
+| 3    | `doctor` found problems                                           |
+| 4    | Conflict or hand-edited entry; re-run with `--force` to overwrite |
