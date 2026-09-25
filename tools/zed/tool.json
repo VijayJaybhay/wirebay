@@ -1,0 +1,60 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "zed",
+  "name": "Zed",
+  "aliases": [
+    "zed-editor"
+  ],
+  "homepage": "https://zed.dev",
+  "docs": {
+    "mcp": "https://zed.dev/docs/ai/mcp",
+    "changelog": "https://zed.dev/releases"
+  },
+  "detect": {
+    "commands": [
+      "zed"
+    ],
+    "paths": [
+      {
+        "win32": "{appdata}/Zed",
+        "darwin": "${XDG_CONFIG_HOME:-~/.config}/zed",
+        "linux": "${XDG_CONFIG_HOME:-~/.config}/zed"
+      }
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": {
+        "win32": "{appdata}/Zed/settings.json",
+        "darwin": "${XDG_CONFIG_HOME:-~/.config}/zed/settings.json",
+        "linux": "${XDG_CONFIG_HOME:-~/.config}/zed/settings.json"
+      },
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/.zed/settings.json",
+      "createIfMissing": true
+    }
+  },
+  "format": "jsonc",
+  "rootKey": "context_servers",
+  "entry": {
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "restartRequired": false,
+  "status": "stable",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

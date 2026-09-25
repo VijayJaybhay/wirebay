@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "neon",
+  "description": "Neon: serverless Postgres projects, branches, SQL and migrations (read-only by default)",
+  "category": "databases",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.neon.tech/mcp?readonly=true",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "token": {
+      "type": "remote",
+      "url": "https://mcp.neon.tech/mcp?readonly=true",
+      "auth": {
+        "type": "bearer",
+        "secret": "NEON_API_KEY"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "NEON_API_KEY",
+      "description": "Neon API key (token variant only)",
+      "help": "https://console.neon.tech/app/settings?modal=create_api_key"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://neon.com/docs/ai/neon-mcp-server",
+  "notes": [
+    "Read-only by default. Signs in through the browser; `--variant token` uses NEON_API_KEY. Intended for development, not production."
+  ],
+  "guide": "docs/servers/catalog.md#neon",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "atlassian",
+  "description": "Atlassian Rovo: Jira, Confluence, Jira Service Management, Bitbucket",
+  "category": "productivity",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.atlassian.com/v2/mcp",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "secrets": [],
+  "docs": "https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/",
+  "notes": [
+    "Signs in through the browser and acts with your full Jira/Confluence permissions."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#atlassian",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

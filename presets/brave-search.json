@@ -1,0 +1,35 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "brave-search",
+  "description": "Brave Search: web, news, image and local search",
+  "category": "search",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@brave/brave-search-mcp-server@2.1.4",
+      "--transport",
+      "stdio"
+    ]
+  },
+  "secrets": [
+    {
+      "key": "BRAVE_API_KEY",
+      "required": true,
+      "description": "Brave Search API key",
+      "help": "https://api-dashboard.search.brave.com/app/keys"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/brave/brave-search-mcp-server",
+  "notes": [
+    "Read-only."
+  ],
+  "guide": "docs/servers/catalog.md#brave-search",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

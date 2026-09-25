@@ -1,0 +1,44 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "tavily",
+  "description": "Tavily: search, extract and crawl for agents",
+  "category": "search",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.tavily.com/mcp/",
+    "auth": {
+      "type": "bearer",
+      "secret": "TAVILY_API_KEY"
+    }
+  },
+  "variants": {
+    "local": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "tavily-mcp@0.2.22"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "TAVILY_API_KEY",
+      "required": true,
+      "description": "Tavily API key",
+      "pattern": "^tvly-",
+      "help": "https://app.tavily.com"
+    }
+  ],
+  "docs": "https://docs.tavily.com/documentation/mcp",
+  "notes": [
+    "Read-only; uses credits."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#tavily",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

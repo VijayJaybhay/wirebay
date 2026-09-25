@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "notion",
+  "description": "Notion: search, read and edit pages and databases",
+  "category": "productivity",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.notion.com/mcp",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "secrets": [],
+  "docs": "https://developers.notion.com/docs/get-started-with-mcp",
+  "notes": [
+    "Signs in through the browser and can create and edit pages. Workspace owners control access in Settings > Connections."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#notion",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

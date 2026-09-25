@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "local",
+      "command": "{{NODE}}",
+      "args": [
+        "{{WIREBAY_CLI}}",
+        "run",
+        "github"
+      ],
+      "tools": [
+        "*"
+      ]
+    },
+    "netlify": {
+      "type": "local",
+      "command": "{{NODE}}",
+      "args": [
+        "{{WIREBAY_CLI}}",
+        "run",
+        "netlify"
+      ],
+      "tools": [
+        "*"
+      ]
+    }
+  }
+}

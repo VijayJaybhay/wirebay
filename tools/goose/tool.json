@@ -1,0 +1,63 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "goose",
+  "name": "Goose",
+  "aliases": [
+    "block-goose"
+  ],
+  "homepage": "https://goose-docs.ai",
+  "docs": {
+    "mcp": "https://goose-docs.ai/docs/guides/config-files/",
+    "changelog": "https://github.com/block/goose/releases"
+  },
+  "detect": {
+    "commands": [
+      "goose"
+    ],
+    "paths": [
+      {
+        "win32": "{appdata}/Block/goose",
+        "darwin": "~/.config/goose",
+        "linux": "~/.config/goose"
+      }
+    ]
+  },
+  "configs": {
+    "user": {
+      "path": {
+        "win32": "{appdata}/Block/goose/config/config.yaml",
+        "darwin": "~/.config/goose/config.yaml",
+        "linux": "~/.config/goose/config.yaml"
+      },
+      "createIfMissing": true
+    }
+  },
+  "format": "yaml",
+  "rootKey": "extensions",
+  "entry": {
+    "stdio": {
+      "type": "stdio",
+      "name": "{name}",
+      "enabled": true,
+      "cmd": "{command}",
+      "args": "{args}",
+      "envs": "{env}",
+      "timeout": 300
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "cli": {
+    "list": "goose info -v"
+  },
+  "restartRequired": true,
+  "status": "stable",
+  "mergeStrategy": "edit",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

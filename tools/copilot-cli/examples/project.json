@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "local",
+      "command": "wirebay",
+      "args": [
+        "run",
+        "github"
+      ],
+      "tools": [
+        "*"
+      ]
+    },
+    "netlify": {
+      "type": "local",
+      "command": "wirebay",
+      "args": [
+        "run",
+        "netlify"
+      ],
+      "tools": [
+        "*"
+      ]
+    }
+  }
+}

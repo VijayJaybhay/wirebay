@@ -1,0 +1,32 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "time",
+  "description": "Time: current time and timezone conversion (MCP reference server)",
+  "category": "utilities",
+  "launch": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": [
+      "mcp-server-time@2026.8.18",
+      {
+        "optional": [
+          "--local-timezone=${LOCAL_TIMEZONE}"
+        ]
+      }
+    ]
+  },
+  "secrets": [
+    {
+      "key": "LOCAL_TIMEZONE",
+      "description": "Optional IANA timezone, e.g. Europe/Berlin"
+    }
+  ],
+  "prereqs": [
+    "uvx"
+  ],
+  "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/time",
+  "guide": "docs/servers/catalog.md#time",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

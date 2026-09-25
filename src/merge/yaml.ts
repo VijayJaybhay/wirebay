@@ -1,12 +1,13 @@
 // YAML edits through the `yaml` Document API, which keeps comments and ordering.
 
-import { parseDocument } from "yaml";
+import { Document, parseDocument } from "yaml";
 import { WirebayError } from "../core/errors.ts";
 import type { Entry } from "../core/types.ts";
 import { keyPath } from "./json.ts";
 
 function doc(text: string, file: string) {
-  const d = parseDocument(text || "{}");
+  // An empty file starts as a block-style document (parsing "{}" would give flow style).
+  const d = text.trim() ? parseDocument(text) : new Document({});
   if (d.errors.length) {
     throw new WirebayError(`Could not parse ${file} as YAML: ${d.errors[0]!.message}`, {
       hint: "Fix the file by hand, or restore a backup with `wirebay restore`.",

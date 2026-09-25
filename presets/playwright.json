@@ -1,0 +1,37 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "playwright",
+  "description": "Playwright: automate a real browser via accessibility snapshots (Microsoft)",
+  "category": "browser",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@playwright/mcp@0.0.82",
+      {
+        "optional": [
+          "--browser",
+          "${PLAYWRIGHT_BROWSER}"
+        ]
+      }
+    ]
+  },
+  "secrets": [
+    {
+      "key": "PLAYWRIGHT_BROWSER",
+      "description": "Optional: chrome, firefox, webkit or msedge"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/microsoft/playwright-mcp",
+  "notes": [
+    "Drives a real browser and can submit forms in logged-in sessions. Set PLAYWRIGHT_BROWSER to pick a browser."
+  ],
+  "guide": "docs/servers/catalog.md#playwright",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

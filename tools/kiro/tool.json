@@ -1,0 +1,24 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "kiro",
+  "name": "Kiro (IDE and Kiro CLI, formerly Amazon Q Developer CLI)",
+  "aliases": ["kiro-cli", "amazon-q", "q-cli"],
+  "homepage": "https://kiro.dev",
+  "docs": { "mcp": "https://kiro.dev/docs/mcp/configuration/", "changelog": "https://kiro.dev/changelog/" },
+  "detect": { "commands": ["kiro-cli", "kiro", "q"], "paths": ["${KIRO_HOME:-~/.kiro}", "~/.aws/amazonq"] },
+  "configs": {
+    "user": { "path": "${KIRO_HOME:-~/.kiro}/settings/mcp.json", "createIfMissing": true },
+    "project": { "path": "{cwd}/.kiro/settings/mcp.json", "createIfMissing": true }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "mergeStrategy": "edit",
+  "entry": { "stdio": { "command": "{command}", "args": "{args}", "env": "{env}", "disabled": false } },
+  "supports": { "stdio": true, "http": true, "envExpansion": true, "cmdShims": false },
+  "cli": { "list": "kiro-cli mcp list" },
+  "restartRequired": false,
+  "status": "stable",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

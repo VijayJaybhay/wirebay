@@ -11,7 +11,7 @@
   <a href="https://github.com/VijayJaybhay/wirebay/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
 </p>
 
-Claude Code, Claude Desktop, Codex, Cursor, VS Code and Gemini CLI each keep MCP servers in
+Claude Code, Claude Desktop, Codex, Cursor, VS Code, Gemini CLI, Windsurf, Zed, Kiro and a dozen more AI tools each keep MCP servers in
 their own file, in their own format, and usually with your tokens pasted into every one of them.
 **wirebay** gives you one list of servers, one private secrets file, and one command to wire them
 into every tool:
@@ -83,14 +83,54 @@ wirebay unsync all                                # take everything wirebay adde
 ## Supported servers
 
 <!-- generated:servers -->
-| Server | What it does | Add it | Guide |
-|---|---|---|---|
-| **aws-api** | AWS API: run AWS CLI commands through MCP (read-only by default) | `wirebay add aws-api to all` | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/aws.md) |
-| **aws-docs** | AWS Documentation: search and read official AWS docs (no credentials needed) | `wirebay add aws-docs to all` | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/aws.md) |
-| **firebase** | Firebase: projects, Auth, Firestore, Data Connect, Storage, Remote Config, Crashlytics | `wirebay add firebase to all` | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/firebase.md) |
-| **github** | GitHub: repositories, issues, pull requests, Actions, code security | `wirebay add github to all` | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/github.md) |
-| **netlify** | Netlify: sites, deploys, environment variables, forms, extensions | `wirebay add netlify to all` | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/netlify.md) |
+| Category | Server | What it does | Auth | Guide |
+|---|---|---|---|---|
+| ai | **huggingface** | Hugging Face: search models, datasets, papers and Spaces | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#huggingface) |
+| ai | **memory** | Memory: persistent knowledge-graph memory across sessions (MCP reference server) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#memory) |
+| ai | **sequential-thinking** | Sequential Thinking: structured step-by-step reasoning tool (MCP reference server) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#sequential-thinking) |
+| browser | **chrome-devtools** | Chrome DevTools: inspect and debug live Chrome (performance, network, console) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#chrome-devtools) |
+| browser | **playwright** | Playwright: automate a real browser via accessibility snapshots (Microsoft) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#playwright) |
+| cloud | **aws-api** | AWS API: run AWS CLI commands through MCP (read-only by default) | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/aws.md) |
+| cloud | **aws-docs** | AWS Documentation: search and read official AWS docs (no credentials needed) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/aws.md) |
+| cloud | **azure** | Azure: work with 45+ Azure services using your Azure login (read-only by default) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#azure) |
+| cloud | **cloudflare** | Cloudflare API: the whole Cloudflare API via search/execute tools | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#cloudflare) |
+| cloud | **cloudflare-docs** | Cloudflare Docs: search Cloudflare documentation (no login needed) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#cloudflare-docs) |
+| cloud | **firebase** | Firebase: projects, Auth, Firestore, Data Connect, Storage, Remote Config, Crashlytics | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/firebase.md) |
+| cloud | **heroku** | Heroku: apps, dynos, add-ons and Postgres | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#heroku) |
+| cloud | **kubernetes** | Kubernetes: pods, resources and Helm via your kubeconfig (containers/kubernetes-mcp-server) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#kubernetes) |
+| cloud | **netlify** | Netlify: sites, deploys, environment variables, forms, extensions | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/netlify.md) |
+| cloud | **render** | Render: services, deploys, logs, metrics and Postgres queries | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#render) |
+| cloud | **terraform** | Terraform: Registry lookups and HCP Terraform workspaces (HashiCorp); runs disabled by default | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#terraform) |
+| cloud | **vercel** | Vercel: docs, projects, deployments and logs | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#vercel) |
+| code-hosting | **github** | GitHub: repositories, issues, pull requests, Actions, code security | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/github.md) |
+| code-hosting | **gitlab** | GitLab: issues, merge requests, CI pipelines and repositories | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#gitlab) |
+| databases | **mongodb** | MongoDB: query databases and manage Atlas (read-only by default) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#mongodb) |
+| databases | **neon** | Neon: serverless Postgres projects, branches, SQL and migrations (read-only by default) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#neon) |
+| databases | **postgres** | PostgreSQL (Postgres MCP Pro): query, explain and tune; restricted (read-only) by default | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#postgres) |
+| databases | **supabase** | Supabase: SQL, migrations, branches, edge functions and docs (read-only by default) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#supabase) |
+| databases | **upstash** | Upstash: manage Redis, QStash and Workflow resources | 2 keys | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#upstash) |
+| dev-tools | **context7** | Context7: up-to-date library documentation and code examples for LLMs | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#context7) |
+| dev-tools | **docker** | Docker MCP Toolkit gateway: one entry point to containerized catalog servers | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#docker) |
+| dev-tools | **git** | Git: read and operate on a local git repository (MCP reference server) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#git) |
+| dev-tools | **postman** | Postman: collections, workspaces and API specs (minimal toolset by default) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#postman) |
+| dev-tools | **shopify-dev** | Shopify Dev: Shopify docs, GraphQL schemas and code validation (no store access) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#shopify-dev) |
+| observability | **sentry** | Sentry: errors, issues, traces and Seer root-cause analysis | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#sentry) |
+| payments | **paypal** | PayPal: invoices, orders and payments (sandbox by default) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#paypal) |
+| payments | **stripe** | Stripe: payments API and docs search (prefer a sandbox) | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#stripe) |
+| productivity | **atlassian** | Atlassian Rovo: Jira, Confluence, Jira Service Management, Bitbucket | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#atlassian) |
+| productivity | **linear** | Linear: issues, projects, cycles and comments | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#linear) |
+| productivity | **notion** | Notion: search, read and edit pages and databases | browser login | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#notion) |
+| search | **brave-search** | Brave Search: web, news, image and local search | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#brave-search) |
+| search | **exa** | Exa: AI web search and page fetching | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#exa) |
+| search | **firecrawl** | Firecrawl: scrape, crawl, search and extract web data | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#firecrawl) |
+| search | **perplexity** | Perplexity: search, ask, research and reasoning | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#perplexity) |
+| search | **tavily** | Tavily: search, extract and crawl for agents | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#tavily) |
+| utilities | **fetch** | Fetch: download web pages and convert them to markdown (MCP reference server) | none | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#fetch) |
+| utilities | **filesystem** | Filesystem: read, write and search files inside an allowed folder (MCP reference server) | token | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#filesystem) |
+| utilities | **time** | Time: current time and timezone conversion (MCP reference server) | optional | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md#time) |
 <!-- /generated:servers -->
+
+Full details for every server, with setup notes and risk notes, are in the [server catalog](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/catalog.md). `wirebay presets <word>` searches them.
 
 Any other MCP server works too: use `wirebay add <name> --npx <package>`, `--uvx`, `--docker`, `--url` or `--command`.
 See [custom servers](https://github.com/VijayJaybhay/wirebay/blob/main/docs/servers/custom-servers.md).
@@ -100,12 +140,25 @@ See [custom servers](https://github.com/VijayJaybhay/wirebay/blob/main/docs/serv
 <!-- generated:tools -->
 | Tool | Name in commands | Scopes | Last verified | Guide |
 |---|---|---|---|---|
+| **Augment Code CLI (auggie)** | `auggie` `augment` `augment-code` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/auggie/GUIDE.md) |
 | **Claude Code** | `claude-code` `claude` `cc` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/claude-code/GUIDE.md) |
 | **Claude Desktop** | `claude-desktop` `desktop` `claude-app` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/claude-desktop/GUIDE.md) |
+| **Cline (VS Code extension and CLI)** | `cline` `claude-dev` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/cline/GUIDE.md) |
 | **OpenAI Codex (CLI, IDE extension and desktop app)** | `codex` `codex-cli` `codex-desktop` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/codex/GUIDE.md) |
+| **Continue** | `continue` `continue-dev` | project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/continue/GUIDE.md) |
+| **GitHub Copilot CLI** | `copilot-cli` `copilot` `gh-copilot` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/copilot-cli/GUIDE.md) |
 | **Cursor** | `cursor` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/cursor/GUIDE.md) |
 | **Gemini CLI** | `gemini` `gemini-cli` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/gemini/GUIDE.md) |
+| **Goose** | `goose` `block-goose` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/goose/GUIDE.md) |
+| **JetBrains Junie (IDE plugin and CLI)** | `junie` `jetbrains-junie` `jetbrains` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/junie/GUIDE.md) |
+| **Kiro (IDE and Kiro CLI, formerly Amazon Q Developer CLI)** | `kiro` `kiro-cli` `amazon-q` `q-cli` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/kiro/GUIDE.md) |
+| **LM Studio** | `lm-studio` `lmstudio` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/lm-studio/GUIDE.md) |
+| **opencode** | `opencode` `open-code` `sst-opencode` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/opencode/GUIDE.md) |
+| **Trae** | `trae` `trae-ide` `traecode` | project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/trae/GUIDE.md) |
 | **Visual Studio Code (GitHub Copilot agent mode)** | `vscode` `code` `vs-code` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/vscode/GUIDE.md) |
+| **Warp** | `warp` `warp-terminal` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/warp/GUIDE.md) |
+| **Windsurf / Devin Desktop (Cascade)** | `windsurf` `devin-desktop` `cascade` `codeium` | user | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/windsurf/GUIDE.md) |
+| **Zed** | `zed` `zed-editor` | user, project | 2026-09-25 | [guide](https://github.com/VijayJaybhay/wirebay/blob/main/tools/zed/GUIDE.md) |
 <!-- /generated:tools -->
 
 ## How it works

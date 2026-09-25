@@ -1,0 +1,42 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "huggingface",
+  "description": "Hugging Face: search models, datasets, papers and Spaces",
+  "category": "ai",
+  "launch": {
+    "type": "remote",
+    "url": "https://huggingface.co/mcp",
+    "auth": {
+      "type": "none"
+    }
+  },
+  "variants": {
+    "token": {
+      "type": "remote",
+      "url": "https://huggingface.co/mcp",
+      "auth": {
+        "type": "bearer",
+        "secret": "HF_TOKEN"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "HF_TOKEN",
+      "description": "Access token (token variant)",
+      "pattern": "^hf_",
+      "help": "https://huggingface.co/settings/tokens"
+    }
+  ],
+  "docs": "https://huggingface.co/docs/hub/hf-mcp-server",
+  "notes": [
+    "Anonymous by default; `--variant token` uses HF_TOKEN. Choose tools at huggingface.co/settings/mcp."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#huggingface",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

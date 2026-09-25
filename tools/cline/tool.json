@@ -1,0 +1,22 @@
+{
+  "$schema": "../../schemas/tool.schema.json",
+  "version": 1,
+  "id": "cline",
+  "name": "Cline (VS Code extension and CLI)",
+  "aliases": ["claude-dev"],
+  "homepage": "https://cline.bot",
+  "docs": { "mcp": "https://docs.cline.bot/mcp/configuring-mcp-servers", "changelog": "https://github.com/cline/cline/releases" },
+  "detect": { "commands": ["cline"], "paths": ["~/.cline"] },
+  "configs": {
+    "user": { "path": "${CLINE_MCP_SETTINGS_PATH:-~/.cline/data/settings/cline_mcp_settings.json}", "createIfMissing": true }
+  },
+  "format": "json",
+  "rootKey": "mcpServers",
+  "mergeStrategy": "edit",
+  "entry": { "stdio": { "command": "{command}", "args": "{args}", "env": "{env}", "disabled": false } },
+  "supports": { "stdio": true, "http": true, "envExpansion": false, "cmdShims": false },
+  "restartRequired": false,
+  "status": "beta",
+  "lastVerified": "2026-09-25",
+  "maintainers": []
+}

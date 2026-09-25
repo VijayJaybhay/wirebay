@@ -1,0 +1,42 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "supabase",
+  "description": "Supabase: SQL, migrations, branches, edge functions and docs (read-only by default)",
+  "category": "databases",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.supabase.com/mcp?read_only=true",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "token": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?read_only=true",
+      "auth": {
+        "type": "bearer",
+        "secret": "SUPABASE_ACCESS_TOKEN"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "SUPABASE_ACCESS_TOKEN",
+      "description": "Personal access token (token variant only)",
+      "pattern": "^sbp_",
+      "help": "https://supabase.com/dashboard/account/tokens"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://supabase.com/docs/guides/getting-started/mcp",
+  "notes": [
+    "Read-only by default (`read_only=true`). Signs in through the browser; `--variant token` uses SUPABASE_ACCESS_TOKEN. Supabase advises against connecting to production."
+  ],
+  "guide": "docs/servers/catalog.md#supabase",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

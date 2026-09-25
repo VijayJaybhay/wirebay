@@ -1,0 +1,23 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "sequential-thinking",
+  "description": "Sequential Thinking: structured step-by-step reasoning tool (MCP reference server)",
+  "category": "ai",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-sequential-thinking@2026.8.31"
+    ]
+  },
+  "secrets": [],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking",
+  "guide": "docs/servers/catalog.md#sequential-thinking",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

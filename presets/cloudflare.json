@@ -1,0 +1,41 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "cloudflare",
+  "description": "Cloudflare API: the whole Cloudflare API via search/execute tools",
+  "category": "cloud",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.cloudflare.com/mcp",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "bindings": {
+      "type": "remote",
+      "url": "https://bindings.mcp.cloudflare.com/mcp",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    "observability": {
+      "type": "remote",
+      "url": "https://observability.mcp.cloudflare.com/mcp",
+      "auth": {
+        "type": "oauth"
+      }
+    }
+  },
+  "secrets": [],
+  "docs": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+  "notes": [
+    "Full Cloudflare API (including deletes) through browser sign-in. Variants: `bindings` (Workers, KV, R2, D1) and `observability` (logs and analytics)."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#cloudflare",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

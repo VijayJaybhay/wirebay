@@ -1,0 +1,25 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "cloudflare-docs",
+  "description": "Cloudflare Docs: search Cloudflare documentation (no login needed)",
+  "category": "cloud",
+  "launch": {
+    "type": "remote",
+    "url": "https://docs.mcp.cloudflare.com/mcp",
+    "auth": {
+      "type": "none"
+    }
+  },
+  "secrets": [],
+  "docs": "https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/",
+  "notes": [
+    "Public and read-only; no login needed."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#cloudflare-docs",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

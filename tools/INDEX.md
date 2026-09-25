@@ -7,11 +7,24 @@ a `GUIDE.md` with setup and quirks, and `examples/` of what wirebay writes.
 
 | Tool | Id | Aliases | Format | Scopes | Status | Last verified | Official docs |
 |---|---|---|---|---|---|---|---|
+| [Augment Code CLI (auggie)](auggie/GUIDE.md) | `auggie` | `augment` `augment-code` | json | user | beta | 2026-09-25 | [docs](https://docs.augmentcode.com/cli/integrations) |
 | [Claude Code](claude-code/GUIDE.md) | `claude-code` | `claude` `cc` | json | user, project | stable | 2026-09-25 | [docs](https://docs.claude.com/en/docs/claude-code/mcp) |
 | [Claude Desktop](claude-desktop/GUIDE.md) | `claude-desktop` | `desktop` `claude-app` | json | user | stable | 2026-09-25 | [docs](https://modelcontextprotocol.io/docs/develop/connect-local-servers) |
+| [Cline (VS Code extension and CLI)](cline/GUIDE.md) | `cline` | `claude-dev` | json | user | beta | 2026-09-25 | [docs](https://docs.cline.bot/mcp/configuring-mcp-servers) |
 | [OpenAI Codex (CLI, IDE extension and desktop app)](codex/GUIDE.md) | `codex` | `codex-cli` `codex-desktop` | toml | user | stable | 2026-09-25 | [docs](https://developers.openai.com/codex/mcp) |
+| [Continue](continue/GUIDE.md) | `continue` | `continue-dev` | json | project | beta | 2026-09-25 | [docs](https://docs.continue.dev/customize/deep-dives/mcp) |
+| [GitHub Copilot CLI](copilot-cli/GUIDE.md) | `copilot-cli` | `copilot` `gh-copilot` | json | user, project | stable | 2026-09-25 | [docs](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers) |
 | [Cursor](cursor/GUIDE.md) | `cursor` |  | json | user, project | stable | 2026-09-25 | [docs](https://cursor.com/docs/context/mcp) |
 | [Gemini CLI](gemini/GUIDE.md) | `gemini` | `gemini-cli` | jsonc | user, project | stable | 2026-09-25 | [docs](https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md) |
+| [Goose](goose/GUIDE.md) | `goose` | `block-goose` | yaml | user | stable | 2026-09-25 | [docs](https://goose-docs.ai/docs/guides/config-files/) |
+| [JetBrains Junie (IDE plugin and CLI)](junie/GUIDE.md) | `junie` | `jetbrains-junie` `jetbrains` | json | user, project | stable | 2026-09-25 | [docs](https://junie.jetbrains.com/docs/junie-cli-mcp-configuration.html) |
+| [Kiro (IDE and Kiro CLI, formerly Amazon Q Developer CLI)](kiro/GUIDE.md) | `kiro` | `kiro-cli` `amazon-q` `q-cli` | json | user, project | stable | 2026-09-25 | [docs](https://kiro.dev/docs/mcp/configuration/) |
+| [LM Studio](lm-studio/GUIDE.md) | `lm-studio` | `lmstudio` | json | user | beta | 2026-09-25 | [docs](https://lmstudio.ai/docs/app/mcp) |
+| [opencode](opencode/GUIDE.md) | `opencode` | `open-code` `sst-opencode` | jsonc | user, project | beta | 2026-09-25 | [docs](https://opencode.ai/docs/mcp-servers/) |
+| [Trae](trae/GUIDE.md) | `trae` | `trae-ide` `traecode` | json | project | beta | 2026-09-25 | [docs](https://docs.trae.ai/ide/add-mcp-servers) |
 | [Visual Studio Code (GitHub Copilot agent mode)](vscode/GUIDE.md) | `vscode` | `code` `vs-code` | jsonc | user, project | stable | 2026-09-25 | [docs](https://code.visualstudio.com/docs/copilot/customization/mcp-servers) |
+| [Warp](warp/GUIDE.md) | `warp` | `warp-terminal` | json | user, project | beta | 2026-09-25 | [docs](https://docs.warp.dev/knowledge-and-collaboration/mcp) |
+| [Windsurf / Devin Desktop (Cascade)](windsurf/GUIDE.md) | `windsurf` | `devin-desktop` `cascade` `codeium` | json | user | beta | 2026-09-25 | [docs](https://docs.devin.ai/desktop/cascade/mcp) |
+| [Zed](zed/GUIDE.md) | `zed` | `zed-editor` | jsonc | user, project | stable | 2026-09-25 | [docs](https://zed.dev/docs/ai/mcp) |
 
 Missing a tool? See [Add a tool](../docs/contributing/add-a-tool.md). It is usually just JSON and Markdown.

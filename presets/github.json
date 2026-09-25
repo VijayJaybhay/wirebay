@@ -3,6 +3,7 @@
   "version": 1,
   "name": "github",
   "description": "GitHub: repositories, issues, pull requests, Actions, code security",
+  "category": "code-hosting",
   "launch": {
     "type": "remote",
     "url": "${GITHUB_MCP_URL:-https://api.githubcopilot.com/mcp/}",

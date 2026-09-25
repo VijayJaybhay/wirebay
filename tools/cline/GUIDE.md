@@ -1,0 +1,48 @@
+# Cline
+
+The Cline agent (VS Code extension `saoudrizwan.claude-dev`, and the Cline CLI).
+Official docs: https://docs.cline.bot/mcp/configuring-mcp-servers
+
+## Where the config lives
+
+| Scope | File |
+|---|---|
+| user | `~/.cline/data/settings/cline_mcp_settings.json` (`%USERPROFILE%\.cline\…` on Windows), or `$CLINE_MCP_SETTINGS_PATH` if set |
+
+Cline 4.x keeps its data in `~/.cline/data` for both the extension and the CLI. Older versions
+kept the file in VS Code's `globalStorage/saoudrizwan.claude-dev/settings/`. There is no project
+scope yet.
+
+## How wirebay syncs it
+
+```bash
+wirebay add github to cline
+```
+
+Entries get `"disabled": false`, like the ones Cline writes itself.
+
+## Doing it by hand
+
+```json
+{
+  "mcpServers": {
+    "github": { "command": "wirebay", "args": ["run", "github"], "disabled": false }
+  }
+}
+```
+
+## Verify
+
+Cline panel → MCP servers icon → **Configure** tab. Each server shows its status and tools, with
+restart and enable toggles.
+
+## Quirks
+
+- **Old Cline (before 4.x):** point wirebay at the legacy file with a user override
+  (`~/.wirebay/tools/cline/tool.json`, `configs.user.path` =
+  `{appdata}/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`).
+- Auto-approve lists (`autoApprove`) are left for you to set in Cline's UI.
+
+## Changelog
+
+- 2026-09-25: first version (Cline 4.x `~/.cline/data` layout).

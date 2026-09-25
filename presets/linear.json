@@ -1,0 +1,49 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "linear",
+  "description": "Linear: issues, projects, cycles and comments",
+  "category": "productivity",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.linear.app/mcp",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "readonly": {
+      "type": "remote",
+      "url": "https://mcp.linear.app/mcp/readonly",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    "token": {
+      "type": "remote",
+      "url": "https://mcp.linear.app/mcp",
+      "auth": {
+        "type": "bearer",
+        "secret": "LINEAR_API_KEY"
+      }
+    }
+  },
+  "secrets": [
+    {
+      "key": "LINEAR_API_KEY",
+      "description": "Personal API key (token variant only)",
+      "pattern": "^lin_api_",
+      "help": "https://linear.app/settings/account/security"
+    }
+  ],
+  "docs": "https://linear.app/docs/mcp",
+  "notes": [
+    "Signs in through the browser. `--variant readonly` exposes only read tools; `--variant token` uses LINEAR_API_KEY."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#linear",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

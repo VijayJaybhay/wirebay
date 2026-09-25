@@ -1,0 +1,48 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "postman",
+  "description": "Postman: collections, workspaces and API specs (minimal toolset by default)",
+  "category": "dev-tools",
+  "status": "beta",
+  "launch": {
+    "type": "remote",
+    "url": "https://mcp.postman.com/minimal",
+    "auth": {
+      "type": "oauth"
+    }
+  },
+  "variants": {
+    "full": {
+      "type": "remote",
+      "url": "https://mcp.postman.com/mcp",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    "local": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@postman/postman-mcp-server@2.13.0"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "POSTMAN_API_KEY",
+      "description": "API key (local variant only)",
+      "pattern": "^PMAK-"
+    }
+  ],
+  "docs": "https://learning.postman.com/docs/developer/postman-api/postman-mcp-server/",
+  "notes": [
+    "Minimal toolset by default; `--variant full` can edit and delete collections. EU accounts need the local variant with POSTMAN_API_KEY and `--region eu`."
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "guide": "docs/servers/catalog.md#postman",
+  "lastVerified": "2026-09-25"
+}

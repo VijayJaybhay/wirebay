@@ -1,0 +1,26 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "shopify-dev",
+  "description": "Shopify Dev: Shopify docs, GraphQL schemas and code validation (no store access)",
+  "category": "dev-tools",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@shopify/dev-mcp@1.15.4"
+    ]
+  },
+  "secrets": [],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://shopify.dev/docs/apps/build/devmcp",
+  "notes": [
+    "Docs and schema tools only; no access to store data. No credentials needed."
+  ],
+  "guide": "docs/servers/catalog.md#shopify-dev",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

@@ -3,10 +3,14 @@
   "version": 1,
   "name": "my-server",
   "description": "One line: what this server lets an AI tool do",
+  "category": "dev-tools",
   "launch": {
     "type": "stdio",
     "command": "npx",
-    "args": ["-y", "@scope/package@1.0.0"]
+    "args": [
+      "-y",
+      "@scope/package@1.0.0"
+    ]
   },
   "secrets": [
     {
@@ -17,7 +21,9 @@
     }
   ],
   "env": {},
-  "prereqs": ["npx"],
+  "prereqs": [
+    "npx"
+  ],
   "docs": "https://link-to-official-docs",
   "guide": "docs/servers/my-server.md",
   "lastVerified": "YYYY-MM-DD",

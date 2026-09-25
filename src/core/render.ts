@@ -50,12 +50,26 @@ export function launcherCommand(
   return { command: base[0]!, args: base.slice(1), env };
 }
 
-/** Fill a tool's entry template ({command}, {args}, {env}) and add its extra fields. */
-export function fillTemplate(template: Record<string, unknown>, values: { command: string; args: string[]; env: Record<string, string> }): Entry {
+export interface TemplateValues {
+  name: string;
+  command: string;
+  args: string[];
+  env: Record<string, string>;
+}
+
+/**
+ * Fill a tool's entry template. Placeholders (as whole string values):
+ *   {command}      the executable            {args}  the argument array
+ *   {commandLine}  [command, ...args]         {env}   env object (key omitted when empty)
+ *   {name}         the server name
+ */
+export function fillTemplate(template: Record<string, unknown>, values: TemplateValues): Entry {
   const out: Entry = {};
   for (const [key, raw] of Object.entries(template)) {
     if (raw === "{command}") out[key] = values.command;
     else if (raw === "{args}") out[key] = values.args;
+    else if (raw === "{commandLine}") out[key] = [values.command, ...values.args];
+    else if (raw === "{name}") out[key] = values.name;
     else if (raw === "{env}") {
       if (Object.keys(values.env).length) out[key] = values.env;
     } else if (raw && typeof raw === "object" && !Array.isArray(raw)) out[key] = fillTemplate(raw as Record<string, unknown>, values);
@@ -65,5 +79,5 @@ export function fillTemplate(template: Record<string, unknown>, values: { comman
 }
 
 export function renderEntry(server: string, tool: ToolManifest, ctx: RenderContext): Entry {
-  return { ...fillTemplate(tool.entry.stdio, launcherCommand(server, tool, ctx)), ...(tool.entry.extra ?? {}) };
+  return { ...fillTemplate(tool.entry.stdio, { name: server, ...launcherCommand(server, tool, ctx) }), ...(tool.entry.extra ?? {}) };
 }

@@ -36,11 +36,26 @@ export interface RemoteLaunch {
 
 export type Launch = StdioLaunch | RemoteLaunch;
 
+export type ServerCategory =
+  | "code-hosting"
+  | "dev-tools"
+  | "browser"
+  | "databases"
+  | "cloud"
+  | "observability"
+  | "productivity"
+  | "design"
+  | "search"
+  | "payments"
+  | "ai"
+  | "utilities";
+
 export interface ServerDef {
   $schema?: string;
   version?: number;
   name: string;
   description?: string;
+  category?: ServerCategory;
   launch: Launch;
   variants?: Record<string, Launch>;
   /** Name of the variant to use instead of `launch`. */
@@ -50,6 +65,8 @@ export interface ServerDef {
   env?: Record<string, string>;
   prereqs?: string[];
   docs?: string;
+  /** Setup tips and risk notes shown in the server catalog. */
+  notes?: string[];
   guide?: string;
   lastVerified?: string;
   status?: "stable" | "beta" | "deprecated";

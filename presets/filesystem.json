@@ -1,0 +1,33 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "filesystem",
+  "description": "Filesystem: read, write and search files inside an allowed folder (MCP reference server)",
+  "category": "utilities",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-filesystem@2026.8.31",
+      "${FILESYSTEM_ROOT}"
+    ]
+  },
+  "secrets": [
+    {
+      "key": "FILESYSTEM_ROOT",
+      "required": true,
+      "description": "Folder the server may access (not a secret)"
+    }
+  ],
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem",
+  "notes": [
+    "Can create, edit and move files inside FILESYSTEM_ROOT. Point it at a project folder, never your whole home folder."
+  ],
+  "guide": "docs/servers/catalog.md#filesystem",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

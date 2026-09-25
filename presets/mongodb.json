@@ -1,0 +1,47 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "mongodb",
+  "description": "MongoDB: query databases and manage Atlas (read-only by default)",
+  "category": "databases",
+  "launch": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "-y",
+      "mongodb-mcp-server@3.0.4"
+    ]
+  },
+  "secrets": [
+    {
+      "key": "MDB_MCP_CONNECTION_STRING",
+      "description": "mongodb:// or mongodb+srv:// connection string (or use the Atlas keys)",
+      "pattern": "^mongodb(\\+srv)?://"
+    },
+    {
+      "key": "MDB_MCP_API_CLIENT_ID",
+      "description": "Atlas service account client ID (optional)"
+    },
+    {
+      "key": "MDB_MCP_API_CLIENT_SECRET",
+      "description": "Atlas service account client secret (optional)"
+    },
+    {
+      "key": "MDB_MCP_READ_ONLY",
+      "description": "true (default) or false"
+    }
+  ],
+  "env": {
+    "MDB_MCP_READ_ONLY": "true"
+  },
+  "prereqs": [
+    "npx"
+  ],
+  "docs": "https://github.com/mongodb-js/mongodb-mcp-server",
+  "notes": [
+    "Read-only by default (MDB_MCP_READ_ONLY=true). Set either MDB_MCP_CONNECTION_STRING or the Atlas service-account pair."
+  ],
+  "guide": "docs/servers/catalog.md#mongodb",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}

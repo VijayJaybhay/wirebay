@@ -1,0 +1,22 @@
+{
+  "mcp": {
+    "github": {
+      "type": "local",
+      "command": [
+        "wirebay",
+        "run",
+        "github"
+      ],
+      "enabled": true
+    },
+    "netlify": {
+      "type": "local",
+      "command": [
+        "wirebay",
+        "run",
+        "netlify"
+      ],
+      "enabled": true
+    }
+  }
+}

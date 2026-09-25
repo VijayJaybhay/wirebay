@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "wirebay",
+      "args": [
+        "run",
+        "github"
+      ],
+      "disabled": false
+    },
+    "netlify": {
+      "command": "wirebay",
+      "args": [
+        "run",
+        "netlify"
+      ],
+      "disabled": false
+    }
+  }
+}

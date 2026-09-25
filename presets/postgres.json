@@ -1,0 +1,52 @@
+{
+  "$schema": "../schemas/server.schema.json",
+  "version": 1,
+  "name": "postgres",
+  "description": "PostgreSQL (Postgres MCP Pro): query, explain and tune; restricted (read-only) by default",
+  "category": "databases",
+  "launch": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": [
+      "postgres-mcp@0.3.0",
+      "--access-mode=${POSTGRES_ACCESS_MODE:-restricted}"
+    ]
+  },
+  "variants": {
+    "docker": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "DATABASE_URI",
+        "crystaldba/postgres-mcp:0.3.0",
+        "--access-mode=${POSTGRES_ACCESS_MODE:-restricted}"
+      ]
+    }
+  },
+  "secrets": [
+    {
+      "key": "DATABASE_URI",
+      "required": true,
+      "description": "postgresql://user:password@host:5432/db",
+      "pattern": "^postgres(ql)?://"
+    },
+    {
+      "key": "POSTGRES_ACCESS_MODE",
+      "description": "restricted (default, read-only) or unrestricted"
+    }
+  ],
+  "prereqs": [
+    "uvx"
+  ],
+  "docs": "https://github.com/crystaldba/postgres-mcp",
+  "notes": [
+    "Restricted (read-only) by default. Set POSTGRES_ACCESS_MODE=unrestricted to allow writes. Requires uv (or `--variant docker`)."
+  ],
+  "guide": "docs/servers/catalog.md#postgres",
+  "lastVerified": "2026-09-25",
+  "status": "stable"
+}
