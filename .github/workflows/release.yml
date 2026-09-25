@@ -24,7 +24,7 @@ jobs:
       - run: npm ci
       - run: npm run lint && npm test && npm run validate
       - name: Create release PR or publish
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
           version: npx changeset version
           publish: npm run release
