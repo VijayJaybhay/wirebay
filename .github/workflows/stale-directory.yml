@@ -13,8 +13,8 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -25,7 +25,7 @@ jobs:
           node src/cli.ts tools --stale --json > stale-tools.json
           node src/cli.ts presets --stale --json > stale-presets.json
       - name: Open or update the tracking issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require("fs");
