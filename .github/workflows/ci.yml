@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  checks: write # publish test results as annotations
 
 jobs:
   test:
@@ -25,7 +26,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - run: npm test
+      - name: Tests
+        run: node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit.xml "test/**/*.test.ts"
+      - name: Publish test results
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: junit.xml
+          check_name: tests (${{ matrix.os }}, node ${{ matrix.node }})
+          annotate_only: true
+          detailed_summary: true
       - run: npm run validate
 
   package:
