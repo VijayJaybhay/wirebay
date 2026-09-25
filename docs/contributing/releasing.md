@@ -26,10 +26,16 @@ npx changeset
 
 ### One-time setup
 
-- Prefer **trusted publishing**: on npmjs.com, package settings → _Trusted publishers_ → add
-  GitHub Actions for `pragnalabs-ai/wirebay`, workflow `release.yml`. No token is needed.
-- Otherwise, create an npm **automation** token and add it as the `NPM_TOKEN` repository secret.
-- Repository settings → Actions → _Allow GitHub Actions to create and approve pull requests_.
+The release job runs in the `production` GitHub environment (Settings → Environments).
+
+- **Allow release PRs:** organization and repository settings → Actions → General → _Allow GitHub
+  Actions to create and approve pull requests_.
+- **First publish** (the package must exist before npm allows trusted publishing): create an npm
+  granular token (read and write, Bypass 2FA) and add it as the `NPM_TOKEN` secret of the
+  `production` environment. Then merge the release PR, or run _Actions → Release → Run workflow_.
+- **After that, trusted publishing:** npmjs.com → wirebay → Settings → _Trusted Publisher_ →
+  GitHub Actions: `pragnalabs-ai` / `wirebay` / `release.yml`, environment `production`, with
+  `npm publish` allowed. Then delete the `NPM_TOKEN` secret and revoke the token.
 
 ### Manual release (emergency only)
 
