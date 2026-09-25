@@ -32,7 +32,9 @@ export class SafeFileWriter {
     try {
       return readFileSync(file, "utf8");
     } catch (err) {
-      if ((err as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+      // ENOTDIR: a parent path is a file (Linux/macOS report this where Windows says ENOENT).
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === "ENOENT" || code === "ENOTDIR") return undefined;
       throw err;
     }
   }
