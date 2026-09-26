@@ -23,6 +23,8 @@ A monthly GitHub Action (`.github/workflows/stale-directory.yml`) posts the same
    - entry fields
    - `.cmd` support
    - restart behaviour
+   - `alsoReads`: other tools' files it reads (open each `source` link; add new ones, remove
+     ones that no longer apply)
 3. If you have the tool: sync to a test home, then to your real config, and check the servers
    appear (`node src/cli.ts tools verify <id>`).
 4. Update:

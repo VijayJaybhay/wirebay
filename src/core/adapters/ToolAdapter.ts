@@ -3,9 +3,12 @@
  * @module
  */
 
+import { copyFileSync, rmSync } from "node:fs";
+import { WirebayError } from "../errors.ts";
 import type { BackupManager } from "../io/BackupManager.ts";
 import type { SafeFileWriter } from "../io/SafeFileWriter.ts";
 import type { Changes, ConfigFormat } from "../formats/ConfigFormat.ts";
+import { EntryHasher } from "../store/EntryHasher.ts";
 import type { Tool } from "../tools/Tool.ts";
 import type { Entry, ScopeName } from "../types.ts";
 
@@ -52,6 +55,7 @@ export interface AdapterDeps {
 export abstract class ToolAdapter {
   protected readonly format: ConfigFormat;
   protected readonly deps: AdapterDeps;
+  protected readonly hasher = new EntryHasher();
 
   /**
    * @param format - Strategy for the tool's file format.
@@ -79,10 +83,36 @@ export abstract class ToolAdapter {
    * Persist the new content: back up, then write atomically (refusing if the file changed
    * since it was read).
    */
-  commit(target: Target, snapshot: Snapshot, _changes: Changes, newText: string): CommitResult {
+  commit(target: Target, snapshot: Snapshot, changes: Changes, newText: string): CommitResult {
     const backup = this.deps.backups.backup(target.tool.id, target.file);
     this.deps.writer.write(target.file, newText, { expectedMtime: snapshot.mtime });
+    this.verifyWrite(target, changes, backup);
     return { via: "file", backup };
+  }
+
+  /**
+   * Read the file back and check every change landed exactly as intended. If the file no longer
+   * parses or an entry differs, put the previous file back (or remove a file that didn't exist)
+   * and stop, so a broken config is never left behind.
+   * @throws {@link core/errors!WirebayError} when the check fails (after rolling back).
+   */
+  protected verifyWrite(target: Target, changes: Changes, backup: string | undefined): void {
+    let problem: string | undefined;
+    try {
+      const { entries } = this.read(target);
+      const wrong = Object.entries(changes.set).find(([name, entry]) => !this.hasher.same(entries[name], entry));
+      const leftover = changes.remove.find((name) => entries[name] !== undefined);
+      if (wrong) problem = `"${wrong[0]}" does not read back as written`;
+      else if (leftover !== undefined) problem = `"${leftover}" is still there after removing it`;
+    } catch (err) {
+      problem = `the file no longer parses (${(err as Error).message})`;
+    }
+    if (problem === undefined) return;
+    if (backup) copyFileSync(backup, target.file);
+    else rmSync(target.file, { force: true });
+    throw new WirebayError(`wirebay's change to ${target.file} didn't verify: ${problem}. The previous file was put back.`, {
+      hint: "Nothing was changed. Please report this with `wirebay doctor --json` output: https://github.com/pragnalabs-ai/wirebay/issues",
+    });
   }
 
   /**

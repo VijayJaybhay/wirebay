@@ -7,6 +7,9 @@ import { existsSync } from "node:fs";
 import type { AppContext } from "../../app/AppContext.ts";
 import { McpHandshakeClient } from "../mcp/McpHandshakeClient.ts";
 import type { ServerDefinition } from "../servers/ServerDefinition.ts";
+import { StateStore } from "../store/StateStore.ts";
+import { Reconciler } from "../sync/Reconciler.ts";
+import type { ScopeName } from "../types.ts";
 
 /** One check's outcome. */
 export interface DoctorCheck {
@@ -17,7 +20,16 @@ export interface DoctorCheck {
   detail?: string;
   /** How to fix it (shown when the status isn't ok). */
   fix?: string;
+  /** A repair `wirebay doctor --fix` can apply for this finding. */
+  repair?: Repair;
 }
+
+/** A change `doctor --fix` can make. */
+export type Repair =
+  /** Take these wirebay-managed servers out of one tool's file (deleting the file if it becomes empty). */
+  | { kind: "remove-from-tool"; tool: string; scope: ScopeName; servers: string[] }
+  /** Bring these tools' files in line with wirebay's config (e.g. entries written in an older format). */
+  | { kind: "sync"; scope: ScopeName; tools: string[] };
 
 /** What to check. */
 export interface DoctorOptions {
@@ -56,8 +68,67 @@ export class Doctor {
     this.checkEnvironment();
     const servers = options.servers ?? (options.tools ? [] : this.ctx.desired.allServerNames());
     for (const name of servers) await this.checkServer(name);
-    if (!options.servers || options.tools) this.checkToolFiles(options.tools);
+    if (!options.servers || options.tools) {
+      this.checkToolFiles(options.tools);
+      this.checkSharedFiles(options.tools);
+      this.checkUpToDate(options.tools);
+    }
     return this.checks;
+  }
+
+  /**
+   * Files another installed tool also reads but can't parse (an incompatible `alsoReads`), e.g.
+   * Visual Studio's global `~/.mcp.json`, which Claude Code reads from parent folders. Only the
+   * file's existence and wirebay's own records are used; no values are read.
+   */
+  private checkSharedFiles(onlyTools?: string[]): void {
+    const state = this.ctx.state.load();
+    for (const tool of this.ctx.tools.all()) {
+      if (onlyTools && !onlyTools.includes(tool.id)) continue;
+      for (const scope of tool.scopes) {
+        if (scope === "project" && !this.ctx.project.exists()) continue;
+        const file = tool.configPath(scope, this.ctx.paths, scope === "project" ? this.ctx.project.root : this.ctx.cwd);
+        if (!file || !existsSync(file)) continue;
+        for (const { reader, read } of this.ctx.readGraph.conflictsFor(tool.id, scope)) {
+          if (!reader.isInstalled(this.ctx.resolver, this.ctx.paths)) continue;
+          const managed = Object.keys(StateStore.fileRecord(state, tool.id, scope, file)?.entries ?? {});
+          this.add({
+            area: reader.id,
+            name: `${file} is also read by ${reader.name}`,
+            status: "warn",
+            detail: `it can't parse this ${tool.name} file (${read.note})`,
+            fix: managed.length
+              ? `wirebay doctor --fix   (or: wirebay disable ${managed.join(" ")} from ${tool.id})`
+              : `wirebay didn't write this file. If you don't use ${tool.name}'s ${scope === "user" ? "global" : "project"} MCP config, delete or rename it.`,
+            ...(managed.length ? { repair: { kind: "remove-from-tool" as const, tool: tool.id, scope, servers: managed } } : {}),
+          });
+        }
+      }
+    }
+  }
+
+  /** Tool files whose wirebay entries differ from wirebay's config (e.g. written in an older format). */
+  private checkUpToDate(onlyTools?: string[]): void {
+    const state = this.ctx.state.load();
+    const scopes: ScopeName[] = this.ctx.project.exists() ? ["user", "project"] : ["user"];
+    for (const scope of scopes) {
+      const tools = StateStore.toolsWithEntries(state, undefined, (f) => f.scope === scope).filter(
+        (id) => !onlyTools || onlyTools.includes(id),
+      );
+      if (!tools.length) continue;
+      const outcome = this.ctx.sync.run({ tools, scope, dryRun: true });
+      const behind = outcome.results
+        .filter((r) => Reconciler.hasChanges(r.plan) && !r.plan.issues.length)
+        .map((r) => r.plan.target.tool.id);
+      this.add({
+        area: "wirebay",
+        name: `${scope === "user" ? "global" : "project"} tool files match wirebay's config`,
+        status: behind.length ? "warn" : "ok",
+        detail: behind.length ? `out of date: ${behind.join(", ")}` : undefined,
+        fix: `wirebay sync${scope === "project" ? " --project" : ""}`,
+        ...(behind.length ? { repair: { kind: "sync" as const, scope, tools: behind } } : {}),
+      });
+    }
   }
 
   private add(check: DoctorCheck): void {

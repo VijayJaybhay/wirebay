@@ -230,7 +230,7 @@ wirebay secrets list
 Check prerequisites, secrets, permissions, tool files, and start each server for a real MCP handshake.
 
 ```
-wirebay doctor [servers|tools] [--offline] [--json]
+wirebay doctor [servers|tools] [--offline] [--fix [--yes] [--dry-run]] [--json]
 ```
 
 Aliases: `check`
@@ -241,6 +241,7 @@ Examples:
 wirebay doctor
 wirebay doctor github
 wirebay doctor --offline
+wirebay doctor --fix
 ```
 
 ## `restore`
@@ -312,6 +313,7 @@ wirebay run github
 | `--days <value>`            | tools/presets --stale: age threshold (default 90)                                       |
 | `--list`                    | restore: list backups                                                                   |
 | `--offline`                 | doctor: skip starting servers                                                           |
+| `--fix`                     | doctor: repair what it can (asks first; --yes to skip, --dry-run to preview)            |
 | `--timeout <value>`         | doctor: seconds to wait for each server (default 90)                                    |
 | `--purge`                   | remove: also delete your custom server definition                                       |
 | `--out <value>`             | export: output folder (default ./wirebay-export)                                        |

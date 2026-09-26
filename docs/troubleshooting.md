@@ -18,6 +18,28 @@ wirebay doctor --json     # safe to paste into an issue: contains no secret valu
 pm`) to your
   PATH, and open a new terminal.
 
+## Claude Code: `Missing "mcpServers" — found "servers" instead` (`~/.mcp.json`)
+
+Claude Code also reads `.mcp.json` files from **parent folders** of your project, including your
+home folder. `%USERPROFILE%\.mcp.json` is **Visual Studio's** global MCP file, which uses the key
+`servers`, so Claude Code can't parse it. It skips that file and still loads your other servers,
+but shows the error.
+
+- If wirebay wrote it: `wirebay doctor --fix` removes wirebay's entries from it and deletes the file
+  once it is empty (a backup is kept; `wirebay restore visual-studio` brings it back).
+- If you wrote it and don't use Visual Studio's global MCP config, delete or rename it.
+
+Since this version wirebay treats that file as **opt-in**: `add … to all` skips it, and it is only
+written when you name `visual-studio` explicitly. See `wirebay tools visual-studio`.
+
+## A tool lists a server twice
+
+Some tools also load other tools' MCP files (for example Devin imports Claude Code's and Cursor's,
+VS Code reads Copilot CLI's `~/.copilot/mcp-config.json` and a workspace `.mcp.json`). wirebay
+still writes each tool's own file, and tells you when this happens after a sync and in
+`wirebay list`. `wirebay tools <tool>` shows what a tool reads. Turn the import off in that tool,
+or disable the server for one of the tools.
+
 ## A server doesn't show up in my tool
 
 1. `wirebay list`: is it `✓` for that tool? If it's `○`, run `wirebay sync`.

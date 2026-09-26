@@ -68,6 +68,7 @@ export const FLAGS: readonly FlagSpec[] = [
   { name: "days", value: true, description: "tools/presets --stale: age threshold (default 90)" },
   { name: "list", description: "restore: list backups" },
   { name: "offline", description: "doctor: skip starting servers" },
+  { name: "fix", description: "doctor: repair what it can (asks first; --yes to skip, --dry-run to preview)" },
   { name: "timeout", value: true, description: "doctor: seconds to wait for each server (default 90)" },
   { name: "purge", description: "remove: also delete your custom server definition" },
   { name: "out", value: true, description: "export: output folder (default ./wirebay-export)" },

@@ -15,6 +15,8 @@ From the tool's **official docs** (link them in the manifest), find:
 - [ ] Whether it needs a restart to pick up changes
 - [ ] How to see connected servers inside the tool (for the guide)
 - [ ] A command that proves it's installed (`cursor`, `code`, …) or a folder it creates
+- [ ] **Other tools' files it also reads** (imports, parent-folder lookups, shared files), and
+      whether it can parse them. These become `alsoReads` (below).
 
 ## 2. Scaffold
 
@@ -68,6 +70,34 @@ For per-OS paths, use `{ "win32": "…", "darwin": "…", "linux": "…" }`.
 - `{name}`, the server name
 
 Root keys use dots for nesting. Write `\\.` for a literal dot, as in `"amp\\.mcpServers"`. Put fixed extra fields in `entry.extra`, e.g. `{ "startup_timeout_sec": 60 }`.
+
+### Other tools' files it reads: `alsoReads`
+
+Many tools also load MCP servers from other tools' config files (Devin imports Claude Code's and
+Cursor's configs, VS Code reads a workspace `.mcp.json`, Claude Code reads `.mcp.json` from parent
+folders). Record each confirmed one on the **reader's** manifest:
+
+```json
+"alsoReads": [
+  {
+    "tool": "claude-code", "scope": "project", "when": "always", "compatible": true,
+    "note": "reads the workspace-root .mcp.json (portable format)",
+    "source": "https://code.visualstudio.com/docs/agents/reference/mcp-configuration"
+  }
+]
+```
+
+- `when`: `always`, `setting` (then name it in `setting`), or `approval` (each server must be approved).
+- `compatible: false` when the reader can't parse that file (for example it expects another root
+  key). That makes the **other** tool's location **opt-in**: `all` and default tools skip it, and
+  `wirebay doctor --fix` can clean it up.
+- Only add facts you found in official docs (or a maintainer-confirmed issue), with the link in `source`.
+
+wirebay still writes each tool's own file; this data is used to tell users when a server may appear
+twice, and to generate the _Shared config files_ section of each guide.
+
+If a config file can also be written by someone else (another tool, or wirebay), set
+`"detect": { …, "configFile": false }` so the file alone doesn't make the tool look installed.
 
 ## 4. Write `GUIDE.md`
 

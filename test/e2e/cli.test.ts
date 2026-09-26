@@ -351,3 +351,40 @@ await test("removing the last server deletes a file wirebay created (VS global ~
     sb.cleanup();
   }
 });
+
+await test("doctor finds ~/.mcp.json that breaks Claude Code, and --fix removes it (like on a real machine)", () => {
+  const sb = new Sandbox();
+  try {
+    sb.run(["init"]);
+    mkdirSync(path.join(sb.home, ".claude"), { recursive: true }); // Claude Code "installed"
+    const vsFile = path.join(sb.home, ".mcp.json");
+    let r = sb.run(["add", "demo", "--command", "node", "to", "visual-studio", "--include-missing"]);
+    assert.equal(r.code, 0, r.stderr);
+    // Simulate a file written by an older wirebay: no "created" record.
+    const stateFile = path.join(sb.wirebayHome, "state.json");
+    writeFileSync(stateFile, readFileSync(stateFile, "utf8").replace(/,\s*"created": true/g, ""));
+
+    r = sb.run(["doctor", "--offline"]);
+    assert.match(r.stdout, /\.mcp\.json is also read by Claude Code/);
+    assert.match(r.stdout, /wirebay doctor --fix/);
+
+    r = sb.run(["doctor", "--offline", "--fix", "--dry-run"]);
+    assert.match(r.stdout, /remove demo from visual-studio/);
+    assert.ok(existsSync(vsFile), "dry run changes nothing");
+
+    r = sb.run(["doctor", "--offline", "--fix", "--yes"]);
+    assert.ok(!existsSync(vsFile), `fixed: ${r.stdout}`);
+    assert.match(r.stdout, /deleted the file/);
+    r = sb.run(["doctor", "--offline"]);
+    assert.doesNotMatch(r.stdout, /is also read by Claude Code/);
+
+    // A hand-made file is reported but never touched.
+    writeFileSync(vsFile, '{ "servers": { "mine": { "command": "x" } } }');
+    r = sb.run(["doctor", "--offline", "--fix", "--yes"]);
+    assert.match(r.stdout, /wirebay didn't write this file/);
+    assert.match(r.stdout, /Nothing doctor can fix automatically/);
+    assert.ok(existsSync(vsFile), "kept");
+  } finally {
+    sb.cleanup();
+  }
+});

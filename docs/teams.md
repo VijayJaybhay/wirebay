@@ -105,6 +105,10 @@ _on Windows_ use `cmd /c wirebay run …`, which doesn't work on macOS or Linux.
 
 ## Tips
 
+- Your **home folder is never a project**: project files there would be your global files, so
+  wirebay refuses `--project` there. `cd` into the project or pass `--dir`.
+- A project's `.mcp.json` (written for Claude Code) is also read by Copilot CLI, VS Code, Visual
+  Studio, Qoder and Devin, so those tools may list its servers too. See `wirebay tools claude-code`.
 - Add `wirebay sync --project` to your project README's setup steps.
 - `wirebay sync --project --dry-run` shows exactly what will change in the repo.
 - Global and project servers can be used together; each tool merges them in its own way (see each

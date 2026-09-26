@@ -38,23 +38,25 @@
 
 ## Key classes
 
-| Class                                 | Responsibility                                                                               |
-| ------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `AppContext`                          | Lazily creates and shares services; the one place dependencies are wired                     |
-| `WirebayPaths`                        | Home folders, package paths, per-OS path expansion                                           |
-| `ExecutableResolver`                  | Finds `npx`/`uvx`/`docker` (remembered paths, PATH, well-known folders)                      |
-| `ServerDefinition` / `ServerRegistry` | A server's rules (declared/required keys, auth, variants) / loading presets + user overrides |
-| `Tool` / `ToolRegistry`               | A tool's config paths and install detection / loading the tools directory                    |
-| `EnvFileSecretsStore`                 | The `secrets.env` backend (implements `SecretsBackend`)                                      |
-| `ConfigFormat` + implementations      | Read and edit JSON/JSONC, TOML (managed block), YAML without disturbing other content        |
-| `ToolAdapter` + `AdapterFactory`      | Read, render and commit one tool file; Claude Code's user scope commits through its CLI      |
-| `EntryRenderer`                       | The launcher entry for (server, tool): absolute / portable / npx modes                       |
-| `Reconciler`                          | Plans per-file changes: conflicts, drift, pruning; applies and records hashes                |
-| `DesiredState` / `ServerMapOps`       | Which servers go to which tools per scope (global `config.json`, project `.wirebay.json`)    |
-| `ProjectConfigStore`                  | Finds the project root (`--dir`, `.wirebay.json`, git root) and reads/writes `.wirebay.json` |
-| `SyncEngine`                          | Orchestrates a sync across tools for one scope                                               |
-| `LaunchPlanner` / `ServerLauncher`    | Builds the child env and command (secrets filtering, mcp-remote bridge) / spawns it          |
-| `McpHandshakeClient` / `Doctor`       | A minimal MCP client / all health checks                                                     |
+| Class                                 | Responsibility                                                                                               |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `AppContext`                          | Lazily creates and shares services; the one place dependencies are wired                                     |
+| `WirebayPaths`                        | Home folders, package paths, per-OS path expansion                                                           |
+| `ExecutableResolver`                  | Finds `npx`/`uvx`/`docker` (remembered paths, PATH, well-known folders)                                      |
+| `ServerDefinition` / `ServerRegistry` | A server's rules (declared/required keys, auth, variants) / loading presets + user overrides                 |
+| `Tool` / `ToolRegistry`               | A tool's config paths and install detection / loading the tools directory                                    |
+| `ConfigReadGraph`                     | Which tools read which other tools' MCP files (`alsoReads`): opt-in locations, servers a tool may load twice |
+| `EnvFileSecretsStore`                 | The `secrets.env` backend (implements `SecretsBackend`)                                                      |
+| `ConfigFormat` + implementations      | Read and edit JSON/JSONC, TOML (managed block), YAML without disturbing other content                        |
+| `ToolAdapter` + `AdapterFactory`      | Read, render and commit one tool file; Claude Code's user scope commits through its CLI                      |
+| `EntryRenderer`                       | The launcher entry for (server, tool): absolute / portable / npx modes                                       |
+| `Reconciler`                          | Plans per-file changes: conflicts, drift, pruning; applies and records hashes                                |
+| `DesiredState` / `ServerMapOps`       | Which servers go to which tools per scope (global `config.json`, project `.wirebay.json`)                    |
+| `ProjectConfigStore`                  | Finds the project root (`--dir`, `.wirebay.json`, git root) and reads/writes `.wirebay.json`                 |
+| `SyncEngine`                          | Orchestrates a sync across tools for one scope                                                               |
+| `LaunchPlanner` / `ServerLauncher`    | Builds the child env and command (secrets filtering, mcp-remote bridge) / spawns it                          |
+| `McpHandshakeClient` / `Doctor`       | A minimal MCP client / all health checks                                                                     |
+| `DoctorFixer`                         | Turns repairable doctor findings into changes for `doctor --fix` (only wirebay-managed entries)              |
 
 The API reference with every class and method is generated from TSDoc: `npm run docs:api`.
 

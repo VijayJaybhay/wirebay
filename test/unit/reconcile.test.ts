@@ -184,3 +184,26 @@ await test("files wirebay created are deleted once empty; files it didn't create
     const p3 = ctx.reconciler.plan(t3, s3, { desired: {}, optIn: true });
     assert.equal(p3.deleteFile, true);
   }));
+
+await test("an entry wirebay wrote in an older format is updated on sync, not treated as a hand edit", () =>
+  withSandbox((sb) => {
+    const { ctx, file, state, target } = setup(sb);
+    ctx.reconciler.apply(ctx.reconciler.plan(target, state, { desired: { a: entry("a") } }), state);
+    // The manifest's template changed (e.g. Cursor now needs "type": "stdio").
+    const newer = { type: "stdio", ...entry("a") };
+    const plan = ctx.reconciler.plan(target, state, { desired: { a: newer } });
+    assert.deepEqual(plan.issues, []);
+    assert.deepEqual(Object.keys(plan.changes.set), ["a"]);
+    ctx.reconciler.apply(plan, state);
+    assert.equal((readTool(file).mcpServers.a as unknown as { type: string }).type, "stdio");
+  }));
+
+await test("a write that doesn't read back correctly is rolled back", () =>
+  withSandbox((sb) => {
+    const { ctx, file, target } = setup(sb);
+    const before = readFileSync(file, "utf8");
+    const adapter = ctx.adapters.for(tool);
+    const snapshot = adapter.read(target);
+    assert.throws(() => adapter.commit(target, snapshot, { set: { a: entry("a") }, remove: [] }, "{ broken"), /didn't verify/);
+    assert.equal(readFileSync(file, "utf8"), before, "the previous file is back");
+  }));
