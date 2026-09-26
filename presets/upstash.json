@@ -13,7 +13,8 @@
     {
       "key": "UPSTASH_EMAIL",
       "required": true,
-      "description": "Upstash account email"
+      "description": "Upstash account email",
+      "help": "The email you sign in to https://console.upstash.com with"
     },
     {
       "key": "UPSTASH_API_KEY",

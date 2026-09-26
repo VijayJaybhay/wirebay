@@ -2,7 +2,7 @@
  * Checks every contribution-facing data file. Run: `npm run validate`.
  * - `tools/*\/tool.json`: schema, folder = id, unique ids/aliases, GUIDE.md and examples exist
  * - `presets/*.json`: schema, file name = name, category, guide exists, pinned versions,
- *   no real-looking tokens, every required key explained
+ *   no real-looking tokens, every required key explained (a description and how to get it)
  * - `templates/secrets.env.example`: no real-looking tokens
  * - generated files are up to date
  * @module
@@ -112,8 +112,11 @@ export class RepoValidator {
         this.fail(where, `guide ${data.guide} does not exist`);
       if (/@latest\b/.test(JSON.stringify(data.launch) + JSON.stringify(data.variants ?? {})))
         this.fail(where, "pin package versions instead of @latest");
-      for (const key of def.requiredKeys())
-        if (!def.secretSpec(key)?.description) this.fail(where, `required key ${key} needs a "description"`);
+      for (const key of def.requiredKeys()) {
+        const spec = def.secretSpec(key);
+        if (!spec?.description) this.fail(where, `required key ${key} needs a "description"`);
+        if (!spec?.help) this.fail(where, `required key ${key} needs a "help" (how to get it: steps or a link, shown by wirebay add)`);
+      }
       this.presetCount++;
     }
   }

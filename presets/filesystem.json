@@ -13,7 +13,8 @@
     {
       "key": "FILESYSTEM_ROOT",
       "required": true,
-      "description": "Folder the server may access (not a secret)"
+      "description": "Folder the server may access (not a secret)",
+      "help": "Not a secret: the folder the server may read and write, e.g. ~/code/my-project. Keep it as narrow as possible."
     }
   ],
   "prereqs": ["npx"],

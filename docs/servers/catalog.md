@@ -151,14 +151,14 @@ wirebay add aws-api to all
 - **Runs:** `uvx awslabs.aws-api-mcp-server@1.5.5`
 - **Needs:** uvx
 
-| Key                     | Required | What it is                                             | Where to get it |
-| ----------------------- | -------- | ------------------------------------------------------ | --------------- |
-| `AWS_PROFILE`           | no       | Named profile from ~/.aws (preferred over static keys) |                 |
-| `AWS_REGION`            | yes      | Default region, e.g. us-east-1                         |                 |
-| `READ_OPERATIONS_ONLY`  | no       | true = only read/list/describe operations              |                 |
-| `AWS_ACCESS_KEY_ID`     | no       | Static key (fallback only)                             |                 |
-| `AWS_SECRET_ACCESS_KEY` | no       | Static secret (fallback only)                          |                 |
-| `AWS_SESSION_TOKEN`     | no       | Session token for temporary credentials                |                 |
+| Key                     | Required | What it is                                             | Where to get it                                                                                                                             |
+| ----------------------- | -------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AWS_PROFILE`           | no       | Named profile from ~/.aws (preferred over static keys) |                                                                                                                                             |
+| `AWS_REGION`            | yes      | Default region, e.g. us-east-1                         | [link](The region your resources are in, e.g. us-east-1: https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions.html) |
+| `READ_OPERATIONS_ONLY`  | no       | true = only read/list/describe operations              |                                                                                                                                             |
+| `AWS_ACCESS_KEY_ID`     | no       | Static key (fallback only)                             |                                                                                                                                             |
+| `AWS_SECRET_ACCESS_KEY` | no       | Static secret (fallback only)                          |                                                                                                                                             |
+| `AWS_SESSION_TOKEN`     | no       | Session token for temporary credentials                |                                                                                                                                             |
 
 Set with `wirebay secrets set <KEY>`.
 
@@ -386,9 +386,9 @@ wirebay add azure-devops to all
 - **Runs:** `npx -y @azure-devops/mcp@2.10.0 ${AZURE_DEVOPS_ORG}`
 - **Needs:** npx
 
-| Key                | Required | What it is                                             | Where to get it |
-| ------------------ | -------- | ------------------------------------------------------ | --------------- |
-| `AZURE_DEVOPS_ORG` | yes      | Your organization name (the part after dev.azure.com/) |                 |
+| Key                | Required | What it is                                             | Where to get it                                                                                                                                                                                              |
+| ------------------ | -------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `AZURE_DEVOPS_ORG` | yes      | Your organization name (the part after dev.azure.com/) | [link](Open https://dev.azure.com and copy the name after dev.azure.com/ in the address bar. No organization yet? https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization) |
 
 Set with `wirebay secrets set <KEY>`.
 
@@ -451,13 +451,13 @@ wirebay add mcp-toolbox-postgres to all
 - **Runs:** `npx -y @toolbox-sdk/server@1.13.0 --prebuilt=postgres --stdio`
 - **Needs:** npx
 
-| Key                 | Required | What it is                           | Where to get it |
-| ------------------- | -------- | ------------------------------------ | --------------- |
-| `POSTGRES_HOST`     | no       | Host (default localhost)             |                 |
-| `POSTGRES_PORT`     | no       | Port (default 5432)                  |                 |
-| `POSTGRES_DATABASE` | yes      | Database name                        |                 |
-| `POSTGRES_USER`     | yes      | Database user (use a read-only role) |                 |
-| `POSTGRES_PASSWORD` | yes      | Database password                    |                 |
+| Key                 | Required | What it is                           | Where to get it                                                                                      |
+| ------------------- | -------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `POSTGRES_HOST`     | no       | Host (default localhost)             |                                                                                                      |
+| `POSTGRES_PORT`     | no       | Port (default 5432)                  |                                                                                                      |
+| `POSTGRES_DATABASE` | yes      | Database name                        | [link](The database name, from your provider's connection details)                                   |
+| `POSTGRES_USER`     | yes      | Database user (use a read-only role) | [link](A database role for the assistant; prefer a read-only one (CREATE ROLE … with SELECT grants)) |
+| `POSTGRES_PASSWORD` | yes      | Database password                    | [link](The password of that role, from your provider's connection details or your database admin)    |
 
 Set with `wirebay secrets set <KEY>`.
 
@@ -523,10 +523,10 @@ wirebay add postgres to all
 - **`--variant docker`:** `docker run -i --rm -e DATABASE_URI crystaldba/postgres-mcp:0.3.0 --access-mode=${POSTGRES_ACCESS_MODE:-restricted}`
 - **Needs:** uvx
 
-| Key                    | Required | What it is                                      | Where to get it |
-| ---------------------- | -------- | ----------------------------------------------- | --------------- |
-| `DATABASE_URI`         | yes      | postgresql://user:password@host:5432/db         |                 |
-| `POSTGRES_ACCESS_MODE` | no       | restricted (default, read-only) or unrestricted |                 |
+| Key                    | Required | What it is                                      | Where to get it                                                                                                                               |
+| ---------------------- | -------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URI`         | yes      | postgresql://user:password@host:5432/db         | [link](Your provider's connection string (often called DATABASE_URL), e.g. postgresql://user:password@host:5432/db. Prefer a read-only role.) |
+| `POSTGRES_ACCESS_MODE` | no       | restricted (default, read-only) or unrestricted |                                                                                                                                               |
 
 Set with `wirebay secrets set <KEY>`.
 
@@ -567,10 +567,10 @@ wirebay add upstash to all
 - **Runs:** `npx -y @upstash/mcp-server@0.3.0`
 - **Needs:** npx
 
-| Key               | Required | What it is                                                | Where to get it                                 |
-| ----------------- | -------- | --------------------------------------------------------- | ----------------------------------------------- |
-| `UPSTASH_EMAIL`   | yes      | Upstash account email                                     |                                                 |
-| `UPSTASH_API_KEY` | yes      | Management API key (a read-only key disables write tools) | [link](https://console.upstash.com/account/api) |
+| Key               | Required | What it is                                                | Where to get it                                                   |
+| ----------------- | -------- | --------------------------------------------------------- | ----------------------------------------------------------------- |
+| `UPSTASH_EMAIL`   | yes      | Upstash account email                                     | [link](The email you sign in to https://console.upstash.com with) |
+| `UPSTASH_API_KEY` | yes      | Management API key (a read-only key disables write tools) | [link](https://console.upstash.com/account/api)                   |
 
 Set with `wirebay secrets set <KEY>`.
 
@@ -812,11 +812,11 @@ wirebay add grafana to all
 - **`--variant docker`:** `docker run --rm -i -e GRAFANA_URL -e GRAFANA_SERVICE_ACCOUNT_TOKEN grafana/mcp-grafana:1.6.0 -t stdio --disable-write`
 - **Needs:** uvx
 
-| Key                             | Required | What it is                                                                   | Where to get it |
-| ------------------------------- | -------- | ---------------------------------------------------------------------------- | --------------- |
-| `GRAFANA_URL`                   | yes      | Grafana URL, e.g. https://<stack>.grafana.net or http://localhost:3000       |                 |
-| `GRAFANA_SERVICE_ACCOUNT_TOKEN` | yes      | Service account token (Administration > Users and access > Service accounts) |                 |
-| `GRAFANA_ORG_ID`                | no       | Optional organization ID                                                     |                 |
+| Key                             | Required | What it is                                                                   | Where to get it                                                                                                                                                                                                                |
+| ------------------------------- | -------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GRAFANA_URL`                   | yes      | Grafana URL, e.g. https://<stack>.grafana.net or http://localhost:3000       | [link](Open Grafana in your browser and copy the address up to the host (and port), without the path after it)                                                                                                                 |
+| `GRAFANA_SERVICE_ACCOUNT_TOKEN` | yes      | Service account token (Administration > Users and access > Service accounts) | [link](Grafana → Administration → Users and access → Service accounts → Add service account (Viewer role for read-only) → Add service account token: https://grafana.com/docs/grafana/latest/administration/service-accounts/) |
+| `GRAFANA_ORG_ID`                | no       | Optional organization ID                                                     |                                                                                                                                                                                                                                |
 
 Set with `wirebay secrets set <KEY>`.
 
@@ -1134,9 +1134,9 @@ wirebay add filesystem to all
 - **Runs:** `npx -y @modelcontextprotocol/server-filesystem@2026.8.31 ${FILESYSTEM_ROOT}`
 - **Needs:** npx
 
-| Key               | Required | What it is                                  | Where to get it |
-| ----------------- | -------- | ------------------------------------------- | --------------- |
-| `FILESYSTEM_ROOT` | yes      | Folder the server may access (not a secret) |                 |
+| Key               | Required | What it is                                  | Where to get it                                                                                                        |
+| ----------------- | -------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `FILESYSTEM_ROOT` | yes      | Folder the server may access (not a secret) | [link](Not a secret: the folder the server may read and write, e.g. ~/code/my-project. Keep it as narrow as possible.) |
 
 Set with `wirebay secrets set <KEY>`.
 

@@ -44,8 +44,14 @@ export class UnsyncCommand extends Command {
     let problems = false;
     for (const plan of plans) {
       if (plans.length > 1) t.out(t.bold(`\n${selector.label(plan.scope)}`));
-      const outcome = ctx.sync.run({ ...plan, servers, force: !!input.flags.force, dryRun: !!input.flags["dry-run"], removeOnly: true });
-      problems = new SyncReporter(t).print(outcome, { dryRun: !!input.flags["dry-run"] }) || problems;
+      const hadProblems = new SyncReporter(t).run(ctx.sync, {
+        ...plan,
+        servers,
+        force: !!input.flags.force,
+        dryRun: !!input.flags["dry-run"],
+        removeOnly: true,
+      });
+      problems = hadProblems || problems;
     }
     if (!input.flags["dry-run"]) t.out(t.dim("Run `wirebay sync` to put them back."));
     return problems ? ExitCode.Conflict : ExitCode.Ok;

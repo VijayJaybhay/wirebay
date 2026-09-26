@@ -1,10 +1,11 @@
 /**
- * Terminal output and input: colours (respecting `NO_COLOR`), tables, prompts, stdin.
- * Human output goes to stdout; notes and warnings go to stderr.
+ * Terminal output and input: colours (respecting `NO_COLOR`), tables, prompts, stdin, progress.
+ * Human output goes to stdout; notes, warnings and the progress line go to stderr.
  * @module
  */
 
 import { stripVTControlCharacters, styleText } from "node:util";
+import { Spinner } from "./Spinner.ts";
 
 type Style = Parameters<typeof styleText>[0];
 
@@ -20,6 +21,7 @@ export class Terminal {
   private readonly stdout: NodeJS.WriteStream;
   private readonly stderr: NodeJS.WriteStream;
   private readonly env: NodeJS.ProcessEnv;
+  private readonly spinner: Spinner;
 
   constructor(
     stdout: NodeJS.WriteStream = process.stdout,
@@ -29,16 +31,33 @@ export class Terminal {
     this.stdout = stdout;
     this.stderr = stderr;
     this.env = env;
+    this.spinner = new Spinner(stderr, stderr.isTTY && env.CI === undefined);
   }
 
   /** Print a line to stdout. */
   out(line = ""): void {
+    this.spinner.clear();
     this.stdout.write(line + "\n");
+    this.spinner.redraw();
   }
 
   /** Print a line to stderr (notes, warnings, the canonical-command echo). */
   note(line: string): void {
+    this.spinner.clear();
     this.stderr.write(line + "\n");
+    this.spinner.redraw();
+  }
+
+  /**
+   * Show a progress line for a slow step (only in an interactive terminal). Call `update` to
+   * change the message and `stop` when done; ordinary output can be printed in between.
+   * @example
+   * const progress = terminal.progress("Starting github…");
+   * await start();
+   * progress.stop();
+   */
+  progress(text: string): Spinner {
+    return this.spinner.start(text);
   }
 
   /** Print a value as pretty JSON to stdout (for `--json`). */
@@ -92,12 +111,14 @@ export class Terminal {
   async confirm(message: string, flags: PromptFlags): Promise<boolean> {
     if (flags.yes) return true;
     if (!this.canPrompt(flags)) return false;
+    this.spinner.stop();
     const p = await import("@clack/prompts");
     return (await p.confirm({ message })) === true;
   }
 
   /** Ask for a secret with hidden input. Returns `undefined` when cancelled. */
   async askSecret(message: string): Promise<string | undefined> {
+    this.spinner.stop();
     const p = await import("@clack/prompts");
     const answer = await p.password({ message, mask: "•" });
     return p.isCancel(answer) ? undefined : answer;

@@ -7,7 +7,7 @@ import type { AppContext } from "../app/AppContext.ts";
 import type { Flags, ParsedCommand } from "../cli/CommandParser.ts";
 import { ExitCode, UsageError } from "../core/errors.ts";
 import { ServerRegistry } from "../core/servers/ServerRegistry.ts";
-import type { ArgSpec, Launch, ServerDef } from "../core/types.ts";
+import type { ArgSpec, Launch, SecretSpec, ServerDef } from "../core/types.ts";
 import { Command } from "./Command.ts";
 import { SyncReporter } from "./support/SyncReporter.ts";
 import { TargetSelector } from "./support/TargetSelector.ts";
@@ -54,13 +54,14 @@ export class AddCommand extends Command {
     t.out(`${t.ok("✓")} enabled ${names.map((n) => t.bold(n)).join(", ")} for ${tools.join(", ")} ${t.dim(`(${selector.label(scope)})`)}`);
     if (scope === "project") t.out(t.dim(`  saved in ${ctx.project.file}: commit it to share these servers with your team`));
 
-    await this.collectSecrets(names, input, ctx);
+    const missing = await this.collectSecrets(names, input, ctx);
 
     if (input.flags["no-sync"]) {
       t.out(t.dim("Not synced (--no-sync). Run `wirebay sync` when ready."));
+      AddCommand.printMissing(missing, t);
       return ExitCode.Ok;
     }
-    const outcome = ctx.sync.run({
+    const problems = new SyncReporter(t).run(ctx.sync, {
       tools,
       servers: names,
       scope,
@@ -68,7 +69,8 @@ export class AddCommand extends Command {
       dryRun: !!input.flags["dry-run"],
       includeMissing: !!input.flags["include-missing"],
     });
-    return new SyncReporter(t).print(outcome, { dryRun: !!input.flags["dry-run"] }) ? ExitCode.Conflict : ExitCode.Ok;
+    AddCommand.printMissing(missing, t);
+    return problems ? ExitCode.Conflict : ExitCode.Ok;
   }
 
   /** Known servers from the command line, plus a new custom server defined by flags. */
@@ -111,21 +113,32 @@ export class AddCommand extends Command {
     ctx.servers.saveUserDefinition({ name: def.name, variant });
   }
 
-  /** Add placeholders for each server's keys, then ask for missing required ones (when interactive). */
-  private async collectSecrets(names: string[], input: ParsedCommand, ctx: AppContext): Promise<void> {
+  /**
+   * For each server: add placeholders (with how-to-get-it comments) to `secrets.env`, say how it
+   * signs in, explain every missing required key and where to get it, and ask for it when
+   * interactive.
+   * @returns Required keys that are still missing.
+   */
+  private async collectSecrets(names: string[], input: ParsedCommand, ctx: AppContext): Promise<string[]> {
     const t = ctx.terminal;
     ctx.secrets.ensureExists();
+    const stillMissing: string[] = [];
     for (const name of names) {
       const def = ctx.servers.get(name);
       ctx.secrets.addPlaceholders(
         name,
-        def.secrets.map((s) => ({ key: s.key, comment: s.description })),
+        def.secrets.map((s) => ({ key: s.key, comment: AddCommand.placeholderComment(s) })),
       );
+      if (def.authLabel() === "browser login") {
+        t.out(`${t.cyan("i")} ${t.bold(name)} signs in through your browser the first time a tool starts it. No token to set.`);
+        continue;
+      }
       for (const key of def.requiredKeys().filter((k) => !ctx.secrets.get(k) && !ctx.env[k])) {
         const spec = def.secretSpec(key);
+        t.out(`${t.warn("!")} ${t.bold(name)} needs ${t.bold(key)}${spec?.description ? t.dim(`: ${spec.description}`) : ""}`);
+        if (spec?.help) t.out(`  How to get it: ${spec.help}`);
         if (t.canPrompt(input.flags)) {
-          if (spec?.help) t.out(t.dim(`  How to get it: ${spec.help}`));
-          const value = await t.askSecret(`${name} needs ${key}${spec?.description ? ` (${spec.description})` : ""}`);
+          const value = await t.askSecret(`Paste ${key} (hidden; leave empty to set it later)`);
           if (value) {
             if (spec?.pattern && !new RegExp(spec.pattern).test(value))
               t.note(t.warn("! That doesn't look like the expected format. Saved anyway."));
@@ -134,9 +147,28 @@ export class AddCommand extends Command {
             continue;
           }
         }
-        t.note(t.warn(`! ${name} needs ${key}. Set it with: wirebay secrets set ${key}`));
+        stillMissing.push(key);
       }
+      const optional = def.secrets.filter((s) => !s.required && !ctx.secrets.get(s.key)).map((s) => s.key);
+      if (optional.length) t.out(t.dim(`  Optional for ${name}: ${optional.join(", ")} (see wirebay secrets list)`));
     }
+    return stillMissing;
+  }
+
+  /** The last lines of `add`: how to set the keys that are still missing. */
+  private static printMissing(missing: string[], t: AppContext["terminal"]): void {
+    if (!missing.length) return;
+    t.out("");
+    t.out(t.warn(`Still needed before ${missing.length === 1 ? "this server" : "these servers"} can start:`));
+    for (const key of missing) t.out(`  wirebay secrets set ${key}`);
+    t.out(`  ${t.dim("or fill them all in at once:")} wirebay secrets edit`);
+    t.out(t.dim("  Tools read secrets when they start a server, so no sync is needed afterwards."));
+  }
+
+  /** The comment written above a key in `secrets.env`: what it is and how to get it. */
+  static placeholderComment(spec: SecretSpec): string | undefined {
+    const lines = [spec.description, spec.help ? `How to get it: ${spec.help}` : undefined].filter((l): l is string => !!l);
+    return lines.length ? lines.join("\n") : undefined;
   }
 
   /**

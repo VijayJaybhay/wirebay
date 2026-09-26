@@ -13,7 +13,8 @@
     {
       "key": "AZURE_DEVOPS_ORG",
       "required": true,
-      "description": "Your organization name (the part after dev.azure.com/)"
+      "description": "Your organization name (the part after dev.azure.com/)",
+      "help": "Open https://dev.azure.com and copy the name after dev.azure.com/ in the address bar. No organization yet? https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization"
     }
   ],
   "prereqs": ["npx"],

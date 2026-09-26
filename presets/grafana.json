@@ -37,13 +37,15 @@
     {
       "key": "GRAFANA_URL",
       "required": true,
-      "description": "Grafana URL, e.g. https://<stack>.grafana.net or http://localhost:3000"
+      "description": "Grafana URL, e.g. https://<stack>.grafana.net or http://localhost:3000",
+      "help": "Open Grafana in your browser and copy the address up to the host (and port), without the path after it"
     },
     {
       "key": "GRAFANA_SERVICE_ACCOUNT_TOKEN",
       "required": true,
       "description": "Service account token (Administration > Users and access > Service accounts)",
-      "pattern": "^glsa_"
+      "pattern": "^glsa_",
+      "help": "Grafana → Administration → Users and access → Service accounts → Add service account (Viewer role for read-only) → Add service account token: https://grafana.com/docs/grafana/latest/administration/service-accounts/"
     },
     {
       "key": "GRAFANA_ORG_ID",

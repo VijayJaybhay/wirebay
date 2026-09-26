@@ -86,7 +86,7 @@ export class EnvFileSecretsStore implements SecretsBackend {
     EnvFileSecretsStore.trimTrailingBlank(lines);
     lines.push("", EnvFileSecretsStore.header(section));
     for (const e of missing) {
-      if (e.comment) lines.push(`# ${e.comment}`);
+      for (const comment of e.comment?.split("\n") ?? []) lines.push(`# ${comment}`);
       lines.push(`${e.key}=`);
     }
     this.save(lines.join("\n") + "\n");

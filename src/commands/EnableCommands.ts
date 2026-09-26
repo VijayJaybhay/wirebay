@@ -43,7 +43,7 @@ abstract class MappingCommand extends Command {
       ctx.terminal.out(ctx.terminal.dim("Not synced (--no-sync). Run `wirebay sync` when ready."));
       return ExitCode.Ok;
     }
-    const outcome = ctx.sync.run({
+    const problems = new SyncReporter(ctx.terminal).run(ctx.sync, {
       tools,
       servers,
       scope,
@@ -51,7 +51,7 @@ abstract class MappingCommand extends Command {
       dryRun: !!input.flags["dry-run"],
       includeMissing: !!input.flags["include-missing"],
     });
-    return new SyncReporter(ctx.terminal).print(outcome, { dryRun: !!input.flags["dry-run"] }) ? ExitCode.Conflict : ExitCode.Ok;
+    return problems ? ExitCode.Conflict : ExitCode.Ok;
   }
 }
 

@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
-import { fakeServer, Sandbox } from "../helpers.ts";
+import { fakeEditor, fakeServer, Sandbox } from "../helpers.ts";
 
 const SENTINEL = "sentinel_secret_value_4f9a2c";
 
@@ -48,7 +48,8 @@ await test("init → add → list → doctor → remove → unsync", () => {
       "codex",
     ]);
     assert.equal(r.code, 0, r.stderr + r.stdout);
-    assert.match(r.stderr, /needs TEST_TOKEN/);
+    assert.match(r.stdout, /fake needs TEST_TOKEN/);
+    assert.match(r.stdout, /wirebay secrets set TEST_TOKEN/, "ends with how to set the missing key");
 
     r = sb.run(["secrets", "set", "TEST_TOKEN", "--stdin"], { input: SENTINEL });
     assert.equal(r.code, 0, r.stderr);
@@ -219,6 +220,35 @@ await test("project scope: --project, --dir, subfolders, and tools without proje
     r = sb.run(["list", "--dir", path.join(sb.root, "missing")]);
     assert.equal(r.code, 2);
     assert.match(r.stderr, /does not exist/);
+  } finally {
+    sb.cleanup();
+  }
+});
+
+await test("add explains how to get each secret; secrets edit reports what changed", () => {
+  const sb = new Sandbox();
+  try {
+    setupTools(sb);
+    sb.run(["init"]);
+    let r = sb.run(["add", "grafana", "atlassian", "to", "cursor", "--no-sync"]);
+    assert.equal(r.code, 0, r.stderr);
+    assert.match(r.stdout, /grafana needs GRAFANA_SERVICE_ACCOUNT_TOKEN/);
+    assert.match(r.stdout, /How to get it: .*Service accounts/);
+    assert.match(r.stdout, /atlassian signs in through your browser/);
+    assert.match(r.stdout, /wirebay secrets edit/);
+    const secretsFile = path.join(sb.wirebayHome, "secrets.env");
+    assert.match(
+      readFileSync(secretsFile, "utf8"),
+      /# How to get it: .*grafana\.com.*\r?\nGRAFANA_SERVICE_ACCOUNT_TOKEN=\r?\n/,
+      "placeholder explains itself",
+    );
+
+    const editor = `"${process.execPath}" --no-warnings "${fakeEditor}" GRAFANA_URL=http://localhost:3000 GRAFANA_SERVICE_ACCOUNT_TOKEN=${SENTINEL}`;
+    r = sb.run(["secrets", "edit"], { env: { EDITOR: editor } });
+    assert.equal(r.code, 0, r.stderr);
+    assert.match(r.stdout, /updated: GRAFANA_SERVICE_ACCOUNT_TOKEN, GRAFANA_URL/);
+    assert.match(r.stdout, /No sync needed\. Restart Cursor/);
+    assert.ok(!r.stdout.includes(SENTINEL) && !r.stderr.includes(SENTINEL), "values are never printed");
   } finally {
     sb.cleanup();
   }

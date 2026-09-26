@@ -21,17 +21,20 @@
     {
       "key": "POSTGRES_DATABASE",
       "required": true,
-      "description": "Database name"
+      "description": "Database name",
+      "help": "The database name, from your provider's connection details"
     },
     {
       "key": "POSTGRES_USER",
       "required": true,
-      "description": "Database user (use a read-only role)"
+      "description": "Database user (use a read-only role)",
+      "help": "A database role for the assistant; prefer a read-only one (CREATE ROLE … with SELECT grants)"
     },
     {
       "key": "POSTGRES_PASSWORD",
       "required": true,
-      "description": "Database password"
+      "description": "Database password",
+      "help": "The password of that role, from your provider's connection details or your database admin"
     }
   ],
   "prereqs": ["npx"],

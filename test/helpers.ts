@@ -14,6 +14,7 @@ import { AppContext } from "../src/app/AppContext.ts";
 export const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const cliPath = path.join(repoRoot, "src", "cli.ts");
 export const fakeServer = path.join(repoRoot, "test", "fixtures", "fake-mcp-server.ts");
+export const fakeEditor = path.join(repoRoot, "test", "fixtures", "fake-editor.ts");
 
 /** A temporary home folder and helpers bound to it. */
 export class Sandbox {
@@ -39,10 +40,14 @@ export class Sandbox {
    * Run the real CLI in this sandbox.
    * @param options.input - Text piped to stdin.
    * @param options.cwd - Working directory (default: the sandbox root).
+   * @param options.env - Extra environment variables for this run.
    */
-  run(args: string[], options: { input?: string; cwd?: string } = {}): { code: number; stdout: string; stderr: string } {
+  run(
+    args: string[],
+    options: { input?: string; cwd?: string; env?: NodeJS.ProcessEnv } = {},
+  ): { code: number; stdout: string; stderr: string } {
     const r = spawnSync(process.execPath, ["--no-warnings", cliPath, ...args], {
-      env: this.env,
+      env: { ...this.env, ...options.env },
       cwd: options.cwd ?? this.root,
       input: options.input,
       encoding: "utf8",

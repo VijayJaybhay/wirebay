@@ -150,6 +150,7 @@ wirebay list                                      # what is synced where
 wirebay remove github from cursor                 # one tool
 wirebay remove github                             # everywhere
 wirebay secrets set NETLIFY_PERSONAL_ACCESS_TOKEN # rotate a token (asked for, never echoed)
+wirebay secrets edit                              # fill in all tokens in your editor; no sync needed
 wirebay add supabase to cursor claude --project  # this project only (saved in ./.wirebay.json)
 wirebay add supabase to vscode --dir ~/code/app   # a project folder named explicitly
 wirebay sync --project                            # re-create this project's tool files

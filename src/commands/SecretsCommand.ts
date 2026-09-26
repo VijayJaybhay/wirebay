@@ -1,12 +1,12 @@
 /**
- * `wirebay secrets set|unset|list|path|edit`
+ * `wirebay secrets set|unset|list|path|edit` (`open` is an alias of `edit`)
  * @module
  */
 
 import { spawnSync } from "node:child_process";
 import type { AppContext } from "../app/AppContext.ts";
 import type { ParsedCommand } from "../cli/CommandParser.ts";
-import { ExitCode, UsageError } from "../core/errors.ts";
+import { ExitCode, UsageError, WirebayError } from "../core/errors.ts";
 import { EnvFileSecretsStore } from "../core/secrets/EnvFileSecretsStore.ts";
 import type { SecretSpec } from "../core/types.ts";
 import { nonEmpty } from "../core/util/values.ts";
@@ -25,8 +25,9 @@ export class SecretsCommand extends Command {
   override readonly aliases = ["secret", "keys"];
   readonly help = {
     usage: "wirebay secrets set|unset|list|path|edit [KEY]",
-    summary: "Manage the central secrets file, one key at a time. Values are never printed.",
+    summary: "Manage the central secrets file: set keys one at a time, or open it in your editor (edit). Values are never printed.",
     examples: [
+      "wirebay secrets edit",
       "wirebay secrets set GITHUB_PERSONAL_ACCESS_TOKEN",
       "echo $TOKEN | wirebay secrets set NETLIFY_PERSONAL_ACCESS_TOKEN --stdin",
       "wirebay secrets list",
@@ -50,6 +51,7 @@ export class SecretsCommand extends Command {
         ctx.terminal.out(ctx.secrets.location);
         return ExitCode.Ok;
       case "edit":
+      case "open":
         return this.edit(ctx);
       default:
         throw new UsageError(`Unknown secrets command "${sub}".`, "Use: wirebay secrets set|unset|list|path|edit");
@@ -145,10 +147,89 @@ export class SecretsCommand extends Command {
     return ExitCode.Ok;
   }
 
+  /**
+   * Open `secrets.env` in an editor. When the editor waits until it's closed, report what changed
+   * (key names only), what is still missing, and which tools to restart. Tokens need no sync:
+   * tools read them when they start a server.
+   */
   private edit(ctx: AppContext): number {
+    const t = ctx.terminal;
+    const file = ctx.secrets.location;
     ctx.secrets.ensureExists();
-    const windows = ctx.paths.os === "win32";
-    const editor = nonEmpty(ctx.env.VISUAL) ?? nonEmpty(ctx.env.EDITOR) ?? (windows ? "notepad" : "vi");
-    return spawnSync(editor, [ctx.secrets.location], { stdio: "inherit", shell: windows }).status ?? ExitCode.Ok;
+    const before = ctx.secrets.all();
+    const editor = this.editorFor(ctx);
+    t.out(t.dim(`Opening ${file} in ${editor.label}…`));
+    const started = Date.now();
+    const result = spawnSync(`${editor.command} "${file}"`, { stdio: "inherit", shell: true });
+    if (result.error ?? (result.status !== 0 && result.status !== null)) {
+      throw new WirebayError(`Could not open an editor (${editor.command}).`, {
+        hint: `Set the EDITOR environment variable, or open the file yourself: ${file}`,
+      });
+    }
+    // GUI editors return right away; Windows 11 Notepad may too, instead of when the file is closed.
+    const returnedEarly = editor.mayReturnEarly === true && Date.now() - started < SecretsCommand.editorReturnedEarlyMs;
+    if (!editor.waits || returnedEarly) {
+      t.out("Fill in the empty KEY= lines and save the file. Each key has a comment saying how to get it.");
+      t.out(t.dim("Tools read secrets when they start a server, so no sync is needed. Check with: wirebay secrets list"));
+      return ExitCode.Ok;
+    }
+    this.reportEdit(before, ctx.secrets.all(), ctx);
+    return ExitCode.Ok;
+  }
+
+  /** Notepad returning faster than this didn't wait for the file to be closed. */
+  private static readonly editorReturnedEarlyMs = 1500;
+
+  /**
+   * The editor to use: `VISUAL`/`EDITOR`, else Notepad (Windows), the default text editor (macOS),
+   * the desktop's default app or `nano`/`vi` (Linux).
+   */
+  private editorFor(ctx: AppContext): { command: string; label: string; waits: boolean; mayReturnEarly?: boolean } {
+    const visual = nonEmpty(ctx.env.VISUAL);
+    const chosen = visual ?? nonEmpty(ctx.env.EDITOR);
+    // The label names the variable, not its value, which is a whole command line.
+    if (chosen) return { command: chosen, label: visual ? "$VISUAL" : "$EDITOR", waits: true };
+    if (ctx.paths.os === "win32") return { command: "notepad", label: "Notepad", waits: true, mayReturnEarly: true };
+    if (ctx.paths.os === "darwin") return { command: "open -t", label: "your default text editor", waits: false };
+    const desktop = nonEmpty(ctx.env.DISPLAY) ?? nonEmpty(ctx.env.WAYLAND_DISPLAY);
+    if (desktop && ctx.resolver.resolve("xdg-open")) return { command: "xdg-open", label: "your default text editor", waits: false };
+    const terminalEditor = ctx.resolver.resolve("nano") ? "nano" : "vi";
+    return { command: terminalEditor, label: terminalEditor, waits: true };
+  }
+
+  /** After editing: changed key names, required keys still missing, and tools to restart. */
+  private reportEdit(before: Record<string, string>, after: Record<string, string>, ctx: AppContext): void {
+    const t = ctx.terminal;
+    const changed = [...new Set([...Object.keys(before), ...Object.keys(after)])].filter((k) => before[k] !== after[k]).sort();
+    t.out(changed.length ? `${t.ok("✓")} updated: ${changed.join(", ")}` : t.dim("No changes."));
+
+    const added = ctx.desired.allServerNames().filter((s) => ctx.servers.has(s));
+    for (const server of added) {
+      const def = ctx.servers.get(server);
+      for (const key of def.requiredKeys().filter((k) => !after[k] && !ctx.env[k])) {
+        const help = def.secretSpec(key)?.help;
+        t.out(`${t.warn("!")} ${server} still needs ${key}${help ? t.dim(`  How to get it: ${help}`) : ""}`);
+      }
+    }
+
+    const affected = added.filter((s) =>
+      ctx.servers
+        .get(s)
+        .declaredKeys()
+        .some((k) => changed.includes(k)),
+    );
+    const tools = [...new Set(affected.flatMap((s) => [...ctx.desired.servers("user").toolsOf(s), ...this.projectToolsOf(s, ctx)]))].map(
+      (id) => (ctx.tools.aliasMap().has(id) ? ctx.tools.get(id).name : id),
+    );
+    if (tools.length) {
+      t.out(`No sync needed. Restart ${tools.join(", ")} (or reload their MCP servers) to use the new values.`);
+    } else if (changed.length) {
+      t.out(t.dim("No sync needed: tools read secrets the next time they start a server."));
+    }
+  }
+
+  /** Tools a server is enabled for in the current project, if there is a project config. */
+  private projectToolsOf(server: string, ctx: AppContext): string[] {
+    return ctx.project.exists() ? ctx.desired.servers("project").toolsOf(server) : [];
   }
 }

@@ -5,7 +5,7 @@
 
 import type { Terminal } from "../../cli/Terminal.ts";
 import { Reconciler } from "../../core/sync/Reconciler.ts";
-import type { SyncOutcome } from "../../core/sync/SyncEngine.ts";
+import type { SyncEngine, SyncOutcome, SyncRequest } from "../../core/sync/SyncEngine.ts";
 
 /** Formats {@link SyncOutcome}s for humans. */
 export class SyncReporter {
@@ -13,6 +13,27 @@ export class SyncReporter {
 
   constructor(terminal: Terminal) {
     this.terminal = terminal;
+  }
+
+  /**
+   * Run a sync with a progress line (`Updating Cursor…`), then print the outcome.
+   * @returns True when there were conflicts or hand-edited entries (exit code 4).
+   */
+  run(engine: SyncEngine, request: SyncRequest): boolean {
+    const verb = request.dryRun ? "Checking" : request.removeOnly ? "Removing from" : "Updating";
+    const progress = this.terminal.progress(`${verb} tool configs…`);
+    let outcome: SyncOutcome;
+    try {
+      outcome = engine.run({
+        ...request,
+        onTool: (tool) => {
+          progress.update(`${verb} ${tool.name}…`);
+        },
+      });
+    } finally {
+      progress.stop();
+    }
+    return this.print(outcome, { dryRun: request.dryRun });
   }
 
   /**

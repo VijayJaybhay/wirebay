@@ -27,6 +27,8 @@ export interface SyncRequest {
   includeMissing?: boolean;
   /** Remove the servers' entries instead of syncing them (unsync). */
   removeOnly?: boolean;
+  /** Called before each tool is processed (for progress output; some tools are updated through their CLI, which is slow). */
+  onTool?: (tool: Tool) => void;
 }
 
 /** The result for one tool file. */
@@ -82,6 +84,7 @@ export class SyncEngine {
 
     for (const toolId of request.tools) {
       const tool = this.ctx.tools.get(toolId);
+      request.onTool?.(tool);
       const target = this.targetFor(tool, scope);
       if (!target) {
         outcome.skipped.push({ tool: tool.id, reason: SyncEngine.noScopeReason(tool, scope) });

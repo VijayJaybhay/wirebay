@@ -30,9 +30,18 @@ wirebay secrets set KEY           # hidden prompt
 echo "$T" | wirebay secrets set KEY --stdin   # for scripts and password managers
 wirebay secrets list              # masked values, which servers use each key, what's missing
 wirebay secrets unset KEY         # clear a value (keeps the placeholder line)
-wirebay secrets edit              # open the file in $EDITOR (notepad on Windows)
+wirebay secrets edit              # open the file in your editor (also: secrets open)
 wirebay secrets path              # print the file location
 ```
+
+### Filling in several tokens at once
+
+`wirebay secrets edit` opens `secrets.env` in `$VISUAL`/`$EDITOR`, or else Notepad (Windows), your
+default text editor (macOS), or the desktop default, `nano` or `vi` (Linux). Every placeholder
+wirebay added has a comment saying what the key is and how to get it. Fill in the empty `KEY=`
+lines and save. When the editor closes, wirebay lists which keys changed (names only), which
+required keys are still missing, and which tools to restart. There is nothing to sync: tools read
+secrets each time they start a server.
 
 Values are never printed in full; `list` shows at most the first and last 4 characters of long
 values. `secrets set KEY=value` works, but it leaves the value in your shell history, so prefer
@@ -56,7 +65,7 @@ Some providers use key _files_ (for example Google service accounts). Put them i
 ## Rotation
 
 1. Create the new token at the provider.
-2. `wirebay secrets set KEY`
+2. `wirebay secrets set KEY`, or `wirebay secrets edit` for several keys
 3. Restart the AI tool, or toggle the server. There's no need to re-sync.
 4. Revoke the old token.
 

@@ -29,7 +29,8 @@
       "key": "DATABASE_URI",
       "required": true,
       "description": "postgresql://user:password@host:5432/db",
-      "pattern": "^postgres(ql)?://"
+      "pattern": "^postgres(ql)?://",
+      "help": "Your provider's connection string (often called DATABASE_URL), e.g. postgresql://user:password@host:5432/db. Prefer a read-only role."
     },
     {
       "key": "POSTGRES_ACCESS_MODE",

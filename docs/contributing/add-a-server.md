@@ -66,8 +66,10 @@ Rules, all checked by `npm run validate`:
 
 ## 4. Describe it well
 
-- Every secret gets a `description` (what it is). Where possible, also add `help` (a link to
-  where it's created) and `pattern` (its prefix).
+- Every secret gets a `description` (what it is). Every **required** secret also needs `help`:
+  how to get it, as short steps and/or a link to where it's created (`npm run validate` checks
+  this). `wirebay add` shows it to users right when the server needs the key. Add `pattern` (its
+  prefix) where the format is known.
 - `notes` holds risk notes (can it write, delete or spend money?) and setup tips. They are shown
   in the catalog.
 - `category` groups it in `wirebay presets` and the README.

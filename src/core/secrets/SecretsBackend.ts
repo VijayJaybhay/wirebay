@@ -22,7 +22,8 @@ export interface SecretsBackend {
   /** Every key present, including empty ones. */
   keys(): string[];
   /**
-   * Add empty placeholders for keys a server needs, skipping keys that already exist.
+   * Add empty placeholders for keys a server needs, skipping keys that already exist. A comment
+   * may span several lines (`\n`); each becomes its own comment line above the key.
    * @returns The keys that were added.
    */
   addPlaceholders(section: string, entries: { key: string; comment?: string }[]): string[];

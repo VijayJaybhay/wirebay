@@ -17,7 +17,8 @@
     {
       "key": "AWS_REGION",
       "required": true,
-      "description": "Default region, e.g. us-east-1"
+      "description": "Default region, e.g. us-east-1",
+      "help": "The region your resources are in, e.g. us-east-1: https://docs.aws.amazon.com/global-infrastructure/latest/regions/aws-regions.html"
     },
     {
       "key": "READ_OPERATIONS_ONLY",

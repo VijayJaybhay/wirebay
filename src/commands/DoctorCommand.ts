@@ -23,22 +23,30 @@ export class DoctorCommand extends Command {
   async run(input: ParsedCommand, ctx: AppContext): Promise<number> {
     const t = ctx.terminal;
     const json = !!input.flags.json;
+    // A handshake can take a minute on first run (npx/uvx download the server), so show progress.
+    const progress = json ? undefined : t.progress("Checking your setup…");
     const print = (c: DoctorCheck): void => {
       if (json) return;
+      progress?.update("Checking…");
       const icon = c.status === "ok" ? t.ok("✓") : c.status === "warn" ? t.warn("!") : t.err("✗");
       t.out(`${icon} ${t.dim(c.area + ":")} ${c.name}${c.detail ? t.dim(`  ${c.detail}`) : ""}`);
       if (c.fix && c.status !== "ok") t.out(`    ${t.cyan("fix:")} ${c.fix.replace(/\n/g, "\n         ")}`);
     };
-    const checks = await new Doctor(ctx).run({
-      servers: Array.isArray(input.servers) ? input.servers : undefined,
-      tools: Array.isArray(input.tools) ? input.tools : undefined,
-      offline: !!input.flags.offline,
-      timeoutSeconds: Number(input.flags.timeout ?? 90),
-      onCheck: print,
-      onStart: (server) => {
-        if (!json) t.out(t.dim(`    starting ${server} (first run may download packages)…`));
-      },
-    });
+    let checks: DoctorCheck[];
+    try {
+      checks = await new Doctor(ctx).run({
+        servers: Array.isArray(input.servers) ? input.servers : undefined,
+        tools: Array.isArray(input.tools) ? input.tools : undefined,
+        offline: !!input.flags.offline,
+        timeoutSeconds: Number(input.flags.timeout ?? 90),
+        onCheck: print,
+        onStart: (server) => {
+          progress?.update(`Starting ${server} for a test connection (the first run may download it)…`);
+        },
+      });
+    } finally {
+      progress?.stop();
+    }
     const fails = checks.filter((c) => c.status === "fail").length;
     const warns = checks.filter((c) => c.status === "warn").length;
     if (json) t.json({ ok: fails === 0, fails, warnings: warns, checks });

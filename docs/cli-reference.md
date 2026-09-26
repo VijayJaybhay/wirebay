@@ -207,7 +207,7 @@ wirebay presets --stale
 
 ## `secrets`
 
-Manage the central secrets file, one key at a time. Values are never printed.
+Manage the central secrets file: set keys one at a time, or open it in your editor (edit). Values are never printed.
 
 ```
 wirebay secrets set|unset|list|path|edit [KEY]
@@ -218,6 +218,7 @@ Aliases: `secret`, `keys`
 Examples:
 
 ```bash
+wirebay secrets edit
 wirebay secrets set GITHUB_PERSONAL_ACCESS_TOKEN
 echo $TOKEN | wirebay secrets set NETLIFY_PERSONAL_ACCESS_TOKEN --stdin
 wirebay secrets list
