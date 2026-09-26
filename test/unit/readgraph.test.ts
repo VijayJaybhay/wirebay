@@ -10,6 +10,9 @@ import { Tool } from "../../src/core/tools/Tool.ts";
 import type { ConfigRead, ToolManifest } from "../../src/core/types.ts";
 import { withSandbox } from "../helpers.ts";
 
+/** Visual Studio (and its ~/.mcp.json) exists only on Windows. */
+const windowsOnly = { skip: process.platform === "win32" ? false : "Visual Studio is Windows-only" };
+
 function tool(id: string, alsoReads: ConfigRead[] = []): Tool {
   const manifest: ToolManifest = {
     id,
@@ -92,7 +95,7 @@ await test("the real manifests: Visual Studio's global file is opt-in because of
     );
   }));
 
-await test("a config file alone doesn't make a tool with detect.configFile=false look installed", () =>
+await test("a config file alone doesn't make a tool with detect.configFile=false look installed", windowsOnly, () =>
   withSandbox((sb) => {
     writeFileSync(path.join(sb.home, ".mcp.json"), '{ "servers": {} }'); // e.g. written by wirebay itself
     const ctx = sb.context();
@@ -100,4 +103,5 @@ await test("a config file alone doesn't make a tool with detect.configFile=false
     assert.equal(vs.isInstalled(ctx.resolver, ctx.paths), false);
     mkdirSync(path.join(sb.home, "AppData", "Local", "Microsoft", "VisualStudio"), { recursive: true });
     assert.equal(vs.isInstalled(ctx.resolver, ctx.paths), true, "the real install folder still counts");
-  }));
+  }),
+);

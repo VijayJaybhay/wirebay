@@ -7,6 +7,9 @@ import path from "node:path";
 import { test } from "node:test";
 import { fakeEditor, fakeServer, Sandbox } from "../helpers.ts";
 
+/** Visual Studio (and its ~/.mcp.json) exists only on Windows. */
+const windowsOnly = { skip: process.platform === "win32" ? false : "Visual Studio is Windows-only" };
+
 const SENTINEL = "sentinel_secret_value_4f9a2c";
 
 function setupTools(sb: Sandbox): { cursor: string; codex: string } {
@@ -255,7 +258,7 @@ await test("add explains how to get each secret; secrets edit reports what chang
   }
 });
 
-await test("tools another tool can't parse are opt-in: Visual Studio's global ~/.mcp.json", () => {
+await test("tools another tool can't parse are opt-in: Visual Studio's global ~/.mcp.json", windowsOnly, () => {
   const sb = new Sandbox();
   try {
     setupTools(sb);
@@ -329,7 +332,7 @@ await test("the home folder is never used as a project", () => {
   }
 });
 
-await test("removing the last server deletes a file wirebay created (VS global ~/.mcp.json)", () => {
+await test("removing the last server deletes a file wirebay created (VS global ~/.mcp.json)", windowsOnly, () => {
   const sb = new Sandbox();
   try {
     sb.run(["init"]);
@@ -352,7 +355,7 @@ await test("removing the last server deletes a file wirebay created (VS global ~
   }
 });
 
-await test("doctor finds ~/.mcp.json that breaks Claude Code, and --fix removes it (like on a real machine)", () => {
+await test("doctor finds ~/.mcp.json that breaks Claude Code, and --fix removes it (like on a real machine)", windowsOnly, () => {
   const sb = new Sandbox();
   try {
     sb.run(["init"]);
