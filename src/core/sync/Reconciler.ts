@@ -5,9 +5,10 @@
  */
 
 import { createTwoFilesPatch } from "diff";
+import { parse, stripComments } from "jsonc-parser";
 import type { AdapterFactory } from "../adapters/AdapterFactory.ts";
 import type { CommitResult, Snapshot, Target } from "../adapters/ToolAdapter.ts";
-import type { Changes } from "../formats/ConfigFormat.ts";
+import { splitRootKey, type Changes } from "../formats/ConfigFormat.ts";
 import { EntryHasher } from "../store/EntryHasher.ts";
 import { StateStore } from "../store/StateStore.ts";
 import type { Entry, WirebayState } from "../types.ts";
@@ -37,6 +38,10 @@ export interface TargetPlan {
   after: string;
   /** Hashes to record after applying. */
   next: RecordedHashes;
+  /** True when wirebay created this file earlier (recorded in state). */
+  created: boolean;
+  /** Delete the file instead of writing `after`: wirebay created it (or it is an opt-in location) and nothing is left in it. */
+  deleteFile: boolean;
 }
 
 /** Inputs for {@link Reconciler.plan}. */
@@ -47,6 +52,12 @@ export interface PlanOptions {
   scopeNames?: Set<string>;
   /** Overwrite conflicts and drift. */
   force?: boolean;
+  /**
+   * The location is opt-in because another tool can't parse it: once its last managed entry is
+   * removed, an empty file is deleted even if wirebay didn't record creating it (files from
+   * earlier versions), because the empty file still breaks that other tool.
+   */
+  optIn?: boolean;
 }
 
 /**
@@ -138,13 +149,51 @@ export class Reconciler {
     }
 
     const after = Reconciler.hasChangesIn(changes) ? adapter.render(target, snapshot, changes) : snapshot.text;
-    return { target, snapshot, changes, unchanged, issues, after, next };
+    const created = record?.created === true;
+    const key = StateStore.key(target.tool.id, target.scope, target.file);
+    const deleteFile =
+      snapshot.exists &&
+      changes.remove.length > 0 &&
+      next.entries.size === 0 &&
+      (created || options.optIn === true) &&
+      (target.tool.format === "json" || target.tool.format === "jsonc") &&
+      Reconciler.isEmptyJson(after, target.tool.rootKey) &&
+      !StateStore.sharedWithOthers(state, key, target.file);
+    return { target, snapshot, changes, unchanged, issues, after, next, created, deleteFile };
+  }
+
+  /**
+   * True when a JSON/JSONC text holds nothing but empty objects along the root key, e.g. `{}` or
+   * `{ "servers": {} }`. Any comment, other key or value counts as content.
+   */
+  static isEmptyJson(text: string, rootKey: string): boolean {
+    const compact = (s: string): string => s.replace(/\s/g, "");
+    if (compact(stripComments(text)) !== compact(text)) return false; // has comments
+    const keyPath = splitRootKey(rootKey);
+    let node: unknown = parse(text);
+    // Walk down the root key: every level may hold only the next key of the path, and the last level nothing.
+    for (let depth = 0; depth <= keyPath.length; depth++) {
+      if (typeof node !== "object" || node === null || Array.isArray(node)) return false;
+      const keys = Object.keys(node);
+      const expected = keyPath[depth];
+      if (keys.length === 0) return true;
+      if (expected === undefined || keys.length > 1 || keys[0] !== expected) return false;
+      node = (node as Record<string, unknown>)[expected];
+    }
+    return false;
   }
 
   /** Write a plan's changes and record the result in `state` (the caller saves state). */
   apply(plan: TargetPlan, state: WirebayState): CommitResult | undefined {
     const { tool, scope, file } = plan.target;
     let result: CommitResult | undefined;
+    const key = StateStore.key(tool.id, scope, file);
+    const remaining = Object.fromEntries(Object.entries(state.files).filter(([k]) => k !== key));
+    if (plan.deleteFile) {
+      result = this.adapters.for(tool).remove(plan.target, plan.snapshot);
+      state.files = remaining;
+      return result;
+    }
     if (Reconciler.hasChanges(plan)) {
       const adapter = this.adapters.for(tool);
       result = adapter.commit(plan.target, plan.snapshot, plan.changes, plan.after);
@@ -157,20 +206,22 @@ export class Reconciler {
         }
       }
     }
-    const key = StateStore.key(tool.id, scope, file);
-    const remaining = Object.fromEntries(Object.entries(state.files).filter(([k]) => k !== key));
-    state.files = plan.next.entries.size
-      ? {
-          ...remaining,
-          [key]: {
-            tool: tool.id,
-            scope,
-            path: file,
-            entries: Object.fromEntries(plan.next.entries),
-            desired: Object.fromEntries(plan.next.desired),
-          },
-        }
-      : remaining;
+    // Remember files wirebay created, even once they're empty, so it may delete them later.
+    const created = plan.created || (result?.via === "file" && !plan.snapshot.exists);
+    state.files =
+      plan.next.entries.size || created
+        ? {
+            ...remaining,
+            [key]: {
+              tool: tool.id,
+              scope,
+              path: file,
+              entries: Object.fromEntries(plan.next.entries),
+              desired: Object.fromEntries(plan.next.desired),
+              ...(created ? { created: true as const } : {}),
+            },
+          }
+        : remaining;
     return result;
   }
 

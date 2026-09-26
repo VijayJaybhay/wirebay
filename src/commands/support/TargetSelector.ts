@@ -40,7 +40,9 @@ export class TargetSelector {
 
   /** The one scope a command that changes things writes to (default: the configured default, normally global). */
   scope(): ScopeName {
-    return this.explicitScope() ?? this.ctx.config.load().defaultScope;
+    const scope = this.explicitScope() ?? this.ctx.config.load().defaultScope;
+    if (scope === "project") this.ctx.project.assertUsableRoot();
+    return scope;
   }
 
   /**
@@ -49,8 +51,9 @@ export class TargetSelector {
    */
   scopes(): ScopeName[] {
     const explicit = this.explicitScope();
-    if (explicit) return [explicit];
-    return this.ctx.project.exists() ? ["user", "project"] : ["user"];
+    const scopes: ScopeName[] = explicit ? [explicit] : this.ctx.project.exists() ? ["user", "project"] : ["user"];
+    if (scopes.includes("project")) this.ctx.project.assertUsableRoot();
+    return scopes;
   }
 
   /** Human label for a scope, e.g. `global` or `project C:\code\app`. */

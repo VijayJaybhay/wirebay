@@ -87,6 +87,31 @@ export class SafeFileWriter {
     }
   }
 
+  /**
+   * Delete a file, refusing if it changed since it was read.
+   * @throws {@link core/errors!WirebayError} when the file changed meanwhile or is locked by another program.
+   */
+  remove(file: string, options: Pick<WriteOptions, "expectedMtime"> = {}): void {
+    const now = this.mtime(file);
+    if (now === undefined) return;
+    if (options.expectedMtime !== undefined && now !== options.expectedMtime) {
+      throw new WirebayError(`${file} changed while wirebay was working on it.`, {
+        hint: "Another program (probably the tool itself) just wrote to it. Run the command again.",
+      });
+    }
+    try {
+      rmSync(file);
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === "EBUSY" || code === "EPERM") {
+        throw new WirebayError(`${file} is in use, so wirebay could not delete it.`, {
+          hint: "Close the tool that has it open and run the command again.",
+        });
+      }
+      throw err;
+    }
+  }
+
   /** Write a value as pretty-printed JSON (atomically). */
   writeJson(file: string, value: unknown, options: WriteOptions = {}): void {
     this.write(file, JSON.stringify(value, null, 2) + "\n", options);

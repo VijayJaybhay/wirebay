@@ -1,12 +1,15 @@
 // The launch planner decides which secrets a server receives. Undeclared keys must never leak.
 
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { test } from "node:test";
 import { WirebayError } from "../../src/core/errors.ts";
 import { LaunchPlanner } from "../../src/core/launch/LaunchPlanner.ts";
 import { ExecutableResolver } from "../../src/core/platform/ExecutableResolver.ts";
 import { WirebayPaths } from "../../src/core/platform/WirebayPaths.ts";
 import { ServerDefinition } from "../../src/core/servers/ServerDefinition.ts";
+import { repoRoot } from "../helpers.ts";
 
 const secrets = { MY_TOKEN: "tok_secret_value_123", OTHER_TOKEN: "other_secret_value", REGION: "eu-west-1" };
 const base = { PATH: process.env.PATH, Path: process.env.Path, SystemRoot: process.env.SystemRoot, PATHEXT: process.env.PATHEXT };
@@ -59,6 +62,15 @@ await test("remote servers get the token through env, never argv", () => {
   assert.equal(plan.env[LaunchPlanner.authEnv], "Bearer tok_secret_value_123");
   assert.ok(plan.args.includes(`Authorization:\${${LaunchPlanner.authEnv}}`));
   assert.ok(plan.args.includes("X-Sets:eu-west-1"));
+  // The bundled bridge starts with this Node directly: no npx (slow first start, network).
+  assert.equal(plan.command, process.execPath);
+  assert.ok(plan.args[0]?.replace(/\\/g, "/").endsWith("mcp-remote/dist/proxy.js"), plan.args[0]);
+  assert.ok(!plan.args.includes("-y"), "no npx arguments");
+});
+
+await test("the bundled mcp-remote is the pinned version", () => {
+  const pkg = JSON.parse(readFileSync(path.join(repoRoot, "package.json"), "utf8")) as { dependencies: Record<string, string> };
+  assert.equal(`mcp-remote@${pkg.dependencies["mcp-remote"] ?? "missing"}`, LaunchPlanner.mcpRemotePackage);
 });
 
 await test("server definitions report auth and required keys", () => {

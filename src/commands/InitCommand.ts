@@ -30,6 +30,7 @@ export class InitCommand extends Command {
   run(input: ParsedCommand, ctx: AppContext): number {
     const { paths, terminal: t } = ctx;
     const forProject = new TargetSelector(ctx, input).explicitScope() === "project";
+    if (forProject) ctx.project.assertUsableRoot();
     mkdirSync(paths.home, { recursive: true });
     ctx.permissions.restrict(paths.home);
     for (const dir of [paths.serversDir, paths.toolsDir, paths.backupsDir, paths.logsDir, paths.credentialsDir])

@@ -3,6 +3,7 @@
  * @module
  */
 
+import { createRequire } from "node:module";
 import { WirebayError } from "../errors.ts";
 import type { ExecutableResolver } from "../platform/ExecutableResolver.ts";
 import type { ServerDefinition } from "../servers/ServerDefinition.ts";
@@ -24,7 +25,7 @@ export interface LaunchPlan extends SpawnSpec {
  * `mcp-remote` bridge, never through argv.
  */
 export class LaunchPlanner {
-  /** Pinned stdio↔HTTP bridge used for remote servers. */
+  /** Pinned stdio↔HTTP bridge used for remote servers (a dependency of wirebay; npx is only a fallback). */
   static readonly mcpRemotePackage = "mcp-remote@0.14.3";
   /** Env var carrying the auth header value to mcp-remote. */
   static readonly authEnv = "WIREBAY_AUTH_HEADER";
@@ -85,8 +86,24 @@ export class LaunchPlanner {
       redact.push(value);
       args.push("--header", `${header}:\${${LaunchPlanner.authEnv}}`);
     }
+    // Start the bundled bridge with this Node directly: no npx resolution, registry check or
+    // download on start, so tools with short start-up timeouts (Claude Code, Codex) don't give up.
+    const local = LaunchPlanner.localMcpRemote();
+    if (local) {
+      const [, , ...bridgeArgs] = args; // drop "-y <package>"
+      return { server: server.name, ...this.processes.forExecutable(process.execPath, [local, ...bridgeArgs]), env: vars, redact };
+    }
     const npx = this.require("npx", server.name);
     return { server: server.name, ...this.processes.forExecutable(npx, args), env: vars, redact };
+  }
+
+  /** Path of mcp-remote's entry script from wirebay's own dependencies, or `undefined` when it isn't installed. */
+  static localMcpRemote(): string | undefined {
+    try {
+      return createRequire(import.meta.url).resolve("mcp-remote/dist/proxy.js");
+    } catch {
+      return undefined;
+    }
   }
 
   /** Values from the secrets store for the keys this server declares (and nothing else). */

@@ -40,10 +40,17 @@ following the server guide and set it again.
 Install the missing program, then **run `wirebay init` again from a terminal where the command works**.
 wirebay stores its absolute path, because desktop apps don't see your shell PATH.
 
-## Server times out on first start
+## Server times out on first start ("Request timed out")
 
 `npx` and `uvx` download the server the first time, which can take a minute (Firebase especially).
-Run `wirebay doctor <server>` once to warm the cache, then restart the tool.
+Run `wirebay doctor <server>` once to warm the cache (it shows how long the start took), then
+restart the tool. Remote servers use wirebay's bundled `mcp-remote`, so they need no download.
+
+If a server is still slower than the tool allows, raise the tool's start-up limit:
+
+- **Claude Code:** start it with `MCP_TIMEOUT=60000 claude` (milliseconds).
+- **Codex:** `startup_timeout_sec` (wirebay writes `60`).
+- **Gemini CLI, Qwen Code, Tabnine:** a per-server `timeout` (milliseconds).
 
 ## "… was edited by hand since the last sync"
 

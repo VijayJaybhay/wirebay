@@ -1,11 +1,13 @@
 // Reconcile rules: never touch foreign entries, detect hand edits, prune what's no longer wanted.
 
 import assert from "node:assert/strict";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 import type { AppContext } from "../../src/app/AppContext.ts";
 import type { Target } from "../../src/core/adapters/ToolAdapter.ts";
+import { EntryHasher } from "../../src/core/store/EntryHasher.ts";
+import { Reconciler } from "../../src/core/sync/Reconciler.ts";
 import { Tool } from "../../src/core/tools/Tool.ts";
 import type { WirebayState } from "../../src/core/types.ts";
 import { type Sandbox, withSandbox } from "../helpers.ts";
@@ -128,4 +130,57 @@ await test("backups taken in the same millisecond never overwrite each other", (
       "newest first, each with its own content",
     );
     assert.match(listed[0]?.createdAt ?? "", /^\d{4}-\d{2}-\d{2}T[\d-]+Z$/, "createdAt has no sequence suffix");
+  }));
+
+await test("isEmptyJson: only empty objects along the root key count as empty", () => {
+  assert.equal(Reconciler.isEmptyJson("{}", "servers"), true);
+  assert.equal(Reconciler.isEmptyJson('{ "servers": {} }\n', "servers"), true);
+  assert.equal(Reconciler.isEmptyJson('{ "amp.mcpServers": {} }', "amp\\.mcpServers"), true);
+  assert.equal(Reconciler.isEmptyJson('{ "a": { "b": {} } }', "a.b"), true);
+  assert.equal(Reconciler.isEmptyJson('{ "servers": {}, "inputs": [] }', "servers"), false, "other keys are content");
+  assert.equal(Reconciler.isEmptyJson('{ "servers": { "x": {} } }', "servers"), false);
+  assert.equal(Reconciler.isEmptyJson('{\n  // mine\n  "servers": {}\n}', "servers"), false, "comments are content");
+  assert.equal(Reconciler.isEmptyJson("[]", "servers"), false);
+});
+
+await test("files wirebay created are deleted once empty; files it didn't create are kept", () =>
+  withSandbox((sb) => {
+    const ctx = sb.context();
+    const created = path.join(sb.root, "created.json");
+    const target = { tool, scope: "user" as const, file: created };
+    const state: WirebayState = { version: 1, files: {} };
+    ctx.reconciler.apply(ctx.reconciler.plan(target, state, { desired: { a: entry("a") } }), state);
+    assert.equal(Object.values(state.files)[0]?.created, true, "creation is recorded");
+    const plan = ctx.reconciler.plan(target, state, { desired: {} });
+    assert.equal(plan.deleteFile, true);
+    const result = ctx.reconciler.apply(plan, state);
+    assert.equal(result?.deleted, true);
+    assert.ok(!existsSync(created), "deleted");
+    assert.ok(result.backup && existsSync(result.backup), "backed up first");
+    assert.deepEqual(state.files, {}, "record dropped");
+
+    // A file that existed before wirebay wrote to it is emptied but kept.
+    const file = path.join(sb.root, "existing.json");
+    writeFileSync(file, '{ "mcpServers": {} }\n');
+    const t2 = { tool, scope: "user" as const, file };
+    const s2: WirebayState = { version: 1, files: {} };
+    ctx.reconciler.apply(ctx.reconciler.plan(t2, s2, { desired: { a: entry("a") } }), s2);
+    const p2 = ctx.reconciler.plan(t2, s2, { desired: {} });
+    assert.equal(p2.deleteFile, false);
+    ctx.reconciler.apply(p2, s2);
+    assert.ok(existsSync(file), "kept: wirebay didn't create it");
+
+    // An opt-in location is deleted when empty even without the created flag (files from older versions).
+    const legacy = path.join(sb.root, "legacy.json");
+    writeFileSync(legacy, '{\n  "mcpServers": {\n    "a": { "command": "node", "args": ["a"] }\n  }\n}\n');
+    const t3 = { tool, scope: "user" as const, file: legacy };
+    const s3: WirebayState = { version: 1, files: {} };
+    s3.files[`t|user|${legacy}`] = {
+      tool: "t",
+      scope: "user",
+      path: legacy,
+      entries: { a: new EntryHasher().hash(ctx.adapters.for(tool).read(t3).entries.a ?? {}) },
+    };
+    const p3 = ctx.reconciler.plan(t3, s3, { desired: {}, optIn: true });
+    assert.equal(p3.deleteFile, true);
   }));

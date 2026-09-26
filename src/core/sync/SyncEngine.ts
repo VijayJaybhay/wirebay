@@ -110,6 +110,7 @@ export class SyncEngine {
         desired: this.desiredEntries(config.renderMode, tool, scope, wanted),
         scopeNames: request.servers ? new Set(request.servers) : undefined,
         force: request.force,
+        optIn: this.ctx.readGraph.isOptIn(tool.id, scope),
       });
       const result: TargetResult = { plan, applied: false };
       if (!request.dryRun) {

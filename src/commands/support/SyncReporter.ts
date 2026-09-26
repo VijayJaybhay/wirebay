@@ -79,7 +79,18 @@ export class SyncReporter {
           ),
         );
       }
-      if (r.commit?.backup) t.out(t.dim(`    backup: ${r.commit.backup}`));
+      if (plan.deleteFile) {
+        const verb = options.dryRun ? "would delete" : "deleted";
+        t.out(
+          `    ${t.err("-")} ${verb} the file: nothing is left in it and ${plan.created ? "wirebay created it" : "another tool can't parse it"}`,
+        );
+      }
+      if (r.commit?.backup)
+        t.out(
+          t.dim(
+            `    backup: ${r.commit.backup}${r.commit.deleted ? " (restore it with: wirebay restore " + plan.target.tool.id + ")" : ""}`,
+          ),
+        );
     }
     for (const s of outcome.skipped) t.note(t.dim(`- skipped ${s.tool}: ${s.reason}`));
     for (const line of this.notes.overlapLines(outcome.overlaps)) t.out(line);

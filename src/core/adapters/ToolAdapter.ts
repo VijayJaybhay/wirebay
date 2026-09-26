@@ -35,6 +35,8 @@ export interface CommitResult {
   via: "file" | "cli";
   /** Path of the backup taken before writing, if any. */
   backup?: string;
+  /** True when the file was deleted (wirebay created it and it became empty). */
+  deleted?: boolean;
 }
 
 /** Services adapters need. */
@@ -81,5 +83,15 @@ export abstract class ToolAdapter {
     const backup = this.deps.backups.backup(target.tool.id, target.file);
     this.deps.writer.write(target.file, newText, { expectedMtime: snapshot.mtime });
     return { via: "file", backup };
+  }
+
+  /**
+   * Delete the file: back it up first (so `wirebay restore` can bring it back), then remove it,
+   * refusing if it changed since it was read.
+   */
+  remove(target: Target, snapshot: Snapshot): CommitResult {
+    const backup = this.deps.backups.backup(target.tool.id, target.file);
+    this.deps.writer.remove(target.file, { expectedMtime: snapshot.mtime });
+    return { via: "file", backup, deleted: true };
   }
 }

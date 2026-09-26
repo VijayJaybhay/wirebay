@@ -50,9 +50,19 @@ export class StateStore {
     return [
       ...new Set(
         Object.values(state.files)
+          .filter((f) => Object.keys(f.entries).length > 0)
           .filter((f) => (server === undefined || server in f.entries) && where(f))
           .map((f) => f.tool),
       ),
     ].sort();
+  }
+
+  /**
+   * True when another record (another tool or scope) still has managed entries in the same file.
+   * Paths compare case-insensitively on Windows and macOS.
+   */
+  static sharedWithOthers(state: WirebayState, key: string, file: string): boolean {
+    const norm = (p: string): string => (process.platform === "linux" ? p : p.toLowerCase());
+    return Object.entries(state.files).some(([k, f]) => k !== key && norm(f.path) === norm(file) && Object.keys(f.entries).length > 0);
   }
 }

@@ -73,7 +73,7 @@ export class AppContext {
 
   /** The current project's `.wirebay.json` (project scope). */
   get project(): ProjectConfigStore {
-    return this.lazy("project", () => new ProjectConfigStore(this.writer, this.cwd));
+    return this.lazy("project", () => new ProjectConfigStore(this.writer, this.cwd, this.paths.userHome));
   }
 
   /** Desired state per scope: global (`config.json`) or project (`.wirebay.json`). */

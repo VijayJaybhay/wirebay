@@ -206,7 +206,8 @@ await test("project scope: --project, --dir, subfolders, and tools without proje
     // unsync --project only touches the project's files.
     r = sb.run(["unsync", "--project", "--yes"], { cwd: app });
     assert.equal(r.code, 0, r.stderr);
-    assert.ok(!readFileSync(projectCursor, "utf8").includes('"local"'));
+    assert.ok(!existsSync(projectCursor), "wirebay created the project file and it is empty now, so it is deleted");
+    assert.match(r.stdout, /deleted the file/);
     assert.match(readFileSync(cursor, "utf8"), /"everywhere"/);
 
     // An invalid project file is reported, not silently ignored.
@@ -299,6 +300,53 @@ await test("a tool that also reads another tool's file is pointed out after sync
     assert.ok(
       report.alsoVia.some((o) => o.tool === "vscode" && o.server === "demo" && o.twice && o.via.some((v) => v.tool === "copilot-cli")),
     );
+  } finally {
+    sb.cleanup();
+  }
+});
+
+await test("the home folder is never used as a project", () => {
+  const sb = new Sandbox();
+  try {
+    sb.run(["init"]);
+    for (const args of [
+      ["add", "x", "--command", "node", "to", "cursor", "--project"],
+      ["init", "--project"],
+      ["list", "--project"],
+    ]) {
+      const r = sb.run(args, { cwd: sb.home });
+      assert.equal(r.code, 2, `${args.join(" ")}: ${r.stdout}${r.stderr}`);
+      assert.match(r.stderr, /home folder isn't a project/);
+    }
+    const r = sb.run(["add", "x", "--command", "node", "to", "cursor", "--dir", sb.home]);
+    assert.equal(r.code, 2);
+    assert.ok(!existsSync(path.join(sb.home, ".wirebay.json")), "no project file in home");
+    // Global commands from the home folder still work.
+    assert.equal(sb.run(["add", "y", "--command", "node", "to", "cursor", "--include-missing"], { cwd: sb.home }).code, 0);
+    assert.equal(sb.run(["list"], { cwd: sb.home }).code, 0);
+  } finally {
+    sb.cleanup();
+  }
+});
+
+await test("removing the last server deletes a file wirebay created (VS global ~/.mcp.json)", () => {
+  const sb = new Sandbox();
+  try {
+    sb.run(["init"]);
+    const vsFile = path.join(sb.home, ".mcp.json");
+    let r = sb.run(["add", "demo", "--command", "node", "to", "visual-studio", "--include-missing"]);
+    assert.equal(r.code, 0, r.stderr);
+    assert.ok(existsSync(vsFile));
+    r = sb.run(["unsync", "visual-studio", "--dry-run"]);
+    assert.match(r.stdout, /would delete the file/);
+    assert.ok(existsSync(vsFile), "dry run changes nothing");
+    r = sb.run(["disable", "demo", "from", "visual-studio"]);
+    assert.equal(r.code, 0, r.stderr);
+    assert.match(r.stdout, /deleted the file/);
+    assert.ok(!existsSync(vsFile), "file wirebay created is gone");
+    r = sb.run(["restore", "visual-studio", "--yes"]);
+    assert.equal(r.code, 0, r.stderr + r.stdout);
+    assert.ok(existsSync(vsFile), "the backup brings it back");
   } finally {
     sb.cleanup();
   }

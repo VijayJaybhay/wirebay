@@ -80,14 +80,15 @@ We use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `f
 
 wirebay keeps its dependencies few and boring. Current runtime dependencies and why:
 
-| Package          | Why                                                                  |
-| ---------------- | -------------------------------------------------------------------- |
-| `jsonc-parser`   | Parse JSON with comments (VS Code, Gemini, Cursor configs)           |
-| `smol-toml`      | Parse and write TOML (Codex `config.toml`)                           |
-| `yaml`           | Comment-preserving YAML edits, for tools that use YAML               |
-| `ajv`            | Validate presets, tool manifests and config against the JSON Schemas |
-| `@clack/prompts` | Friendly prompts and hidden input for secrets                        |
-| `diff`           | Show `--dry-run` diffs                                               |
+| Package          | Why                                                                                                                                                 |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `jsonc-parser`   | Parse JSON with comments (VS Code, Gemini, Cursor configs)                                                                                          |
+| `smol-toml`      | Parse and write TOML (Codex `config.toml`)                                                                                                          |
+| `yaml`           | Comment-preserving YAML edits, for tools that use YAML                                                                                              |
+| `ajv`            | Validate presets, tool manifests and config against the JSON Schemas                                                                                |
+| `@clack/prompts` | Friendly prompts and hidden input for secrets                                                                                                       |
+| `diff`           | Show `--dry-run` diffs                                                                                                                              |
+| `mcp-remote`     | Stdio↔HTTP bridge for remote servers, pinned and started with Node directly (starting it through `npx` was slow enough for Claude Code to time out) |
 
 Development-only: `typescript`, `@types/node`, `@changesets/cli`, `typedoc` (API docs), `eslint` +
 `typescript-eslint` + `@eslint/js` + `eslint-config-prettier` + `globals` (linting), `prettier`

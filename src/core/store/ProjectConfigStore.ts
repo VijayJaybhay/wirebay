@@ -4,7 +4,7 @@
  * @module
  */
 
-import { existsSync, statSync } from "node:fs";
+import { existsSync, realpathSync, statSync } from "node:fs";
 import path from "node:path";
 import { UsageError, WirebayError } from "../errors.ts";
 import type { SafeFileWriter } from "../io/SafeFileWriter.ts";
@@ -26,16 +26,47 @@ export class ProjectConfigStore {
 
   private readonly writer: SafeFileWriter;
   private readonly cwd: string;
+  private readonly userHome: string;
   private readonly validator = new SchemaValidator();
   private chosenRoot?: string;
 
   /**
    * @param writer - Used for atomic writes.
    * @param cwd - Where to start looking for the project.
+   * @param userHome - The user's home folder, which is never a usable project root.
    */
-  constructor(writer: SafeFileWriter, cwd: string) {
+  constructor(writer: SafeFileWriter, cwd: string, userHome: string) {
     this.writer = writer;
     this.cwd = cwd;
+    this.userHome = userHome;
+  }
+
+  /**
+   * Refuse to use the home folder as a project. Tools' project files there are the same paths as
+   * their global files (and Claude Code's project `.mcp.json` would be Visual Studio's global file),
+   * so project entries would silently land in global configs. Call it only for project scope.
+   * @throws {@link core/errors!UsageError} when the project root is the home folder.
+   */
+  assertUsableRoot(): void {
+    if (ProjectConfigStore.samePath(this.root, this.userHome)) {
+      throw new UsageError(
+        "Your home folder isn't a project: project config files there are your global config files.",
+        "cd into a project folder, or pass --dir path/to/project. For global servers use --global.",
+      );
+    }
+  }
+
+  /** True when two paths name the same folder (real paths; case-insensitive on Windows and macOS). */
+  static samePath(a: string, b: string): boolean {
+    const real = (p: string): string => {
+      try {
+        return realpathSync.native(p);
+      } catch {
+        return path.resolve(p);
+      }
+    };
+    const norm = (p: string): string => (process.platform === "linux" ? real(p) : real(p).toLowerCase());
+    return norm(a) === norm(b);
   }
 
   /**
