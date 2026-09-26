@@ -12,17 +12,26 @@
 ## Global install (recommended)
 
 ```bash
-npm install -g @pragnalabs.ai/wirebay
+npm install -g "@pragnalabs.ai/wirebay"
 wirebay init
 ```
 
 Tool configs then point at a stable path: your Node binary plus wirebay's installed script.
 
+- **Quote the name.** In Windows PowerShell an unquoted `@pragnalabs.ai/wirebay` fails with _"The
+  splatting operator '@' cannot be used…"_. The quoted form works in every shell.
+- **Use `-g`.** Without it (as in the `npm i …` line npmjs.com shows for every package) wirebay is
+  installed into the current folder and the `wirebay` command is not found. Undo that with
+  `npm uninstall "@pragnalabs.ai/wirebay"` in the same folder.
+- **Command not found after `-g`?** `npm prefix -g` prints npm's global folder (on Windows usually
+  `%APPDATA%
+pm`). Add it to your PATH and open a new terminal.
+
 ## Without installing (npx)
 
 ```bash
-npx @pragnalabs.ai/wirebay init
-npx @pragnalabs.ai/wirebay add github to all
+npx "@pragnalabs.ai/wirebay" init
+npx "@pragnalabs.ai/wirebay" add github to all
 ```
 
 This works, but the npx cache path changes over time. When wirebay notices it is running from npx,
@@ -43,7 +52,7 @@ note as macOS for desktop apps.
 ## Upgrading
 
 ```bash
-npm install -g @pragnalabs.ai/wirebay@latest
+npm install -g "@pragnalabs.ai/wirebay@latest"
 wirebay sync          # refresh entries if paths changed
 wirebay doctor
 ```
@@ -57,7 +66,7 @@ If you upgrade **Node.js** (for example with nvm), the node path inside tool con
 
 ```bash
 wirebay unsync all        # remove every entry wirebay added to your tools
-npm rm -g @pragnalabs.ai/wirebay
+npm rm -g "@pragnalabs.ai/wirebay"
 ```
 
 `~/.wirebay` is left in place so you don't lose secrets by accident. Delete it yourself if you're sure.

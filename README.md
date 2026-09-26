@@ -104,13 +104,28 @@ The same GitHub server, before and after:
 
 ## Install
 
+wirebay is a command-line tool, so install it **globally** (`-g`). That puts the `wirebay`
+command on your PATH:
+
 ```bash
-npm install -g @pragnalabs.ai/wirebay     # recommended: tool configs point at a stable path
+npm install -g "@pragnalabs.ai/wirebay"
+wirebay --version
 ```
 
-This needs **Node.js 24+**. Some servers have extra requirements: the AWS servers need
+- **Keep the quotes.** Windows PowerShell treats a leading `@` as its own syntax and fails with
+  _"The splatting operator '@' cannot be used…"_. The quoted name works in every shell (PowerShell,
+  cmd, bash, zsh).
+- **Don't use the `npm i @pragnalabs.ai/wirebay` line shown on npmjs.com.** npm shows that for
+  every package. Without `-g` it installs wirebay as a library into the current folder, and the
+  `wirebay` command is not found. To undo it: `npm uninstall "@pragnalabs.ai/wirebay"` in that folder.
+- **`wirebay` not found after a global install?** Run `npm prefix -g` and make sure that folder
+  (on Windows usually `%APPDATA%\npm`) is on your PATH, then open a new terminal.
+
+Requirements: **Node.js 24+**. Some servers need more: the AWS servers need
 [uv](https://docs.astral.sh/uv/) (`uvx`), and the GitHub `docker` variant needs Docker.
-You can also try wirebay without installing (`npx @pragnalabs.ai/wirebay …`), but a global install is more robust.
+
+To try it without installing, use `npx "@pragnalabs.ai/wirebay" init`. A global install is still
+recommended, because tool configs then point at a stable path.
 
 ## Quick start
 
@@ -313,7 +328,7 @@ See [CONTRIBUTING.md](https://github.com/pragnalabs-ai/wirebay/blob/main/CONTRIB
 
 ```bash
 wirebay unsync all     # remove every entry wirebay added (backups are kept)
-npm rm -g @pragnalabs.ai/wirebay
+npm rm -g "@pragnalabs.ai/wirebay"
 # optionally delete ~/.wirebay (this deletes your secrets file)
 ```
 

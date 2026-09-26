@@ -8,6 +8,16 @@ wirebay doctor github     # one server
 wirebay doctor --json     # safe to paste into an issue: contains no secret values
 ```
 
+## `wirebay` is not recognized / command not found
+
+- Install **globally**: `npm install -g "@pragnalabs.ai/wirebay"`. Without `-g` npm puts it in the
+  current folder only (`npx wirebay …` works there, a plain `wirebay` does not).
+- Windows PowerShell: keep the quotes around the name. Unquoted, PowerShell fails with _"The
+  splatting operator '@' cannot be used…"_.
+- Still not found: run `npm prefix -g`, add that folder (Windows: usually `%APPDATA%
+pm`) to your
+  PATH, and open a new terminal.
+
 ## A server doesn't show up in my tool
 
 1. `wirebay list`: is it `✓` for that tool? If it's `○`, run `wirebay sync`.
