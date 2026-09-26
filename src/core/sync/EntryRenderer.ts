@@ -4,7 +4,7 @@
  * @module
  */
 
-import type { OsName, WirebayPaths } from "../platform/WirebayPaths.ts";
+import { type OsName, WirebayPaths } from "../platform/WirebayPaths.ts";
 import type { Tool } from "../tools/Tool.ts";
 import type { Entry, RenderMode, ScopeName } from "../types.ts";
 
@@ -70,7 +70,8 @@ export class EntryRenderer {
     const ctx = this.context;
     const env: Record<string, string> = ctx.wirebayHome ? { WIREBAY_HOME: ctx.wirebayHome } : {};
     if (ctx.mode === "absolute") return { command: ctx.nodePath, args: [ctx.cliPath, "run", server], env };
-    const [command, ...args] = ctx.mode === "portable" ? ["wirebay", "run", server] : ["npx", "-y", "wirebay@latest", "run", server];
+    const [command, ...args] =
+      ctx.mode === "portable" ? ["wirebay", "run", server] : ["npx", "-y", `${WirebayPaths.packageInfo().name}@latest`, "run", server];
     // Most tools cannot start Windows .cmd shims (wirebay.cmd, npx.cmd) directly.
     if (ctx.os === "win32" && !tool.supportsCmdShims) return { command: "cmd", args: ["/c", command, ...args], env };
     return { command, args, env };

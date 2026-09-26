@@ -3,7 +3,6 @@
  * @module
  */
 
-import { readFileSync } from "node:fs";
 import type { AppContext } from "../app/AppContext.ts";
 import type { ParsedCommand } from "../cli/CommandParser.ts";
 import { FLAGS } from "../cli/Grammar.ts";
@@ -76,6 +75,6 @@ export class VersionCommand extends Command {
 
   /** The version from package.json. */
   static version(): string {
-    return (JSON.parse(readFileSync(WirebayPaths.packagePath("package.json"), "utf8")) as { version: string }).version;
+    return WirebayPaths.packageInfo().version;
   }
 }

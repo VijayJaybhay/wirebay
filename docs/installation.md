@@ -12,7 +12,7 @@
 ## Global install (recommended)
 
 ```bash
-npm install -g wirebay
+npm install -g @pragnalabs.ai/wirebay
 wirebay init
 ```
 
@@ -21,12 +21,12 @@ Tool configs then point at a stable path: your Node binary plus wirebay's instal
 ## Without installing (npx)
 
 ```bash
-npx wirebay init
-npx wirebay add github to all
+npx @pragnalabs.ai/wirebay init
+npx @pragnalabs.ai/wirebay add github to all
 ```
 
 This works, but the npx cache path changes over time. When wirebay notices it is running from npx,
-it writes `npx -y wirebay@latest run <server>` into tool configs instead of an absolute path.
+it writes `npx -y @pragnalabs.ai/wirebay@latest run <server>` into tool configs instead of an absolute path.
 That is slower to start and needs network access on first run, so a global install is better.
 
 ## Per OS
@@ -43,7 +43,7 @@ note as macOS for desktop apps.
 ## Upgrading
 
 ```bash
-npm install -g wirebay@latest
+npm install -g @pragnalabs.ai/wirebay@latest
 wirebay sync          # refresh entries if paths changed
 wirebay doctor
 ```
@@ -57,7 +57,7 @@ If you upgrade **Node.js** (for example with nvm), the node path inside tool con
 
 ```bash
 wirebay unsync all        # remove every entry wirebay added to your tools
-npm rm -g wirebay
+npm rm -g @pragnalabs.ai/wirebay
 ```
 
 `~/.wirebay` is left in place so you don't lose secrets by accident. Delete it yourself if you're sure.

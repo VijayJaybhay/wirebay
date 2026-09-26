@@ -57,7 +57,7 @@ or the first `wirebay add … --project`, and checked against
 | ---------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `absolute` | `"command": "/usr/local/bin/node", "args": ["/…/wirebay/dist/cli.js", "run", "github"]`                  | User scope. Most robust: no PATH lookups, no Windows `.cmd` problems. |
 | `portable` | `"command": "wirebay", "args": ["run", "github"]` (`cmd /c wirebay …` on Windows for tools that need it) | Project scope (committed files), so no machine-specific paths.        |
-| `npx`      | `"command": "npx", "args": ["-y", "wirebay@latest", "run", "github"]`                                    | Automatic when wirebay itself runs from npx.                          |
+| `npx`      | `"command": "npx", "args": ["-y", "@pragnalabs.ai/wirebay@latest", "run", "github"]`                     | Automatic when wirebay itself runs from npx.                          |
 
 ## Overrides
 

@@ -63,8 +63,8 @@ jobs:
             console.log(files.length + " files OK");'
       - name: Install tarball and run
         run: |
-          npm pack
-          npm install -g ./wirebay-*.tgz
+          tarball="$(npm pack --silent)" # pragnalabs.ai-wirebay-<version>.tgz for the scoped package
+          npm install -g "./$tarball"
           export WIREBAY_USER_HOME="$RUNNER_TEMP/home" WIREBAY_HOME="$RUNNER_TEMP/home/.wirebay"
           wirebay --version
           wirebay init

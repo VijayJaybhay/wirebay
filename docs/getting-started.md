@@ -6,7 +6,7 @@ on your machine, and check that it works.
 ## 1. Install
 
 ```bash
-npm install -g wirebay
+npm install -g @pragnalabs.ai/wirebay
 wirebay --version
 ```
 

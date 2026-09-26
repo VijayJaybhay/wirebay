@@ -1,5 +1,5 @@
 {
-  "name": "wirebay",
+  "name": "@pragnalabs.ai/wirebay",
   "version": "0.2.0",
   "description": "Define MCP servers once, keep secrets in one place, and sync them to every AI coding tool (Claude Code, Claude Desktop, Codex, Cursor, VS Code, Gemini CLI).",
   "type": "module",
@@ -15,6 +15,9 @@
     "README.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=24"
   },

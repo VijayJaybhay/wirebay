@@ -83,7 +83,7 @@ use `--global` for the exceptions.
 Commit them. Each teammate runs:
 
 ```bash
-npm install -g wirebay
+npm install -g @pragnalabs.ai/wirebay
 wirebay init
 wirebay secrets set SUPABASE_ACCESS_TOKEN   # their own token
 wirebay sync --project                      # optional: re-create the tool files from .wirebay.json

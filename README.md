@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/wirebay"><img alt="npm" src="https://img.shields.io/npm/v/wirebay?color=cb3837"></a>
+  <a href="https://www.npmjs.com/package/@pragnalabs.ai/wirebay"><img alt="npm" src="https://img.shields.io/npm/v/@pragnalabs.ai/wirebay?color=cb3837"></a>
   <a href="https://github.com/pragnalabs-ai/wirebay/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/pragnalabs-ai/wirebay/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-%3E%3D24-339933">
   <a href="https://github.com/pragnalabs-ai/wirebay/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
@@ -105,12 +105,12 @@ The same GitHub server, before and after:
 ## Install
 
 ```bash
-npm install -g wirebay     # recommended: tool configs point at a stable path
+npm install -g @pragnalabs.ai/wirebay     # recommended: tool configs point at a stable path
 ```
 
 This needs **Node.js 24+**. Some servers have extra requirements: the AWS servers need
 [uv](https://docs.astral.sh/uv/) (`uvx`), and the GitHub `docker` variant needs Docker.
-You can also try wirebay without installing (`npx wirebay …`), but a global install is more robust.
+You can also try wirebay without installing (`npx @pragnalabs.ai/wirebay …`), but a global install is more robust.
 
 ## Quick start
 
@@ -313,7 +313,7 @@ See [CONTRIBUTING.md](https://github.com/pragnalabs-ai/wirebay/blob/main/CONTRIB
 
 ```bash
 wirebay unsync all     # remove every entry wirebay added (backups are kept)
-npm rm -g wirebay
+npm rm -g @pragnalabs.ai/wirebay
 # optionally delete ~/.wirebay (this deletes your secrets file)
 ```
 

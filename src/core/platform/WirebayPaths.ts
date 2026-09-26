@@ -4,12 +4,20 @@
  * @module
  */
 
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { PerOs } from "../types.ts";
 import { nonEmpty } from "../util/values.ts";
+
+/** The fields wirebay reads from its own `package.json`. */
+export interface PackageInfo {
+  /** npm package name, e.g. `@pragnalabs.ai/wirebay`. */
+  name: string;
+  /** Installed version. */
+  version: string;
+}
 
 /** Operating systems wirebay distinguishes between. */
 export type OsName = "win32" | "darwin" | "linux";
@@ -102,6 +110,18 @@ export class WirebayPaths {
   static packagePath(...parts: string[]): string {
     return path.join(WirebayPaths.packageRoot, ...parts);
   }
+
+  /**
+   * The installed package's npm name and version, from its `package.json` (read once).
+   * @example
+   * WirebayPaths.packageInfo().name; // "@pragnalabs.ai/wirebay"
+   */
+  static packageInfo(): PackageInfo {
+    WirebayPaths.cachedPackageInfo ??= JSON.parse(readFileSync(WirebayPaths.packagePath("package.json"), "utf8")) as PackageInfo;
+    return WirebayPaths.cachedPackageInfo;
+  }
+
+  private static cachedPackageInfo: PackageInfo | undefined;
 
   /** The CLI script tool configs should call: `dist/cli.js` when published, `src/cli.ts` in development. */
   cliEntry(): string {

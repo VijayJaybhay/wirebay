@@ -4,6 +4,8 @@ All notable changes are recorded here by [Changesets](https://github.com/changes
 
 ## 0.2.0
 
+First release on npm, as **`@pragnalabs.ai/wirebay`** (install: `npm install -g @pragnalabs.ai/wirebay`; the command is still `wirebay`).
+
 ### Minor Changes
 
 - 2908b84: Add 13 tools (Windsurf/Devin Desktop, Cline, Kiro + Kiro CLI, GitHub Copilot CLI, Zed, opencode, Goose, Continue, JetBrains Junie, Augment auggie, Trae, Warp, LM Studio) and 38 server presets (Context7, Playwright, Chrome DevTools, reference servers, Supabase, Neon, MongoDB, Postgres, Docker, Azure, Terraform, Kubernetes, Sentry, Linear, Notion, Atlassian, Stripe, PayPal, Vercel, Heroku, Render, Cloudflare, GitLab, Brave, Exa, Firecrawl, Tavily, Perplexity, Hugging Face, Postman, Upstash, Shopify Dev). Presets now have categories, a generated server catalog, and `wirebay presets <search>`.
