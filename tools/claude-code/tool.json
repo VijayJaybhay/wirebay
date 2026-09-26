@@ -5,18 +5,52 @@
   "name": "Claude Code",
   "aliases": ["claude", "cc"],
   "homepage": "https://claude.com/claude-code",
-  "docs": { "mcp": "https://docs.claude.com/en/docs/claude-code/mcp" },
-  "detect": { "commands": ["claude"], "paths": ["~/.claude"] },
-  "configs": {
-    "user": { "path": "~/.claude.json" },
-    "project": { "path": "{cwd}/.mcp.json", "createIfMissing": true }
+  "docs": {
+    "mcp": "https://code.claude.com/docs/en/mcp"
   },
+  "detect": {
+    "commands": ["claude"],
+    "paths": ["~/.claude"]
+  },
+  "configs": {
+    "user": {
+      "path": "~/.claude.json"
+    },
+    "project": {
+      "path": "{cwd}/.mcp.json",
+      "createIfMissing": true
+    }
+  },
+  "alsoReads": [
+    {
+      "tool": "visual-studio",
+      "scope": "user",
+      "when": "always",
+      "compatible": false,
+      "note": "Claude Code also loads .mcp.json from parent folders, including Visual Studio's global ~/.mcp.json, and can't parse its \"servers\" key",
+      "source": "https://github.com/anthropics/claude-code/issues/42465"
+    }
+  ],
   "format": "json",
   "rootKey": "mcpServers",
   "mergeStrategy": "edit",
-  "entry": { "stdio": { "type": "stdio", "command": "{command}", "args": "{args}", "env": "{env}" } },
-  "supports": { "stdio": true, "http": true, "envExpansion": true, "cmdShims": false },
-  "cli": { "list": "claude mcp list" },
+  "entry": {
+    "stdio": {
+      "type": "stdio",
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": true,
+    "cmdShims": false
+  },
+  "cli": {
+    "list": "claude mcp list"
+  },
   "adapter": "claude-code",
   "restartRequired": false,
   "status": "stable",

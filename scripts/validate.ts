@@ -1,6 +1,7 @@
 /**
  * Checks every contribution-facing data file. Run: `npm run validate`.
- * - `tools/*\/tool.json`: schema, folder = id, unique ids/aliases, GUIDE.md and examples exist
+ * - `tools/*\/tool.json`: schema, folder = id, unique ids/aliases, GUIDE.md and examples exist,
+ *   `alsoReads` names existing tools and scopes
  * - `presets/*.json`: schema, file name = name, category, guide exists, pinned versions,
  *   no real-looking tokens, every required key explained (a description and how to get it)
  * - `templates/secrets.env.example`: no real-looking tokens
@@ -27,6 +28,7 @@ export class RepoValidator {
 
   readonly errors: string[] = [];
   private readonly toolNames = new Map<string, string>();
+  private readonly tools = new Map<string, { tool: Tool; file: string }>();
   private toolCount = 0;
   private presetCount = 0;
   private readonly validator = new SchemaValidator();
@@ -86,7 +88,24 @@ export class RepoValidator {
         const example = path.join(dir, entry.name, "examples", ToolDirectory.exampleFileName(tool, scope));
         if (!existsSync(example)) this.fail(this.rel(example), "missing (run `npm run gen:docs`)");
       }
+      this.tools.set(tool.id, { tool, file: this.rel(file) });
       this.toolCount++;
+    }
+    this.checkReads();
+  }
+
+  /** Every `alsoReads` entry must name another existing tool and one of its scopes. */
+  private checkReads(): void {
+    for (const { tool, file } of this.tools.values()) {
+      for (const read of tool.manifest.alsoReads ?? []) {
+        const where = `${file} alsoReads ${read.tool}:${read.scope}`;
+        const source = this.tools.get(read.tool)?.tool;
+        if (read.tool === tool.id) this.fail(where, "a tool cannot list its own file");
+        else if (!source) this.fail(where, `unknown tool "${read.tool}"`);
+        else if (!source.scopes.includes(read.scope)) this.fail(where, `${read.tool} has no ${read.scope} config`);
+        if ((read.when === "setting") !== (read.setting !== undefined))
+          this.fail(where, `"setting" is required exactly when "when" is "setting"`);
+      }
     }
   }
 

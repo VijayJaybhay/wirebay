@@ -28,7 +28,15 @@ export class Sandbox {
     this.home = path.join(this.root, "home");
     this.wirebayHome = path.join(this.home, ".wirebay");
     mkdirSync(this.home, { recursive: true });
-    this.env = { ...process.env, WIREBAY_USER_HOME: this.home, WIREBAY_HOME: this.wirebayHome, NO_COLOR: "1", CI: "1" };
+    this.env = {
+      ...process.env,
+      WIREBAY_USER_HOME: this.home,
+      WIREBAY_HOME: this.wirebayHome,
+      // Keep install detection inside the sandbox (e.g. Visual Studio is detected via LOCALAPPDATA).
+      LOCALAPPDATA: path.join(this.home, "AppData", "Local"),
+      NO_COLOR: "1",
+      CI: "1",
+    };
   }
 
   /** A fresh service container that only sees this sandbox. */

@@ -13,6 +13,10 @@
     "paths": ["~/.continue"]
   },
   "configs": {
+    "user": {
+      "path": "~/.continue/mcpServers/wirebay.json",
+      "createIfMissing": true
+    },
     "project": {
       "path": "{cwd}/.continue/mcpServers/wirebay.json",
       "createIfMissing": true

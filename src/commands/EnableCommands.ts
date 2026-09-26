@@ -28,9 +28,12 @@ abstract class MappingCommand extends Command {
     return input.servers;
   }
 
-  /** Tools named on the command line (`all` = every installed tool that supports the scope). */
+  /**
+   * Tools named on the command line. `all` means every installed tool that supports the scope;
+   * for `enable` it leaves out opt-in locations, while `disable`/`remove` reach every tool.
+   */
   protected tools(input: ParsedCommand, selector: TargetSelector, scope: ScopeName, verb: string): string[] {
-    if (input.tools === "all") return selector.allTools(scope);
+    if (input.tools === "all") return verb === "enable" ? selector.addableTools(scope) : selector.allTools(scope);
     if (!input.tools?.length) {
       throw new UsageError("Which tool(s)?", `Example: wirebay ${verb} github ${verb === "enable" ? "for" : "from"} cursor vscode`);
     }
@@ -43,7 +46,7 @@ abstract class MappingCommand extends Command {
       ctx.terminal.out(ctx.terminal.dim("Not synced (--no-sync). Run `wirebay sync` when ready."));
       return ExitCode.Ok;
     }
-    const problems = new SyncReporter(ctx.terminal).run(ctx.sync, {
+    const problems = new SyncReporter(ctx.terminal, ctx.tools).run(ctx.sync, {
       tools,
       servers,
       scope,
@@ -70,6 +73,7 @@ export class EnableCommand extends MappingCommand {
     const scope = selector.scope();
     const servers = this.servers(input, ctx, scope, "enable");
     const tools = this.tools(input, selector, scope, "enable");
+    selector.reportOptIn(scope, tools);
     for (const s of servers) ctx.servers.get(s);
     if (!input.flags["dry-run"]) ctx.desired.save(scope, ctx.desired.servers(scope).enable(servers, tools));
     const t = ctx.terminal;

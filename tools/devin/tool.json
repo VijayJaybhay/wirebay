@@ -34,6 +34,32 @@
       "createIfMissing": true
     }
   },
+  "alsoReads": [
+    {
+      "tool": "claude-code",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "imports Claude Code's .mcp.json by default (read_config_from)",
+      "source": "https://docs.devin.ai/cli/reference/configuration/read-config-from"
+    },
+    {
+      "tool": "claude-code",
+      "scope": "user",
+      "when": "always",
+      "compatible": true,
+      "note": "imports Claude Code's ~/.claude.json by default (read_config_from)",
+      "source": "https://docs.devin.ai/cli/reference/configuration/read-config-from"
+    },
+    {
+      "tool": "cursor",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "imports Cursor's .cursor/mcp.json by default (read_config_from)",
+      "source": "https://docs.devin.ai/cli/reference/configuration/read-config-from"
+    }
+  ],
   "format": "json",
   "rootKey": "mcpServers",
   "mergeStrategy": "edit",

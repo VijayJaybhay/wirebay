@@ -44,7 +44,7 @@ export class UnsyncCommand extends Command {
     let problems = false;
     for (const plan of plans) {
       if (plans.length > 1) t.out(t.bold(`\n${selector.label(plan.scope)}`));
-      const hadProblems = new SyncReporter(t).run(ctx.sync, {
+      const hadProblems = new SyncReporter(t, ctx.tools).run(ctx.sync, {
         ...plan,
         servers,
         force: !!input.flags.force,

@@ -44,6 +44,7 @@ export class AddCommand extends Command {
     if (input.flags.variant) this.selectVariant(names, String(input.flags.variant), ctx);
 
     const tools = selector.toolsForAdd(scope);
+    selector.reportOptIn(scope, tools);
     if (!tools.length) {
       throw new UsageError(
         scope === "project" ? "No detected tool supports project-level MCP config." : "No AI tools detected on this machine.",
@@ -61,7 +62,7 @@ export class AddCommand extends Command {
       AddCommand.printMissing(missing, t);
       return ExitCode.Ok;
     }
-    const problems = new SyncReporter(t).run(ctx.sync, {
+    const problems = new SyncReporter(t, ctx.tools).run(ctx.sync, {
       tools,
       servers: names,
       scope,

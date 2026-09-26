@@ -18,6 +18,16 @@
       "createIfMissing": true
     }
   },
+  "alsoReads": [
+    {
+      "tool": "claude-code",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "uses the project .mcp.json as its project scope",
+      "source": "https://docs.qoder.com/cli/mcp-servers"
+    }
+  ],
   "format": "jsonc",
   "rootKey": "mcpServers",
   "entry": {

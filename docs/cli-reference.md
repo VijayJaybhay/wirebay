@@ -174,7 +174,7 @@ wirebay list --project
 Supported AI tools, whether they are installed, and where their config lives.
 
 ```
-wirebay tools [--stale [--days N]] | tools verify [id] | tools index
+wirebay tools [<tool>] [--stale [--days N]] | tools verify [id] | tools index
 ```
 
 Aliases: `clients`
@@ -183,6 +183,7 @@ Examples:
 
 ```bash
 wirebay tools
+wirebay tools devin
 wirebay tools --stale
 wirebay tools verify codex
 ```

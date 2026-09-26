@@ -70,14 +70,58 @@ export class TargetSelector {
     return candidates.filter((id) => supports.has(id));
   }
 
-  /** Tools to enable a newly added server for: named, `all`, the configured defaults, or detected. */
+  /**
+   * Tools to enable a newly added server for: named, `all`, the configured defaults, or detected.
+   * `all` and the defaults leave out opt-in locations (see {@link TargetSelector.addableTools});
+   * tools named explicitly are always used.
+   */
   toolsForAdd(scope: ScopeName): string[] {
     const sel = this.input.tools;
-    if (sel === "all") return this.allTools(scope);
+    if (sel === "all") return this.addableTools(scope);
     if (sel?.length) return sel;
     const defaults = this.ctx.config.load().defaultTools;
-    if (!defaults.length) return this.allTools(scope);
-    return defaults.filter((id) => this.ctx.tools.get(id).scopes.includes(scope));
+    if (!defaults.length) return this.addableTools(scope);
+    return this.withoutOptIn(
+      defaults.filter((id) => this.ctx.tools.get(id).scopes.includes(scope)),
+      scope,
+    );
+  }
+
+  /**
+   * Like {@link TargetSelector.allTools}, minus locations that are opt-in because another tool
+   * reads that file and can't parse it (e.g. Visual Studio's global `~/.mcp.json`). Used when
+   * *adding* servers; removing still reaches every tool.
+   */
+  addableTools(scope: ScopeName): string[] {
+    return this.withoutOptIn(this.allTools(scope), scope);
+  }
+
+  /**
+   * Print why opt-in tools were left out, and warn about opt-in tools that were named explicitly.
+   * @param chosen - The tools the command is about to write to.
+   */
+  reportOptIn(scope: ScopeName, chosen: string[]): void {
+    const t = this.ctx.terminal;
+    for (const id of this.skippedOptIn) {
+      t.note(t.dim(`- skipped ${id} (${this.label(scope)}): opt-in — ${this.optInReason(id, scope)}. Name it to use it anyway.`));
+    }
+    for (const id of chosen.filter((c) => this.ctx.readGraph.isOptIn(this.ctx.tools.get(c).id, scope))) {
+      t.note(t.warn(`! ${id} (${this.label(scope)}): ${this.optInReason(id, scope)}.`));
+    }
+  }
+
+  /** Opt-in tools left out by the last `toolsForAdd`/`addableTools` call. */
+  private skippedOptIn: string[] = [];
+
+  private withoutOptIn(ids: string[], scope: ScopeName): string[] {
+    const optIn = ids.filter((id) => this.ctx.readGraph.isOptIn(this.ctx.tools.get(id).id, scope));
+    this.skippedOptIn = optIn;
+    return ids.filter((id) => !optIn.includes(id));
+  }
+
+  private optInReason(id: string, scope: ScopeName): string {
+    const [conflict] = this.ctx.readGraph.conflictsFor(this.ctx.tools.get(id).id, scope);
+    return conflict ? `${conflict.reader.name} also reads this file and can't parse it` : "another tool can't parse this file";
   }
 
   /** Tools a sync-like command should touch when none are named: tools in use in the scope, plus tools wirebay wrote to there. */

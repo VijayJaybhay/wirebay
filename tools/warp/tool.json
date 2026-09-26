@@ -22,6 +22,34 @@
       "createIfMissing": true
     }
   },
+  "alsoReads": [
+    {
+      "tool": "claude-code",
+      "scope": "user",
+      "when": "setting",
+      "setting": "Auto-spawn servers from third-party agents",
+      "compatible": true,
+      "note": "starts Claude Code's servers when auto-spawn for third-party agents is on",
+      "source": "https://docs.warp.dev/knowledge-and-collaboration/mcp"
+    },
+    {
+      "tool": "codex",
+      "scope": "user",
+      "when": "setting",
+      "setting": "Auto-spawn servers from third-party agents",
+      "compatible": true,
+      "note": "starts Codex's servers when auto-spawn for third-party agents is on",
+      "source": "https://docs.warp.dev/knowledge-and-collaboration/mcp"
+    },
+    {
+      "tool": "claude-code",
+      "scope": "project",
+      "when": "approval",
+      "compatible": true,
+      "note": "offers the project .mcp.json servers for approval",
+      "source": "https://docs.warp.dev/knowledge-and-collaboration/mcp"
+    }
+  ],
   "format": "json",
   "rootKey": "mcpServers",
   "entry": {

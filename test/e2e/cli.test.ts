@@ -2,7 +2,7 @@
 // No network, and never the real ~/.wirebay or real tool configs.
 
 import assert from "node:assert/strict";
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 import { fakeEditor, fakeServer, Sandbox } from "../helpers.ts";
@@ -198,10 +198,10 @@ await test("project scope: --project, --dir, subfolders, and tools without proje
     r = sb.run(["list", "--json"]);
     assert.equal((JSON.parse(r.stdout) as { scope: string }).scope, "user");
 
-    // Codex has no project-level config: it is skipped with a hint to use --global.
-    r = sb.run(["enable", "local", "for", "codex", "--dir", app]);
+    // Claude Desktop has no project-level config: it is skipped with a hint to use --global.
+    r = sb.run(["enable", "local", "for", "claude-desktop", "--dir", app]);
     assert.match(r.stdout + r.stderr, /--global/);
-    assert.ok(!readFileSync(path.join(sb.home, ".codex", "config.toml"), "utf8").includes("local"));
+    assert.ok(!existsSync(path.join(app, ".claude")), "nothing written for Claude Desktop in the project");
 
     // unsync --project only touches the project's files.
     r = sb.run(["unsync", "--project", "--yes"], { cwd: app });
@@ -249,6 +249,56 @@ await test("add explains how to get each secret; secrets edit reports what chang
     assert.match(r.stdout, /updated: GRAFANA_SERVICE_ACCOUNT_TOKEN, GRAFANA_URL/);
     assert.match(r.stdout, /No sync needed\. Restart Cursor/);
     assert.ok(!r.stdout.includes(SENTINEL) && !r.stderr.includes(SENTINEL), "values are never printed");
+  } finally {
+    sb.cleanup();
+  }
+});
+
+await test("tools another tool can't parse are opt-in: Visual Studio's global ~/.mcp.json", () => {
+  const sb = new Sandbox();
+  try {
+    setupTools(sb);
+    mkdirSync(path.join(sb.home, "AppData", "Local", "Microsoft", "VisualStudio"), { recursive: true }); // VS "installed"
+    const vsFile = path.join(sb.home, ".mcp.json");
+    sb.run(["init"]);
+
+    // `all` and the defaults leave it out, with the reason…
+    let r = sb.run(["add", "one", "--command", "node", "to", "all", "--include-missing"]);
+    assert.equal(r.code, 0, r.stderr);
+    assert.match(r.stderr, /skipped visual-studio \(global\): opt-in — Claude Code also reads this file/);
+    assert.ok(!existsSync(vsFile), "~/.mcp.json not written for `all`");
+    r = sb.run(["add", "two", "--command", "node"]);
+    assert.ok(!existsSync(vsFile), "~/.mcp.json not written for the default tools");
+    r = sb.run(["enable", "one", "for", "all"]);
+    assert.ok(!existsSync(vsFile), "~/.mcp.json not written by `enable … for all`");
+
+    // …but naming it writes the file, with a warning.
+    r = sb.run(["add", "three", "--command", "node", "to", "visual-studio"]);
+    assert.equal(r.code, 0, r.stderr);
+    assert.match(r.stderr, /! visual-studio \(global\): Claude Code also reads this file and can't parse it/);
+    assert.match(readFileSync(vsFile, "utf8"), /"servers"[\s\S]*"three"/);
+
+    // `tools <id>` explains both directions.
+    r = sb.run(["tools", "visual-studio"]);
+    assert.match(r.stdout, /opt-in: only written when you name this tool/);
+    assert.match(r.stdout, /Claude Code reads the global file but can't parse it/);
+  } finally {
+    sb.cleanup();
+  }
+});
+
+await test("a tool that also reads another tool's file is pointed out after sync and in list", () => {
+  const sb = new Sandbox();
+  try {
+    sb.run(["init"]);
+    let r = sb.run(["add", "demo", "--command", "node", "to", "vscode", "copilot-cli", "--include-missing"]);
+    assert.equal(r.code, 0, r.stderr);
+    assert.match(r.stdout, /Visual Studio Code .* may also load demo via GitHub Copilot CLI's global config/);
+    r = sb.run(["list", "--json"]);
+    const report = JSON.parse(r.stdout) as { alsoVia: { tool: string; server: string; twice: boolean; via: { tool: string }[] }[] };
+    assert.ok(
+      report.alsoVia.some((o) => o.tool === "vscode" && o.server === "demo" && o.twice && o.via.some((v) => v.tool === "copilot-cli")),
+    );
   } finally {
     sb.cleanup();
   }

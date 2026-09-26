@@ -22,6 +22,24 @@
       "createIfMissing": true
     }
   },
+  "alsoReads": [
+    {
+      "tool": "opencode",
+      "scope": "user",
+      "when": "always",
+      "compatible": true,
+      "note": "deep-merges legacy opencode.json files from the same locations",
+      "source": "https://kilo.ai/docs/getting-started/settings"
+    },
+    {
+      "tool": "opencode",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "deep-merges legacy opencode.json files from the same locations",
+      "source": "https://kilo.ai/docs/getting-started/settings"
+    }
+  ],
   "format": "jsonc",
   "rootKey": "mcp",
   "entry": {

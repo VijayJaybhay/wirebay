@@ -10,21 +10,11 @@
   },
   "detect": {
     "commands": ["amp"],
-    "paths": [
-      {
-        "win32": "{appdata}/amp",
-        "darwin": "~/.config/amp",
-        "linux": "~/.config/amp"
-      }
-    ]
+    "paths": ["~/.config/amp"]
   },
   "configs": {
     "user": {
-      "path": {
-        "win32": "{appdata}/amp/settings.json",
-        "darwin": "~/.config/amp/settings.json",
-        "linux": "~/.config/amp/settings.json"
-      },
+      "path": "~/.config/amp/settings.json",
       "createIfMissing": true
     },
     "project": {
@@ -44,7 +34,7 @@
   "supports": {
     "stdio": true,
     "http": true,
-    "envExpansion": false,
+    "envExpansion": true,
     "cmdShims": false
   },
   "restartRequired": false,

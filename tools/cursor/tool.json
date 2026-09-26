@@ -27,6 +27,7 @@
   "mergeStrategy": "edit",
   "entry": {
     "stdio": {
+      "type": "stdio",
       "command": "{command}",
       "args": "{args}",
       "env": "{env}"

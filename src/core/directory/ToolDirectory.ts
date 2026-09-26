@@ -10,6 +10,7 @@ import type { AdapterFactory } from "../adapters/AdapterFactory.ts";
 import { WirebayPaths } from "../platform/WirebayPaths.ts";
 import { SchemaValidator } from "../schema/SchemaValidator.ts";
 import { EntryRenderer } from "../sync/EntryRenderer.ts";
+import { ConfigReadGraph } from "../tools/ConfigReadGraph.ts";
 import type { Tool } from "../tools/Tool.ts";
 import type { ScopeName, ToolManifest } from "../types.ts";
 
@@ -81,9 +82,12 @@ export class ToolDirectory {
 
   /** Markdown for `tools/INDEX.md`. */
   static indexMarkdown(tools: Tool[]): string {
+    const graph = new ConfigReadGraph(tools);
     const rows = tools.map((t) => {
       const docs = t.manifest.docs?.mcp ? `[docs](${t.manifest.docs.mcp})` : "";
-      return `| [${t.name}](${t.id}/GUIDE.md) | \`${t.id}\` | ${t.aliases.map((a) => `\`${a}\``).join(" ")} | ${t.format} | ${t.scopes.join(", ")} | ${t.status} | ${t.manifest.lastVerified ?? "never"} | ${docs} |`;
+      const scopes = t.scopes.map((s) => (graph.isOptIn(t.id, s) ? `${s} (opt-in)` : s)).join(", ");
+      const reads = [...new Set(t.alsoReads.map((r) => `\`${r.tool}\` ${r.scope}`))].join(", ");
+      return `| [${t.name}](${t.id}/GUIDE.md) | \`${t.id}\` | ${t.aliases.map((a) => `\`${a}\``).join(" ")} | ${t.format} | ${scopes} | ${reads} | ${t.status} | ${t.manifest.lastVerified ?? "never"} | ${docs} |`;
     });
     return [
       "# Tools directory",
@@ -93,9 +97,11 @@ export class ToolDirectory {
       "Every AI tool wirebay can write MCP config for. Each folder has a `tool.json` manifest,",
       "a `GUIDE.md` with setup and quirks, and `examples/` of what wirebay writes.",
       "",
-      "| Tool | Id | Aliases | Format | Scopes | Status | Last verified | Official docs |",
-      "|---|---|---|---|---|---|---|---|",
+      "| Tool | Id | Aliases | Format | Scopes | Also reads | Status | Last verified | Official docs |",
+      "|---|---|---|---|---|---|---|---|---|",
       ...rows,
+      "",
+      "**Also reads:** other tools' MCP config files this tool also loads (so a server may appear twice there). **opt-in:** wirebay only writes that file when you name the tool, because another tool can't parse it. Details are in each guide under *Shared config files*.",
       "",
       "Missing a tool? See [Add a tool](../docs/contributing/add-a-tool.md). It is usually just JSON and Markdown.",
       "",

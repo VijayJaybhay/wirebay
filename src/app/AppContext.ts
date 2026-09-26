@@ -23,6 +23,7 @@ import { ProjectConfigStore } from "../core/store/ProjectConfigStore.ts";
 import { StateStore } from "../core/store/StateStore.ts";
 import { Reconciler } from "../core/sync/Reconciler.ts";
 import { SyncEngine } from "../core/sync/SyncEngine.ts";
+import { ConfigReadGraph } from "../core/tools/ConfigReadGraph.ts";
 import { ToolRegistry } from "../core/tools/ToolRegistry.ts";
 
 /** Options for {@link AppContext}. */
@@ -98,6 +99,11 @@ export class AppContext {
   /** The tools directory. */
   get tools(): ToolRegistry {
     return this.lazy("tools", () => new ToolRegistry(this.paths, this.writer));
+  }
+
+  /** Which tools read which other tools' MCP config files. */
+  get readGraph(): ConfigReadGraph {
+    return this.lazy("readGraph", () => new ConfigReadGraph(this.tools.all()));
   }
 
   /** Backups of tool config files. */

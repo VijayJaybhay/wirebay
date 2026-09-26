@@ -8,11 +8,23 @@
   "definitions": {
     "perOsString": {
       "oneOf": [
-        { "type": "string" },
+        {
+          "type": "string"
+        },
         {
           "type": "object",
           "additionalProperties": false,
-          "properties": { "win32": { "type": "string" }, "darwin": { "type": "string" }, "linux": { "type": "string" } }
+          "properties": {
+            "win32": {
+              "type": "string"
+            },
+            "darwin": {
+              "type": "string"
+            },
+            "linux": {
+              "type": "string"
+            }
+          }
         }
       ]
     },
@@ -21,65 +33,203 @@
       "required": ["path"],
       "additionalProperties": false,
       "properties": {
-        "path": { "$ref": "#/definitions/perOsString" },
-        "createIfMissing": { "type": "boolean" }
+        "path": {
+          "$ref": "#/definitions/perOsString"
+        },
+        "createIfMissing": {
+          "type": "boolean"
+        }
+      }
+    },
+    "configRead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool", "scope", "when", "compatible", "note", "source"],
+      "description": "One way this tool also loads MCP servers from another tool's config file.",
+      "properties": {
+        "tool": {
+          "type": "string",
+          "description": "Id of the tool whose config file is read"
+        },
+        "scope": {
+          "enum": ["user", "project"],
+          "description": "Which of that tool's files"
+        },
+        "when": {
+          "enum": ["always", "setting", "approval"],
+          "description": "always: read by default; setting: only with a setting on; approval: each server must be approved"
+        },
+        "setting": {
+          "type": "string",
+          "description": "The reader's setting name, when \"when\" is \"setting\""
+        },
+        "compatible": {
+          "type": "boolean",
+          "description": "false when this tool expects a different structure and reports an error for that file"
+        },
+        "note": {
+          "type": "string",
+          "description": "Short explanation shown to users"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^https://",
+          "description": "Official docs URL for this fact"
+        }
       }
     }
   },
   "properties": {
-    "$schema": { "type": "string" },
-    "version": { "type": "integer", "minimum": 1 },
-    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
-    "name": { "type": "string" },
-    "aliases": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" } },
-    "homepage": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      }
+    },
+    "homepage": {
+      "type": "string"
+    },
     "docs": {
       "type": "object",
       "additionalProperties": false,
-      "properties": { "mcp": { "type": "string" }, "changelog": { "type": "string" } }
+      "properties": {
+        "mcp": {
+          "type": "string"
+        },
+        "changelog": {
+          "type": "string"
+        }
+      }
     },
     "detect": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "commands": { "type": "array", "items": { "type": "string" } },
-        "paths": { "type": "array", "items": { "$ref": "#/definitions/perOsString" } }
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/perOsString"
+          }
+        },
+        "configFile": {
+          "type": "boolean",
+          "description": "false: the config file existing does not mean the tool is installed (e.g. the file may be written by another tool or by wirebay). Default true."
+        }
       }
     },
     "configs": {
       "type": "object",
       "minProperties": 1,
       "additionalProperties": false,
-      "properties": { "user": { "$ref": "#/definitions/location" }, "project": { "$ref": "#/definitions/location" } }
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/location"
+        },
+        "project": {
+          "$ref": "#/definitions/location"
+        }
+      }
     },
-    "format": { "enum": ["json", "jsonc", "toml", "yaml"] },
-    "rootKey": { "type": "string", "minLength": 1 },
-    "mergeStrategy": { "enum": ["edit", "managed-block"] },
+    "alsoReads": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/configRead"
+      },
+      "description": "Other tools' MCP config files this tool also reads (from its docs)"
+    },
+    "format": {
+      "enum": ["json", "jsonc", "toml", "yaml"]
+    },
+    "rootKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mergeStrategy": {
+      "enum": ["edit", "managed-block"]
+    },
     "entry": {
       "type": "object",
       "required": ["stdio"],
       "additionalProperties": false,
       "properties": {
-        "stdio": { "type": "object", "description": "Template using {command}, {args}, {commandLine}, {env}, {name}" },
-        "extra": { "type": "object" }
+        "stdio": {
+          "type": "object",
+          "description": "Template using {command}, {args}, {commandLine}, {env}, {name}"
+        },
+        "extra": {
+          "type": "object"
+        }
       }
     },
     "supports": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "stdio": { "type": "boolean" },
-        "http": { "type": "boolean" },
-        "envExpansion": { "type": "boolean" },
-        "cmdShims": { "type": "boolean" }
+        "stdio": {
+          "type": "boolean"
+        },
+        "http": {
+          "type": "boolean"
+        },
+        "envExpansion": {
+          "type": "boolean"
+        },
+        "cmdShims": {
+          "type": "boolean"
+        }
       }
     },
-    "cli": { "type": "object", "additionalProperties": false, "properties": { "list": { "type": "string" } } },
-    "adapter": { "type": "string" },
-    "restartRequired": { "type": "boolean" },
-    "status": { "enum": ["stable", "beta", "deprecated"] },
-    "lastVerified": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
-    "verifiedVersion": { "type": "string" },
-    "maintainers": { "type": "array", "items": { "type": "string" } }
+    "cli": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "list": {
+          "type": "string"
+        }
+      }
+    },
+    "adapter": {
+      "type": "string"
+    },
+    "restartRequired": {
+      "type": "boolean"
+    },
+    "status": {
+      "enum": ["stable", "beta", "deprecated"]
+    },
+    "lastVerified": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "verifiedVersion": {
+      "type": "string"
+    },
+    "maintainers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
   }
 }

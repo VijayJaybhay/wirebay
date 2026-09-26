@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "github": {
+      "type": "stdio",
       "command": "wirebay",
       "args": [
         "run",
@@ -8,6 +9,7 @@
       ]
     },
     "netlify": {
+      "type": "stdio",
       "command": "wirebay",
       "args": [
         "run",

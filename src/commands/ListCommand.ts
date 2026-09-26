@@ -9,6 +9,7 @@ import { ExitCode } from "../core/errors.ts";
 import { StateStore } from "../core/store/StateStore.ts";
 import type { Entry, ScopeName } from "../core/types.ts";
 import { Command } from "./Command.ts";
+import { ReadNotes } from "./support/ReadNotes.ts";
 import { TargetSelector } from "./support/TargetSelector.ts";
 
 /** The status of one server in one tool. */
@@ -30,6 +31,10 @@ interface ScopeReport {
   source: string;
   tools: string[];
   servers: Row[];
+  /** Servers a tool may also load through another tool's config file (see `alsoReads`). */
+  alsoVia: { tool: string; server: string; via: { tool: string; scope: ScopeName; when: string }[]; twice: boolean }[];
+  /** Human lines for `alsoVia` (not part of the JSON output). */
+  overlapLines: string[];
 }
 
 /**
@@ -52,7 +57,15 @@ export class ListCommand extends Command {
     const reports = selector.scopes().map((scope) => this.report(scope, input, ctx, selector));
 
     if (input.flags.json) {
-      t.json(reports.length === 1 && reports[0] ? reports[0] : { scopes: reports });
+      const data = reports.map((r) => ({
+        scope: r.scope,
+        label: r.label,
+        source: r.source,
+        tools: r.tools,
+        servers: r.servers,
+        alsoVia: r.alsoVia,
+      }));
+      t.json(data.length === 1 && data[0] ? data[0] : { scopes: data });
       return ExitCode.Ok;
     }
     if (reports.every((r) => !r.servers.length)) {
@@ -79,6 +92,7 @@ export class ListCommand extends Command {
           ]),
         ),
       );
+      for (const line of r.overlapLines) t.out(line);
       t.out("");
     }
     t.out(t.dim("✓ synced  ○ enabled, run `wirebay sync`  ~ edited by hand  ? synced but disabled  · off"));
@@ -118,7 +132,15 @@ export class ListCommand extends Command {
       const tools: Record<string, Cell> = Object.fromEntries(toolIds.map((id) => [id, cell(name, id)]));
       return { server: name, known, missingSecrets, tools };
     });
-    return { scope, label: selector.label(scope), source: ctx.desired.location(scope), tools: toolIds, servers };
+    const overlaps = ctx.readGraph.overlaps(toolIds, scope, desired, { includeSettings: true });
+    const alsoVia = overlaps.map((o) => ({
+      tool: o.reader.id,
+      server: o.server,
+      via: o.via.map((r) => ({ tool: r.tool, scope: r.scope, when: r.when })),
+      twice: o.direct,
+    }));
+    const overlapLines = new ReadNotes(ctx.tools, ctx.terminal).overlapLines(overlaps);
+    return { scope, label: selector.label(scope), source: ctx.desired.location(scope), tools: toolIds, servers, alsoVia, overlapLines };
   }
 
   /** Read each tool's file for the scope once: current entries and what wirebay recorded. */

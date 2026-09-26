@@ -10,23 +10,69 @@ import { ToolDirectory } from "../core/directory/ToolDirectory.ts";
 import { ExitCode, UsageError } from "../core/errors.ts";
 import { WirebayPaths } from "../core/platform/WirebayPaths.ts";
 import { Command } from "./Command.ts";
+import { ReadNotes } from "./support/ReadNotes.ts";
 
 /** Lists supported tools, verifies manifests, and regenerates the tools index. */
 export class ToolsCommand extends Command {
   readonly name = "tools";
   override readonly aliases = ["clients"];
   readonly help = {
-    usage: "wirebay tools [--stale [--days N]] | tools verify [id] | tools index",
+    usage: "wirebay tools [<tool>] [--stale [--days N]] | tools verify [id] | tools index",
     summary: "Supported AI tools, whether they are installed, and where their config lives.",
-    examples: ["wirebay tools", "wirebay tools --stale", "wirebay tools verify codex"],
+    examples: ["wirebay tools", "wirebay tools devin", "wirebay tools --stale", "wirebay tools verify codex"],
   };
 
   run(input: ParsedCommand, ctx: AppContext): number {
     const [sub, id] = input.rest;
     if (sub === "verify") return this.verify(id, input, ctx);
     if (sub === "index") return this.writeIndex(ctx);
-    if (sub) throw new UsageError(`Unknown tools command "${sub}".`, "Use: wirebay tools [--stale] | tools verify <id> | tools index");
+    if (sub && ctx.tools.resolveId(sub)) return this.show(sub, input, ctx);
+    if (sub)
+      throw new UsageError(
+        `Unknown tools command or tool "${sub}".`,
+        "Use: wirebay tools [<tool>] [--stale] | tools verify <id> | tools index",
+      );
     return this.list(input, ctx);
+  }
+
+  /** One tool: install status, config files, and which other tools' configs it reads or is read by. */
+  private show(idOrAlias: string, input: ParsedCommand, ctx: AppContext): number {
+    const t = ctx.terminal;
+    const tool = ctx.tools.get(idOrAlias);
+    const graph = ctx.readGraph;
+    const readBy = tool.scopes.flatMap((scope) =>
+      graph.readersOf(tool.id, scope).map(({ reader, read }) => ({ scope, reader: reader.id, read })),
+    );
+    if (input.flags.json) {
+      t.json({
+        id: tool.id,
+        name: tool.name,
+        installed: tool.isInstalled(ctx.resolver, ctx.paths),
+        configs: Object.fromEntries(tool.scopes.map((s) => [s, tool.configPath(s, ctx.paths, ctx.cwd) ?? null])),
+        optIn: tool.scopes.filter((s) => graph.isOptIn(tool.id, s)),
+        alsoReads: tool.alsoReads,
+        readBy,
+      });
+      return ExitCode.Ok;
+    }
+    const notes = new ReadNotes(ctx.tools, t);
+    t.out(
+      `${t.bold(tool.name)} ${t.dim(`(${tool.id})`)}  ${tool.isInstalled(ctx.resolver, ctx.paths) ? t.ok("installed") : t.dim("not detected")}`,
+    );
+    for (const scope of tool.scopes) {
+      const optIn = graph.isOptIn(tool.id, scope) ? t.warn("  opt-in: only written when you name this tool") : "";
+      t.out(`  ${ReadNotes.scopeLabel(scope).padEnd(8)} ${t.dim(tool.configPath(scope, ctx.paths, ctx.cwd) ?? "-")}${optIn}`);
+    }
+    t.out(`  ${t.bold("also reads")}`);
+    if (!tool.alsoReads.length) t.out(t.dim("    only its own files"));
+    for (const read of tool.alsoReads) t.out(`    ${notes.describe(read)}`);
+    t.out(`  ${t.bold("read by")}`);
+    if (!readBy.length) t.out(t.dim("    no other tool"));
+    for (const r of readBy)
+      t.out(
+        `    ${ctx.tools.get(r.reader).name} reads the ${ReadNotes.scopeLabel(r.scope)} file${r.read.compatible ? "" : t.warn(" but can't parse it")}: ${r.read.note}`,
+      );
+    return ExitCode.Ok;
   }
 
   private list(input: ParsedCommand, ctx: AppContext): number {

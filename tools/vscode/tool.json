@@ -5,10 +5,18 @@
   "name": "Visual Studio Code (GitHub Copilot agent mode)",
   "aliases": ["code", "vs-code"],
   "homepage": "https://code.visualstudio.com",
-  "docs": { "mcp": "https://code.visualstudio.com/docs/copilot/customization/mcp-servers" },
+  "docs": {
+    "mcp": "https://code.visualstudio.com/docs/copilot/customization/mcp-servers"
+  },
   "detect": {
     "commands": ["code"],
-    "paths": [{ "win32": "{appdata}/Code/User", "darwin": "~/Library/Application Support/Code/User", "linux": "{config}/Code/User" }]
+    "paths": [
+      {
+        "win32": "{appdata}/Code/User",
+        "darwin": "~/Library/Application Support/Code/User",
+        "linux": "{config}/Code/User"
+      }
+    ]
   },
   "configs": {
     "user": {
@@ -19,13 +27,64 @@
       },
       "createIfMissing": true
     },
-    "project": { "path": "{cwd}/.vscode/mcp.json", "createIfMissing": true }
+    "project": {
+      "path": "{cwd}/.vscode/mcp.json",
+      "createIfMissing": true
+    }
   },
+  "alsoReads": [
+    {
+      "tool": "claude-code",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "reads the workspace-root .mcp.json (portable format)",
+      "source": "https://code.visualstudio.com/docs/agents/reference/mcp-configuration"
+    },
+    {
+      "tool": "copilot-cli",
+      "scope": "user",
+      "when": "always",
+      "compatible": true,
+      "note": "reads ~/.copilot/mcp-config.json (portable format)",
+      "source": "https://code.visualstudio.com/docs/agents/reference/mcp-configuration"
+    },
+    {
+      "tool": "claude-desktop",
+      "scope": "user",
+      "when": "setting",
+      "setting": "chat.mcp.discovery.enabled",
+      "compatible": true,
+      "note": "discovers Claude Desktop's servers when MCP discovery is on",
+      "source": "https://code.visualstudio.com/docs/agent-customization/mcp-servers"
+    },
+    {
+      "tool": "cursor",
+      "scope": "user",
+      "when": "setting",
+      "setting": "chat.mcp.discovery.enabled",
+      "compatible": true,
+      "note": "discovers Cursor's servers when MCP discovery is on",
+      "source": "https://code.visualstudio.com/docs/agent-customization/mcp-servers"
+    }
+  ],
   "format": "jsonc",
   "rootKey": "servers",
   "mergeStrategy": "edit",
-  "entry": { "stdio": { "type": "stdio", "command": "{command}", "args": "{args}", "env": "{env}" } },
-  "supports": { "stdio": true, "http": true, "envExpansion": true, "cmdShims": true },
+  "entry": {
+    "stdio": {
+      "type": "stdio",
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": true,
+    "cmdShims": true
+  },
   "restartRequired": false,
   "status": "stable",
   "lastVerified": "2026-09-25",

@@ -4,15 +4,23 @@
  */
 
 import type { Terminal } from "../../cli/Terminal.ts";
+import type { ToolRegistry } from "../../core/tools/ToolRegistry.ts";
+import { ReadNotes } from "./ReadNotes.ts";
 import { Reconciler } from "../../core/sync/Reconciler.ts";
 import type { SyncEngine, SyncOutcome, SyncRequest } from "../../core/sync/SyncEngine.ts";
 
 /** Formats {@link SyncOutcome}s for humans. */
 export class SyncReporter {
   private readonly terminal: Terminal;
+  private readonly notes: ReadNotes;
 
-  constructor(terminal: Terminal) {
+  /**
+   * @param terminal - Where to print.
+   * @param tools - Used to name tools in "may also load … via …" notes.
+   */
+  constructor(terminal: Terminal, tools: ToolRegistry) {
     this.terminal = terminal;
+    this.notes = new ReadNotes(tools, terminal);
   }
 
   /**
@@ -74,6 +82,7 @@ export class SyncReporter {
       if (r.commit?.backup) t.out(t.dim(`    backup: ${r.commit.backup}`));
     }
     for (const s of outcome.skipped) t.note(t.dim(`- skipped ${s.tool}: ${s.reason}`));
+    for (const line of this.notes.overlapLines(outcome.overlaps)) t.out(line);
     if (outcome.restartNeeded.length) t.out(t.warn(`Restart to pick up the changes: ${outcome.restartNeeded.join(", ")}`));
     if (options.dryRun) t.out(t.dim("Dry run: nothing was changed."));
     return problems;

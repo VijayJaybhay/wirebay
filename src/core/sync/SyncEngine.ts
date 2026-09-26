@@ -6,6 +6,7 @@
 import { existsSync } from "node:fs";
 import type { AppContext } from "../../app/AppContext.ts";
 import type { CommitResult, Target } from "../adapters/ToolAdapter.ts";
+import type { Overlap } from "../tools/ConfigReadGraph.ts";
 import type { Tool } from "../tools/Tool.ts";
 import type { Entry, RenderMode, ScopeName } from "../types.ts";
 import { EntryRenderer } from "./EntryRenderer.ts";
@@ -45,6 +46,8 @@ export interface SyncOutcome {
   skipped: { tool: string; reason: string }[];
   /** Names of tools that need a restart to pick up the changes. */
   restartNeeded: string[];
+  /** Servers a synced tool may also load through another tool's file (so it may appear twice). Informational. */
+  overlaps: Overlap[];
 }
 
 /** Runs syncs for one scope. Uses the context's stores, registries and reconciler. */
@@ -80,7 +83,7 @@ export class SyncEngine {
     const config = this.ctx.config.load();
     const desired = this.ctx.desired.servers(scope);
     const state = this.ctx.state.load();
-    const outcome: SyncOutcome = { scope, results: [], skipped: [], restartNeeded: [] };
+    const outcome: SyncOutcome = { scope, results: [], skipped: [], restartNeeded: [], overlaps: [] };
 
     for (const toolId of request.tools) {
       const tool = this.ctx.tools.get(toolId);
@@ -117,6 +120,12 @@ export class SyncEngine {
       outcome.results.push(result);
     }
     if (!request.dryRun) this.ctx.state.save(state);
+    if (!request.removeOnly) {
+      const touched = outcome.results.map((r) => r.plan.target.tool.id);
+      outcome.overlaps = this.ctx.readGraph
+        .overlaps(touched, scope, desired)
+        .filter((o) => o.direct && (!request.servers || request.servers.includes(o.server)));
+    }
     return outcome;
   }
 

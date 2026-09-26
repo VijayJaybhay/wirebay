@@ -13,7 +13,8 @@
       {
         "win32": "${LOCALAPPDATA:-~/AppData/Local}/Microsoft/VisualStudio"
       }
-    ]
+    ],
+    "configFile": false
   },
   "configs": {
     "user": {
@@ -27,6 +28,32 @@
       "createIfMissing": true
     }
   },
+  "alsoReads": [
+    {
+      "tool": "claude-code",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "reads <solution>\\.mcp.json",
+      "source": "https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers"
+    },
+    {
+      "tool": "vscode",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "reads <solution>\\.vscode\\mcp.json",
+      "source": "https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers"
+    },
+    {
+      "tool": "cursor",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "reads <solution>\\.cursor\\mcp.json",
+      "source": "https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers"
+    }
+  ],
   "format": "json",
   "rootKey": "servers",
   "entry": {

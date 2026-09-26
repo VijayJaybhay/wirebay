@@ -81,6 +81,24 @@ export interface ToolConfigLocation {
   createIfMissing?: boolean;
 }
 
+/** One way a tool (the reader) also loads MCP servers from another tool's config file. */
+export interface ConfigRead {
+  /** Id of the tool whose config file is read, e.g. `claude-code`. */
+  tool: string;
+  /** Which of that tool's files: its user (global) or project file. */
+  scope: ScopeName;
+  /** `always`: read by default; `setting`: only with a reader setting on; `approval`: each server must be approved. */
+  when: "always" | "setting" | "approval";
+  /** The reader's setting name when `when` is `setting`. */
+  setting?: string;
+  /** False when the reader expects a different structure and reports an error for that file. */
+  compatible: boolean;
+  /** Short explanation shown to users. */
+  note: string;
+  /** Official docs URL for this fact. */
+  source: string;
+}
+
 export interface ToolManifest {
   $schema?: string;
   version?: number;
@@ -89,8 +107,15 @@ export interface ToolManifest {
   aliases?: string[];
   homepage?: string;
   docs?: { mcp?: string; changelog?: string };
-  detect?: { commands?: string[]; paths?: PerOs<string>[] };
+  detect?: {
+    commands?: string[];
+    paths?: PerOs<string>[];
+    /** False: the config file existing doesn't mean the tool is installed (another tool or wirebay may have written it). */
+    configFile?: boolean;
+  };
   configs: Partial<Record<ScopeName, ToolConfigLocation>>;
+  /** Other tools' MCP config files this tool also reads (from its docs). */
+  alsoReads?: ConfigRead[];
   format: "json" | "jsonc" | "toml" | "yaml";
   /** Dot-separated key under which servers live, e.g. "mcpServers" or "mcp_servers". */
   rootKey: string;
@@ -149,6 +174,8 @@ export interface StateFile {
   entries: Record<string, string>;
   /** Hash of the entry wirebay asked for (differs from `entries` when a tool CLI normalises it). */
   desired?: Record<string, string>;
+  /** True when wirebay created this file (so it may delete it again once it is empty). */
+  created?: true;
 }
 
 /** A rendered server entry as it appears inside a tool's config. */

@@ -6,7 +6,7 @@
 import { existsSync } from "node:fs";
 import type { ExecutableResolver } from "../platform/ExecutableResolver.ts";
 import type { WirebayPaths } from "../platform/WirebayPaths.ts";
-import type { ScopeName, ToolManifest } from "../types.ts";
+import type { ConfigRead, ScopeName, ToolManifest } from "../types.ts";
 
 /**
  * A tool manifest plus behaviour derived from it (config paths, install detection).
@@ -68,6 +68,11 @@ export class Tool {
     return Object.keys(this.manifest.configs) as ScopeName[];
   }
 
+  /** Other tools' MCP config files this tool also reads (from its docs). */
+  get alsoReads(): ConfigRead[] {
+    return this.manifest.alsoReads ?? [];
+  }
+
   /** `stable`, `beta` or `deprecated`. */
   get status(): NonNullable<ToolManifest["status"]> {
     return this.manifest.status ?? "beta";
@@ -84,13 +89,20 @@ export class Tool {
     return raw ? paths.expand(raw, cwd) : undefined;
   }
 
-  /** A tool counts as installed when one of its commands is found or one of its folders/config files exists. */
+  /**
+   * A tool counts as installed when one of its commands is found, one of its folders exists, or
+   * (unless `detect.configFile` is false) its user config file exists. Tools whose config file can
+   * be written by someone else, such as Visual Studio's `~/.mcp.json`, turn that last check off so
+   * a file wirebay created can't make the tool look installed.
+   */
   isInstalled(resolver: ExecutableResolver, paths: WirebayPaths): boolean {
-    for (const cmd of this.manifest.detect?.commands ?? []) if (resolver.resolve(cmd)) return true;
-    for (const p of this.manifest.detect?.paths ?? []) {
+    const detect = this.manifest.detect;
+    for (const cmd of detect?.commands ?? []) if (resolver.resolve(cmd)) return true;
+    for (const p of detect?.paths ?? []) {
       const raw = paths.pick(p);
       if (raw && existsSync(paths.expand(raw))) return true;
     }
+    if (detect?.configFile === false) return false;
     const userFile = this.configPath("user", paths);
     return userFile ? existsSync(userFile) : false;
   }

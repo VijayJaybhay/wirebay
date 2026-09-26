@@ -5,21 +5,46 @@
   "name": "OpenAI Codex (CLI, IDE extension and desktop app)",
   "aliases": ["codex-cli", "codex-desktop"],
   "homepage": "https://developers.openai.com/codex",
-  "docs": { "mcp": "https://developers.openai.com/codex/mcp" },
-  "detect": { "commands": ["codex"], "paths": ["${CODEX_HOME:-~/.codex}"] },
+  "docs": {
+    "mcp": "https://learn.chatgpt.com/docs/extend/mcp?surface=cli"
+  },
+  "detect": {
+    "commands": ["codex"],
+    "paths": ["${CODEX_HOME:-~/.codex}"]
+  },
   "configs": {
-    "user": { "path": "${CODEX_HOME:-~/.codex}/config.toml", "createIfMissing": true }
+    "user": {
+      "path": "${CODEX_HOME:-~/.codex}/config.toml",
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/.codex/config.toml",
+      "createIfMissing": true
+    }
   },
   "format": "toml",
   "rootKey": "mcp_servers",
   "mergeStrategy": "managed-block",
   "entry": {
-    "stdio": { "command": "{command}", "args": "{args}", "env": "{env}" },
-    "extra": { "startup_timeout_sec": 60 }
+    "stdio": {
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}"
+    },
+    "extra": {
+      "startup_timeout_sec": 60
+    }
   },
-  "supports": { "stdio": true, "http": true, "envExpansion": false, "cmdShims": false },
-  "cli": { "list": "codex mcp list" },
-  "restartRequired": false,
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": false,
+    "cmdShims": false
+  },
+  "cli": {
+    "list": "codex mcp list"
+  },
+  "restartRequired": true,
   "status": "stable",
   "lastVerified": "2026-09-25",
   "maintainers": []

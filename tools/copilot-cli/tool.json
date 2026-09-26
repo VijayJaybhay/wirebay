@@ -9,16 +9,48 @@
     "mcp": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers",
     "changelog": "https://github.com/github/copilot-cli/releases"
   },
-  "detect": { "commands": ["copilot"], "paths": ["${COPILOT_HOME:-~/.copilot}"] },
-  "configs": {
-    "user": { "path": "${COPILOT_HOME:-~/.copilot}/mcp-config.json", "createIfMissing": true },
-    "project": { "path": "{cwd}/.github/mcp.json", "createIfMissing": true }
+  "detect": {
+    "commands": ["copilot"],
+    "paths": ["${COPILOT_HOME:-~/.copilot}"]
   },
+  "configs": {
+    "user": {
+      "path": "${COPILOT_HOME:-~/.copilot}/mcp-config.json",
+      "createIfMissing": true
+    },
+    "project": {
+      "path": "{cwd}/.github/mcp.json",
+      "createIfMissing": true
+    }
+  },
+  "alsoReads": [
+    {
+      "tool": "claude-code",
+      "scope": "project",
+      "when": "always",
+      "compatible": true,
+      "note": "reads .mcp.json from the current folder up to the repository root",
+      "source": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers"
+    }
+  ],
   "format": "json",
   "rootKey": "mcpServers",
   "mergeStrategy": "edit",
-  "entry": { "stdio": { "type": "local", "command": "{command}", "args": "{args}", "env": "{env}", "tools": ["*"] } },
-  "supports": { "stdio": true, "http": true, "envExpansion": true, "cmdShims": false },
+  "entry": {
+    "stdio": {
+      "type": "local",
+      "command": "{command}",
+      "args": "{args}",
+      "env": "{env}",
+      "tools": ["*"]
+    }
+  },
+  "supports": {
+    "stdio": true,
+    "http": true,
+    "envExpansion": true,
+    "cmdShims": false
+  },
   "restartRequired": false,
   "status": "stable",
   "lastVerified": "2026-09-25",
